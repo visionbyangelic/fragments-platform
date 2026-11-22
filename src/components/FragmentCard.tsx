@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   type Entry,
   colorStyle,
@@ -25,7 +26,13 @@ interface Props {
 }
 
 export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+
+  function refreshEntries() {
+    queryClient.invalidateQueries({ queryKey: ["entries"] });
+    queryClient.invalidateQueries({ queryKey: ["sealed"] });
+  }
   const hidden = !entry.is_visible;
   const displayName = entry.name?.trim() ? entry.name : "Anonymous";
 
@@ -34,6 +41,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
     try {
       await setEntryVisibility(entry.id, !entry.is_visible);
       toast.success(entry.is_visible ? "Fragment hidden" : "Fragment shown");
+      refreshEntries();
     } catch {
       toast.error("Could not update fragment");
     }
@@ -44,6 +52,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
     try {
       await setEntryFavorite(entry.id, !entry.is_favorite);
       toast.success(entry.is_favorite ? "Removed from favourites" : "Kept as a favourite");
+      refreshEntries();
     } catch {
       toast.error("Could not update fragment");
     }
@@ -54,6 +63,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
     try {
       await deleteEntry(entry.id);
       toast.success("Fragment removed");
+      refreshEntries();
     } catch {
       toast.error("Could not remove fragment");
     }

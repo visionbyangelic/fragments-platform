@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -29,14 +30,20 @@ function getLetterColor(index: number): string {
 }
 
 function QuestionAdminControls({ question }: { question: Question }) {
+  const queryClient = useQueryClient();
   const [answer, setAnswer] = useState(question.answer ?? "");
   const [busy, setBusy] = useState(false);
+
+  function refreshQuestions() {
+    queryClient.invalidateQueries({ queryKey: ["questions"] });
+  }
 
   async function saveAnswer() {
     setBusy(true);
     try {
       await answerQuestion(question.id, answer);
       toast.success("Answer saved");
+      refreshQuestions();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not save answer");
     } finally {
@@ -56,6 +63,7 @@ function QuestionAdminControls({ question }: { question: Question }) {
       }
       await setQuestionPublished(question.id, !question.is_published);
       toast.success(question.is_published ? "Answer unpublished" : "Answer published");
+      refreshQuestions();
     } catch {
       toast.error("Could not update publish status");
     } finally {
@@ -68,6 +76,7 @@ function QuestionAdminControls({ question }: { question: Question }) {
     try {
       await deleteQuestion(question.id);
       toast.success("Question deleted");
+      refreshQuestions();
     } catch {
       toast.error("Could not delete question");
     } finally {
