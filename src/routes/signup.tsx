@@ -9,6 +9,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 
@@ -30,6 +37,7 @@ function SignupPage() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [theme, setTheme] = useState("dusk");
   const [usernameState, setUsernameState] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
   const [busy, setBusy] = useState(false);
   const [confirmSent, setConfirmSent] = useState(false);
@@ -70,7 +78,11 @@ function SignupPage() {
     try {
       localStorage.setItem(
         PENDING_PROFILE_KEY,
-        JSON.stringify({ username: name, display_name: displayName.trim() || name }),
+        JSON.stringify({
+          username: name,
+          display_name: displayName.trim() || name,
+          theme,
+        }),
       );
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -152,6 +164,22 @@ function SignupPage() {
               placeholder="How your wall greets people"
               className="bg-white/60"
             />
+          </div>
+          <div className="space-y-2">
+            <Label>Your wall's theme</Label>
+            <Select value={theme} onValueChange={setTheme}>
+              <SelectTrigger className="bg-white/60">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="dusk">Dusk, deep blue violet</SelectItem>
+                <SelectItem value="pink-dream">Pink Dream, soft pink</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Your wall is born in this colour. You can change it anytime in
+              your gate, and visitors can switch it for themselves.
+            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>

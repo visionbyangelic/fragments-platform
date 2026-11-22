@@ -92,6 +92,7 @@ export async function createProfile(input: {
   username: string;
   display_name: string;
   auth_user_id: string;
+  theme?: string;
 }): Promise<Profile> {
   const username = normalizeUsername(input.username);
   const { data, error } = await sb
@@ -100,7 +101,7 @@ export async function createProfile(input: {
       username,
       display_name: input.display_name.trim(),
       auth_user_id: input.auth_user_id,
-      theme: "dusk",
+      theme: input.theme === "pink-dream" ? "pink-dream" : "dusk",
     })
     .select("*")
     .single();

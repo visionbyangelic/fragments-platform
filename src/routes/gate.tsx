@@ -49,6 +49,7 @@ export const Route = createFileRoute("/gate")({
 });
 
 function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () => void }) {
+  const { setTheme } = useTheme();
   const [username, setUsername] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(PENDING_PROFILE_KEY) ?? "{}").username ?? "";
@@ -61,6 +62,13 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
       return JSON.parse(localStorage.getItem(PENDING_PROFILE_KEY) ?? "{}").display_name ?? "";
     } catch {
       return "";
+    }
+  });
+  const [theme, setThemeChoice] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(PENDING_PROFILE_KEY) ?? "{}").theme ?? "dusk";
+    } catch {
+      return "dusk";
     }
   });
   const [state, setState] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
@@ -94,7 +102,9 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
         username: name,
         display_name: displayName.trim() || name,
         auth_user_id: userId,
+        theme,
       });
+      setTheme(theme === "pink-dream" ? "pink-dream" : "dusk");
       localStorage.removeItem(PENDING_PROFILE_KEY);
       toast.success("Your wall is live");
       onClaimed();
@@ -142,6 +152,18 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
               placeholder="How your wall greets people"
               className="bg-white/60"
             />
+          </div>
+          <div className="space-y-2">
+            <Label>Your wall's theme</Label>
+            <Select value={theme} onValueChange={setThemeChoice}>
+              <SelectTrigger className="bg-white/60">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="dusk">Dusk, deep blue violet</SelectItem>
+                <SelectItem value="pink-dream">Pink Dream, soft pink</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <Button type="submit" disabled={busy || state === "taken"} className="w-full rounded-full">
             {busy ? "Please wait…" : "Open my wall"}
