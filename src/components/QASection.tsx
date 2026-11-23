@@ -8,14 +8,66 @@ import {
   setQuestionPublished,
   type Question,
 } from "@/lib/questions";
-import { CircleCheck as CheckCircle2, MessageCircleQuestionMark as MessageCircleQuestion, Send, Trash2 } from "lucide-react";
+import { CircleCheck as CheckCircle2, MessageCircleQuestionMark as MessageCircleQuestion, Send, Share2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { shareAnswerCard } from "@/lib/share-card";
 
 interface Props {
   questions: Question[];
   isOwner: boolean;
   ownerName: string;
   editMode?: boolean;
+  wallUsername: string;
+  wallTheme: string;
+}
+
+function ShareCardButton({
+  question,
+  wallUsername,
+  ownerName,
+  wallTheme,
+}: {
+  question: Question;
+  wallUsername: string;
+  ownerName: string;
+  wallTheme: string;
+}) {
+  const [sharing, setSharing] = useState(false);
+
+  async function handleShare() {
+    if (!question.answer) return;
+    setSharing(true);
+    try {
+      const how = await shareAnswerCard({
+        question: question.question,
+        answer: question.answer,
+        username: wallUsername,
+        displayName: ownerName,
+        theme: wallTheme,
+      });
+      if (how === "downloaded") toast.success("Card saved. Post it anywhere 🤍");
+    } catch {
+      toast.error("Could not make the card");
+    } finally {
+      setSharing(false);
+    }
+  }
+
+  return (
+    <div className="mt-4 flex justify-end">
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={handleShare}
+        disabled={sharing}
+        className="rounded-full text-xs"
+      >
+        <Share2 className="mr-1.5 h-3.5 w-3.5" aria-hidden />
+        {sharing ? "Making your card..." : "Share as image"}
+      </Button>
+    </div>
+  );
 }
 
 function askerName(q: Question) {
@@ -124,7 +176,7 @@ function QuestionAdminControls({ question }: { question: Question }) {
   );
 }
 
-export function QASection({ questions, isOwner, ownerName, editMode }: Props) {
+export function QASection({ questions, isOwner, ownerName, editMode, wallUsername, wallTheme }: Props) {
   const visibleQuestions = isOwner
     ? questions
     : questions.filter((q) => q.is_published && q.answer);
@@ -181,6 +233,15 @@ export function QASection({ questions, isOwner, ownerName, editMode }: Props) {
                       <p className="mt-4 text-sm opacity-70">— {ownerName}</p>
                     </div>
                   ) : isOwner && <p className="mt-5 text-sm text-muted-foreground">Not answered yet.</p>}
+
+                  {q.answer && q.is_published && (
+                    <ShareCardButton
+                      question={q}
+                      wallUsername={wallUsername}
+                      ownerName={ownerName}
+                      wallTheme={wallTheme}
+                    />
+                  )}
 
                   {isOwner && editMode && <QuestionAdminControls question={q} />}
                 </div>

@@ -321,6 +321,8 @@ function Wall() {
             isOwner={isOwner}
             ownerName={ownerName}
             editMode={editMode}
+            wallUsername={profile.username}
+            wallTheme={profile.theme}
           />
         )}
       </main>

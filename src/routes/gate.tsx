@@ -460,6 +460,8 @@ function GatePage() {
             isOwner
             ownerName={ownerName}
             editMode
+            wallUsername={profile.username}
+            wallTheme={profile.theme}
           />
         )}
 
