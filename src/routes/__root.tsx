@@ -103,7 +103,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     scripts: [
       {
         children:
-          "try{var t=localStorage.getItem('fragments-theme');document.documentElement.setAttribute('data-theme',t==='pink-dream'?'pink-dream':'dusk')}catch(e){document.documentElement.setAttribute('data-theme','dusk')}",
+          "try{var ok=['dusk','pink-dream','midnight','vintage','lagoon','matcha'];var t=localStorage.getItem('fragments-theme');document.documentElement.setAttribute('data-theme',ok.indexOf(t)>=0?t:'dusk')}catch(e){document.documentElement.setAttribute('data-theme','dusk')}",
       },
     ],
     links: [

@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { isThemeName } from "@/lib/themes";
 
 // Platform-level data: profiles (one per wall), reports, account helpers.
 // The generated Database type does not include our tables, so we use a
@@ -101,7 +102,7 @@ export async function createProfile(input: {
       username,
       display_name: input.display_name.trim(),
       auth_user_id: input.auth_user_id,
-      theme: input.theme === "pink-dream" ? "pink-dream" : "dusk",
+      theme: isThemeName(input.theme) ? input.theme : "dusk",
     })
     .select("*")
     .single();

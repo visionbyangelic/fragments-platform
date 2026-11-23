@@ -27,14 +27,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PENDING_PROFILE_KEY } from "./signup";
+import { ThemePicker } from "@/components/ThemePicker";
+import { isThemeName } from "@/lib/themes";
 import { toast } from "sonner";
 import { Copy, Lock, ShieldCheck } from "lucide-react";
 
@@ -155,15 +150,13 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
           </div>
           <div className="space-y-2">
             <Label>Your wall's theme</Label>
-            <Select value={theme} onValueChange={setThemeChoice}>
-              <SelectTrigger className="bg-white/60">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dusk">Dusk, deep blue violet</SelectItem>
-                <SelectItem value="pink-dream">Pink Dream, soft pink</SelectItem>
-              </SelectContent>
-            </Select>
+            <ThemePicker
+              value={isThemeName(theme) ? theme : "dusk"}
+              onChange={(t) => {
+                setThemeChoice(t);
+                setTheme(t);
+              }}
+            />
           </div>
           <Button type="submit" disabled={busy || state === "taken"} className="w-full rounded-full">
             {busy ? "Please wait…" : "Open my wall"}
@@ -483,18 +476,10 @@ function GatePage() {
             </div>
             <div className="space-y-2">
               <Label>Your wall's theme</Label>
-              <Select value={theme} onValueChange={(v) => setTheme(v as ThemeName)}>
-                <SelectTrigger className="bg-white/60">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="dusk">Dusk</SelectItem>
-                  <SelectItem value="pink-dream">Pink Dream</SelectItem>
-                </SelectContent>
-              </Select>
+              <ThemePicker value={theme} onChange={setTheme} />
               <p className="text-xs text-muted-foreground">
                 Visitors see your wall in this theme first. They can switch it
-                for themselves.
+                for themselves. Press Save settings to keep your choice.
               </p>
             </div>
             <div className="flex items-center justify-between gap-4">

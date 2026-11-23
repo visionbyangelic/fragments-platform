@@ -16,7 +16,8 @@ import {
 import { fetchQuestions, subscribeToQuestions } from "@/lib/questions";
 import { fetchProfileByUsername, reportWall, USERNAME_RE } from "@/lib/platform";
 import { useSession } from "@/hooks/use-session";
-import { useTheme, type ThemeName } from "@/context/ThemeContext";
+import { useTheme } from "@/context/ThemeContext";
+import { isThemeName } from "@/lib/themes";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -127,7 +128,7 @@ function Wall() {
   useEffect(() => {
     if (profile && themedFor.current !== profile.id) {
       themedFor.current = profile.id;
-      setTheme((profile.theme === "pink-dream" ? "pink-dream" : "dusk") as ThemeName);
+      setTheme(isThemeName(profile.theme) ? profile.theme : "dusk");
     }
   }, [profile, setTheme]);
 

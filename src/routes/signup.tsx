@@ -9,13 +9,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ThemePicker } from "@/components/ThemePicker";
+import { useTheme, type ThemeName } from "@/context/ThemeContext";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 
@@ -37,7 +32,8 @@ function SignupPage() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [theme, setTheme] = useState("dusk");
+  const [themeChoice, setThemeChoice] = useState<ThemeName>("dusk");
+  const { setTheme } = useTheme();
   const [usernameState, setUsernameState] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
   const [busy, setBusy] = useState(false);
   const [confirmSent, setConfirmSent] = useState(false);
@@ -81,7 +77,7 @@ function SignupPage() {
         JSON.stringify({
           username: name,
           display_name: displayName.trim() || name,
-          theme,
+          theme: themeChoice,
         }),
       );
       const { data, error } = await supabase.auth.signUp({
@@ -167,18 +163,16 @@ function SignupPage() {
           </div>
           <div className="space-y-2">
             <Label>Your wall's theme</Label>
-            <Select value={theme} onValueChange={setTheme}>
-              <SelectTrigger className="bg-white/60">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="dusk">Dusk, deep blue violet</SelectItem>
-                <SelectItem value="pink-dream">Pink Dream, soft pink</SelectItem>
-              </SelectContent>
-            </Select>
+            <ThemePicker
+              value={themeChoice}
+              onChange={(t) => {
+                setThemeChoice(t);
+                setTheme(t);
+              }}
+            />
             <p className="text-xs text-muted-foreground">
-              Your wall is born in this colour. You can change it anytime in
-              your gate, and visitors can switch it for themselves.
+              Tap one and this page shows it live. Your wall is born in the
+              theme you pick, and you can change it anytime in your gate.
             </p>
           </div>
           <div className="space-y-2">
