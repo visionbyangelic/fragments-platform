@@ -426,6 +426,13 @@
     border-color: var(--color-border);
   }
 
+  /* No sideways scroll: a page wider than the phone is what makes
+     iOS jump sideways and cut buttons off the edge. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
   body {
     background-color: var(--color-background);
     background-image: var(--gradient-aura);

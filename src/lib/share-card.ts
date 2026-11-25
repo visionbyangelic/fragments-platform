@@ -1,14 +1,46 @@
 import { cardPalette } from "@/lib/themes";
 
-// Renders a published Q&A as a story-ready PNG (1080 x 1350) drawn on
-// a canvas in the wall's own theme, then hands it to the share sheet
-// on mobile or downloads it elsewhere.
+// Renders a published Q&A as a story-ready card drawn on a canvas
+// in a chosen theme, then hands it to the share sheet on mobile or
+// downloads it elsewhere.
+//
+// The file is a JPEG, not a PNG: same 1080 x 1350 picture, roughly
+// a tenth of the weight (a PNG of this gradient card runs to well
+// over a megabyte; the JPEG lands around 100-200 KB), so it costs
+// far less mobile data to save and to post.
 
 const W = 1080;
 const H = 1350;
 const PAD = 84;
 const SERIF = '"Cormorant Garamond", Georgia, serif';
 const SANS = '"Inter", system-ui, sans-serif';
+
+export type CardSize = "story" | "compact";
+
+export const CARD_SIZES: Record<
+  CardSize,
+  { width: number; height: number; label: string; blurb: string }
+> = {
+  story: {
+    width: 1080,
+    height: 1350,
+    label: "Story",
+    blurb: "1080 × 1350 · crisp, for stories",
+  },
+  compact: {
+    width: 720,
+    height: 900,
+    label: "Compact",
+    blurb: "720 × 900 · much lighter file",
+  },
+};
+
+export interface ShareCardOptions {
+  /** Any of the six wall themes; defaults to the wall's own theme. */
+  theme?: string;
+  /** Story (1080 x 1350) or Compact (720 x 900). Defaults to Story. */
+  size?: CardSize;
+}
 
 export interface AnswerCardInput {
   question: string;
@@ -56,8 +88,11 @@ function roundRect(
   ctx.closePath();
 }
 
-export async function renderAnswerCard(input: AnswerCardInput): Promise<Blob> {
-  const pal = cardPalette(input.theme);
+async function renderAnswerCanvas(
+  input: AnswerCardInput,
+  theme: string,
+): Promise<HTMLCanvasElement> {
+  const pal = cardPalette(theme);
   await document.fonts.ready;
 
   const canvas = document.createElement("canvas");
@@ -170,17 +205,63 @@ export async function renderAnswerCard(input: AnswerCardInput): Promise<Blob> {
   const tag = "Leave an anonymous message";
   ctx.fillText(tag, (W - ctx.measureText(tag).width) / 2, H - 44);
 
+  return canvas;
+}
+
+function canvasToJpeg(
+  source: HTMLCanvasElement,
+  width: number,
+  height: number,
+  quality: number,
+): Promise<Blob> {
+  let canvas = source;
+  if (source.width !== width || source.height !== height) {
+    canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Canvas is not available");
+    ctx.drawImage(source, 0, 0, width, height);
+  }
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error("Could not render the card"))),
-      "image/png",
+      "image/jpeg",
+      quality,
     );
   });
 }
 
-export async function shareAnswerCard(input: AnswerCardInput): Promise<"shared" | "downloaded"> {
-  const blob = await renderAnswerCard(input);
-  const file = new File([blob], `fragments-${input.username}.png`, { type: "image/png" });
+export async function renderAnswerCard(
+  input: AnswerCardInput,
+  options: ShareCardOptions = {},
+): Promise<Blob> {
+  const size = CARD_SIZES[options.size ?? "story"];
+  const canvas = await renderAnswerCanvas(input, options.theme ?? input.theme);
+  return canvasToJpeg(canvas, size.width, size.height, 0.85);
+}
+
+/** Small JPEG data URL for the live preview in the save dialog. */
+export async function renderAnswerCardPreview(
+  input: AnswerCardInput,
+  options: ShareCardOptions = {},
+): Promise<string> {
+  const canvas = await renderAnswerCanvas(input, options.theme ?? input.theme);
+  const small = document.createElement("canvas");
+  small.width = 360;
+  small.height = 450;
+  const ctx = small.getContext("2d");
+  if (!ctx) throw new Error("Canvas is not available");
+  ctx.drawImage(canvas, 0, 0, 360, 450);
+  return small.toDataURL("image/jpeg", 0.8);
+}
+
+export async function shareAnswerCard(
+  input: AnswerCardInput,
+  options: ShareCardOptions = {},
+): Promise<"shared" | "downloaded"> {
+  const blob = await renderAnswerCard(input, options);
+  const file = new File([blob], `fragments-${input.username}.jpg`, { type: "image/jpeg" });
 
   const nav = navigator as Navigator & {
     canShare?: (data: { files: File[] }) => boolean;

@@ -1,7 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   answerQuestion,
   deleteQuestion,
@@ -10,7 +17,13 @@ import {
 } from "@/lib/questions";
 import { CircleCheck as CheckCircle2, MessageCircleQuestionMark as MessageCircleQuestion, Send, Share2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { shareAnswerCard } from "@/lib/share-card";
+import {
+  CARD_SIZES,
+  renderAnswerCardPreview,
+  shareAnswerCard,
+  type CardSize,
+} from "@/lib/share-card";
+import { THEMES } from "@/lib/themes";
 
 interface Props {
   questions: Question[];
@@ -32,20 +45,58 @@ function ShareCardButton({
   ownerName: string;
   wallTheme: string;
 }) {
+  const [open, setOpen] = useState(false);
+  const [theme, setTheme] = useState(wallTheme);
+  const [size, setSize] = useState<CardSize>("story");
+  const [preview, setPreview] = useState<string | null>(null);
+  const [rendering, setRendering] = useState(false);
   const [sharing, setSharing] = useState(false);
 
-  async function handleShare() {
-    if (!question.answer) return;
-    setSharing(true);
-    try {
-      const how = await shareAnswerCard({
+  // Live preview, re-drawn whenever the colour or size changes.
+  useEffect(() => {
+    if (!open || !question.answer) return;
+    let cancelled = false;
+    setRendering(true);
+    renderAnswerCardPreview(
+      {
         question: question.question,
         answer: question.answer,
         username: wallUsername,
         displayName: ownerName,
         theme: wallTheme,
+      },
+      { theme, size },
+    )
+      .then((url) => {
+        if (!cancelled) setPreview(url);
+      })
+      .catch(() => {
+        if (!cancelled) setPreview(null);
+      })
+      .finally(() => {
+        if (!cancelled) setRendering(false);
       });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, theme, size, question, wallUsername, ownerName, wallTheme]);
+
+  async function handleShare() {
+    if (!question.answer) return;
+    setSharing(true);
+    try {
+      const how = await shareAnswerCard(
+        {
+          question: question.question,
+          answer: question.answer,
+          username: wallUsername,
+          displayName: ownerName,
+          theme: wallTheme,
+        },
+        { theme, size },
+      );
       if (how === "downloaded") toast.success("Card saved. Post it anywhere 🤍");
+      setOpen(false);
     } catch {
       toast.error("Could not make the card");
     } finally {
@@ -59,13 +110,114 @@ function ShareCardButton({
         type="button"
         variant="ghost"
         size="sm"
-        onClick={handleShare}
-        disabled={sharing}
+        onClick={() => {
+          setTheme(wallTheme);
+          setOpen(true);
+        }}
         className="rounded-full text-xs"
       >
         <Share2 className="mr-1.5 h-3.5 w-3.5" aria-hidden />
-        {sharing ? "Making your card..." : "Share as image"}
+        Share as image
       </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl">Save your card</DialogTitle>
+            <DialogDescription>
+              Pick a colour and a size, then save it. The file is a JPEG,
+              so it stays light on data.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-2 flex justify-center">
+            {preview ? (
+              <img
+                src={preview}
+                alt="Preview of your answer card"
+                className="max-h-[46vh] w-auto rounded-xl shadow-lg"
+              />
+            ) : (
+              <div className="flex h-64 w-48 items-center justify-center rounded-xl bg-muted text-sm text-muted-foreground">
+                {rendering ? "Drawing your card…" : "Preview unavailable"}
+              </div>
+            )}
+          </div>
+
+          <div className="mt-5 space-y-2">
+            <p className="text-sm font-medium">Colour</p>
+            <div className="flex flex-wrap gap-2.5" role="radiogroup" aria-label="Card colour">
+              {THEMES.map((t) => (
+                <button
+                  key={t.name}
+                  type="button"
+                  role="radio"
+                  aria-checked={theme === t.name}
+                  aria-label={t.label}
+                  title={t.label}
+                  onClick={() => setTheme(t.name)}
+                  className={`h-10 w-10 rounded-full transition ${
+                    theme === t.name
+                      ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                      : "ring-1 ring-border"
+                  }`}
+                  style={{
+                    background: `linear-gradient(135deg, ${t.card.bg[0]}, ${t.card.bg[2]})`,
+                  }}
+                />
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {THEMES.find((t) => t.name === theme)?.label ?? "Dusk"} ·{" "}
+              {THEMES.find((t) => t.name === theme)?.blurb ?? ""}
+            </p>
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <p className="text-sm font-medium">Size</p>
+            <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Card size">
+              {(Object.keys(CARD_SIZES) as CardSize[]).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="radio"
+                  aria-checked={size === key}
+                  onClick={() => setSize(key)}
+                  className={`rounded-2xl border px-3 py-2.5 text-left transition ${
+                    size === key
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card/40"
+                  }`}
+                >
+                  <span className="block text-sm font-medium">{CARD_SIZES[key].label}</span>
+                  <span
+                    className={`mt-0.5 block text-xs ${
+                      size === key ? "text-primary-foreground/80" : "text-muted-foreground"
+                    }`}
+                  >
+                    {CARD_SIZES[key].blurb}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-end gap-2">
+            <Button type="button" variant="ghost" onClick={() => setOpen(false)} className="rounded-full">
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleShare}
+              disabled={sharing || rendering || !preview}
+              className="rounded-full"
+            >
+              <Share2 className="mr-2 h-4 w-4" aria-hidden />
+              {sharing ? "Making your card…" : "Share / Save image"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
