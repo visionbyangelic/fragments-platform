@@ -17,6 +17,7 @@ import {
   submitEntry,
 } from "@/lib/entries";
 import { submitQuestion } from "@/lib/questions";
+import { notifyWallOwner } from "@/lib/notify";
 import { toast } from "sonner";
 
 interface Props {
@@ -56,15 +57,16 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
     setSubmitting(true);
     try {
       if (asQuestion) {
-        await submitQuestion({
+        const questionId = await submitQuestion({
           profile_id: profileId,
           name: anonymous ? null : name.trim() || null,
           question: clean,
           is_anonymous: anonymous,
         });
+        notifyWallOwner("question", questionId);
         toast.success(`Question sent for ${ownerName} to answer ✨`);
       } else {
-        await submitEntry({
+        const entryId = await submitEntry({
           profile_id: profileId,
           name: anonymous ? null : name.trim() || null,
           message: clean,
@@ -72,6 +74,7 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
           shape,
           reveal_date: sealed ? new Date(`${sealDate}T00:00:00`).toISOString() : null,
         });
+        notifyWallOwner("fragment", entryId);
         toast.success(
           sealed ? "Your fragment is sealed until its day comes 🔒" : "Your fragment has been added 🤍",
         );

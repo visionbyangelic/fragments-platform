@@ -34,22 +34,27 @@ export async function submitQuestion(input: {
   name: string | null;
   question: string;
   is_anonymous: boolean;
-}): Promise<void> {
+}): Promise<string> {
   const cleanQuestion = input.question.trim();
   if (cleanQuestion.length < 3 || cleanQuestion.length > 800) {
     throw new Error("Question must be between 3 and 800 characters.");
   }
 
-  const { error } = await sb.from("questions").insert({
-    profile_id: input.profile_id,
-    name: input.is_anonymous ? null : input.name?.trim() || null,
-    question: cleanQuestion,
-    is_anonymous: input.is_anonymous,
-    is_published: false,
-    answer: null,
-    answered_at: null,
-  });
+  const { data, error } = await sb
+    .from("questions")
+    .insert({
+      profile_id: input.profile_id,
+      name: input.is_anonymous ? null : input.name?.trim() || null,
+      question: cleanQuestion,
+      is_anonymous: input.is_anonymous,
+      is_published: false,
+      answer: null,
+      answered_at: null,
+    })
+    .select("id")
+    .single();
   if (error) throw error;
+  return (data as { id: string }).id;
 }
 
 export async function answerQuestion(id: string, answer: string): Promise<void> {

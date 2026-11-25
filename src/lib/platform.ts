@@ -15,6 +15,7 @@ export type Profile = {
   display_name: string;
   theme: string;
   wall_open: boolean;
+  email_notifications: boolean;
   suspended: boolean;
   is_platform_admin: boolean;
   auth_user_id: string | null;
@@ -112,7 +113,9 @@ export async function createProfile(input: {
 
 export async function updateProfile(
   id: string,
-  patch: Partial<Pick<Profile, "display_name" | "theme" | "wall_open" | "suspended">>,
+  patch: Partial<
+    Pick<Profile, "display_name" | "theme" | "wall_open" | "email_notifications" | "suspended">
+  >,
 ): Promise<void> {
   const { error } = await sb.from("profiles").update(patch).eq("id", id);
   if (error) throw error;

@@ -277,6 +277,7 @@ function GatePage() {
   const [tab, setTab] = useState<"fragments" | "questions" | "settings" | "platform">("fragments");
   const [displayName, setDisplayName] = useState("");
   const [wallOpen, setWallOpen] = useState(true);
+  const [emailNotifications, setEmailNotifications] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -287,6 +288,7 @@ function GatePage() {
     if (profile) {
       setDisplayName(profile.display_name);
       setWallOpen(profile.wall_open);
+      setEmailNotifications(profile.email_notifications ?? true);
     }
   }, [profile]);
 
@@ -336,6 +338,7 @@ function GatePage() {
         display_name: displayName.trim() || profile!.username,
         theme,
         wall_open: wallOpen,
+        email_notifications: emailNotifications,
       });
       toast.success("Settings saved");
       refreshProfile(session);
@@ -492,6 +495,21 @@ function GatePage() {
                 </p>
               </div>
               <Switch id="wall-open" checked={wallOpen} onCheckedChange={setWallOpen} />
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <Label htmlFor="email-notifications">Email notifications</Label>
+                <p className="text-xs text-muted-foreground">
+                  Get an email when someone leaves a fragment or asks a
+                  question
+                  {user?.email ? ` — sent to ${user.email}` : ""}.
+                </p>
+              </div>
+              <Switch
+                id="email-notifications"
+                checked={emailNotifications}
+                onCheckedChange={setEmailNotifications}
+              />
             </div>
             <Button onClick={saveSettings} disabled={saving} className="w-full rounded-full">
               {saving ? "Saving…" : "Save settings"}

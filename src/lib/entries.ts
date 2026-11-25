@@ -94,18 +94,23 @@ export async function submitEntry(input: {
   color: string;
   shape: string;
   reveal_date?: string | null;
-}): Promise<void> {
-  const { error } = await sb.from("entries").insert({
-    profile_id: input.profile_id,
-    name: input.name,
-    message: input.message,
-    color: input.color,
-    shape: input.shape,
-    is_private: false,
-    is_visible: true,
-    reveal_date: input.reveal_date ?? null,
-  });
+}): Promise<string> {
+  const { data, error } = await sb
+    .from("entries")
+    .insert({
+      profile_id: input.profile_id,
+      name: input.name,
+      message: input.message,
+      color: input.color,
+      shape: input.shape,
+      is_private: false,
+      is_visible: true,
+      reveal_date: input.reveal_date ?? null,
+    })
+    .select("id")
+    .single();
   if (error) throw error;
+  return (data as { id: string }).id;
 }
 
 export async function setEntryVisibility(id: string, is_visible: boolean): Promise<void> {
