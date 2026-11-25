@@ -13,8 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as UsernameRouteImport } from './routes/$username'
 import { Route as GateRouteImport } from './routes/gate'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ApiLoginRouteImport } from './routes/api/login'
 import { Route as ApiNotifyRouteImport } from './routes/api/notify'
 
 const IndexRoute = IndexRouteImport.update({
@@ -37,6 +39,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -45,6 +52,11 @@ const SignupRoute = SignupRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLoginRoute = ApiLoginRouteImport.update({
+  id: '/api/login',
+  path: '/api/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiNotifyRoute = ApiNotifyRouteImport.update({
@@ -58,8 +70,10 @@ export interface FileRoutesByFullPath {
   '/$username': typeof UsernameRoute
   '/gate': typeof GateRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/login': typeof ApiLoginRoute
   '/api/notify': typeof ApiNotifyRoute
 }
 export interface FileRoutesByTo {
@@ -67,8 +81,10 @@ export interface FileRoutesByTo {
   '/$username': typeof UsernameRoute
   '/gate': typeof GateRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/login': typeof ApiLoginRoute
   '/api/notify': typeof ApiNotifyRoute
 }
 export interface FileRoutesById {
@@ -77,8 +93,10 @@ export interface FileRoutesById {
   '/$username': typeof UsernameRoute
   '/gate': typeof GateRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/login': typeof ApiLoginRoute
   '/api/notify': typeof ApiNotifyRoute
 }
 export interface FileRouteTypes {
@@ -88,8 +106,10 @@ export interface FileRouteTypes {
     | '/$username'
     | '/gate'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/sitemap.xml'
+    | '/api/login'
     | '/api/notify'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -97,8 +117,10 @@ export interface FileRouteTypes {
     | '/$username'
     | '/gate'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/sitemap.xml'
+    | '/api/login'
     | '/api/notify'
   id:
     | '__root__'
@@ -106,8 +128,10 @@ export interface FileRouteTypes {
     | '/$username'
     | '/gate'
     | '/login'
+    | '/reset-password'
     | '/signup'
     | '/sitemap.xml'
+    | '/api/login'
     | '/api/notify'
   fileRoutesById: FileRoutesById
 }
@@ -116,8 +140,10 @@ export interface RootRouteChildren {
   UsernameRoute: typeof UsernameRoute
   GateRoute: typeof GateRoute
   LoginRoute: typeof LoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiLoginRoute: typeof ApiLoginRoute
   ApiNotifyRoute: typeof ApiNotifyRoute
 }
 
@@ -151,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -163,6 +196,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/login': {
+      id: '/api/login'
+      path: '/api/login'
+      fullPath: '/api/login'
+      preLoaderRoute: typeof ApiLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/notify': {
@@ -180,8 +220,10 @@ const rootRouteChildren: RootRouteChildren = {
   UsernameRoute: UsernameRoute,
   GateRoute: GateRoute,
   LoginRoute: LoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiLoginRoute: ApiLoginRoute,
   ApiNotifyRoute: ApiNotifyRoute,
 }
 export const routeTree = rootRouteImport
