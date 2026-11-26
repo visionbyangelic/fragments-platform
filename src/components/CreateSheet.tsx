@@ -142,7 +142,7 @@ export function CreateSheet({ open, onOpenChange, profile, onCreated }: Props) {
                 : view === "capsule"
                   ? "A date and a title. Friends contribute while it is sealed, and it opens itself on the day."
                   : view === "letter"
-                    ? "A private letter to your future self. It waits for its day — the email that would deliver it is still to come, so for now it opens here."
+                    ? "A private letter to your future self. Heads up: the email doesn't work yet, so no email will arrive. Your letter is saved and will open here, on your dashboard, on the day."
                     : "Visitors ask, you answer. Switch the question box on or off your wall."}
           </DialogDescription>
         </DialogHeader>
@@ -311,8 +311,9 @@ export function CreateSheet({ open, onOpenChange, profile, onCreated }: Props) {
                 className="bg-background/70"
               />
               <p className="text-xs text-muted-foreground">
-                For now it opens here, on your dashboard, on the day. The
-                email that would deliver it is still to come.
+                Heads up: the email doesn't work yet — nothing will be sent
+                to your inbox. Your letter is saved and will open here, on
+                your dashboard, on the day.
               </p>
             </div>
             <Button type="submit" disabled={busy} className="w-full rounded-full">

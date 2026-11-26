@@ -1066,6 +1066,10 @@ function GatePage() {
                   question
                   {user?.email ? ` — sent to ${user.email}` : ""}.
                 </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Heads up: these emails aren't sending yet — email is still
+                  being set up. Your fragments still arrive here instantly.
+                </p>
               </div>
               <Switch
                 id="email-notifications"
