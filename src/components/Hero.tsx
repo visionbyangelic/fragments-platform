@@ -67,12 +67,14 @@ export function Hero({ displayName, username, isOwner, onBegin, themeControl, bi
           layers hid the pattern, so a theme like Starry Night only
           showed below the hero, where the fragments are. The
           background fades out toward the bottom instead of ending
-          on a solid band, so the pattern carries on down the page. */}
+          on a solid band, so the pattern carries on down the page.
+          A wallpaper picture, when the owner set one, takes the
+          pattern's place here as well as on the page behind it. */}
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: "var(--gradient-aura), var(--gradient-sanctuary)",
-          backgroundSize: "var(--wall-pattern-size, auto), auto",
+          backgroundImage: "var(--wallpaper-image, var(--gradient-aura)), var(--gradient-sanctuary)",
+          backgroundSize: "var(--wallpaper-size, var(--wall-pattern-size, auto)), auto",
           maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
           WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
         }}

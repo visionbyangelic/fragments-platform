@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useTheme } from "@/context/ThemeContext";
 import { useSession } from "@/hooks/use-session";
@@ -6,6 +6,7 @@ import { CUSTOM_THEME_NAME, isThemeName, themeDef, type ThemeName } from "@/lib/
 import { DEFAULT_CUSTOM_THEME, parseCustomTheme, type CustomTheme } from "@/lib/custom-theme";
 import { parseThemeOverrides, type ThemeOverrides } from "@/lib/theme-overrides";
 import { updateProfile, type Profile } from "@/lib/platform";
+import { deleteWallpaperByUrl, uploadWallpaper } from "@/lib/wallpaper";
 import { ThemePicker } from "@/components/ThemePicker";
 import { ThemeEditor } from "@/components/ThemeEditor";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,55 @@ export function ThemeEditorPanel({ profile, onSaved, onPreviewDecorations }: Pro
   const [draftTheme, setDraftTheme] = useState<ThemeName>(savedTheme);
   const [draftCustom, setDraftCustom] = useState<CustomTheme>(savedCustom);
   const [draftOverrides, setDraftOverrides] = useState<ThemeOverrides | null>(savedOverrides);
+
+  // The wallpaper is a separate setting from the theme draft: it
+  // saves the moment it is picked or removed, not with "Save theme".
+  const [wallpaperBusy, setWallpaperBusy] = useState(false);
+  const [wallpaperError, setWallpaperError] = useState<string | null>(null);
+  const wallpaperFileRef = useRef<HTMLInputElement>(null);
+
+  async function handleWallpaperFile(file: File | undefined) {
+    if (!file || wallpaperBusy) return;
+    if (!profile.auth_user_id) {
+      setWallpaperError("Sign in again — your account could not be confirmed.");
+      return;
+    }
+    const previous = profile.wallpaper_url;
+    setWallpaperBusy(true);
+    setWallpaperError(null);
+    try {
+      const url = await uploadWallpaper(file, profile.auth_user_id);
+      await updateProfile(profile.id, { wallpaper_url: url });
+      if (previous) await deleteWallpaperByUrl(previous);
+      toast.success("Wallpaper set — open your wall to see it");
+      refreshProfile(session);
+      onSaved?.();
+    } catch (e) {
+      setWallpaperError(
+        e instanceof Error ? e.message : "That picture could not be used.",
+      );
+    } finally {
+      setWallpaperBusy(false);
+    }
+  }
+
+  async function handleRemoveWallpaper() {
+    const previous = profile.wallpaper_url;
+    if (!previous || wallpaperBusy) return;
+    setWallpaperBusy(true);
+    setWallpaperError(null);
+    try {
+      await updateProfile(profile.id, { wallpaper_url: null });
+      await deleteWallpaperByUrl(previous);
+      toast.success("Wallpaper removed — your theme's background is back");
+      refreshProfile(session);
+      onSaved?.();
+    } catch {
+      setWallpaperError("Could not remove the wallpaper — try again.");
+    } finally {
+      setWallpaperBusy(false);
+    }
+  }
 
   const dirty =
     draftTheme !== savedTheme ||
@@ -147,6 +197,63 @@ export function ThemeEditorPanel({ profile, onSaved, onPreviewDecorations }: Pro
         onChange={setDraftOverrides}
         showColors={draftTheme !== CUSTOM_THEME_NAME}
       />
+
+      <div className="space-y-3 rounded-3xl border border-border bg-background/40 p-4">
+        <p className="text-sm font-medium">Wallpaper</p>
+        <p className="text-xs text-muted-foreground">
+          Put one of your own pictures behind the whole wall instead of
+          the theme's background. Your theme's colours, fonts and
+          decorations stay exactly as they are.
+        </p>
+        {profile.wallpaper_url ? (
+          <img
+            src={profile.wallpaper_url}
+            alt="Your wall's wallpaper"
+            className="aspect-[16/9] w-full rounded-2xl object-cover"
+          />
+        ) : null}
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="secondary"
+            disabled={wallpaperBusy}
+            onClick={() => wallpaperFileRef.current?.click()}
+            className="rounded-full"
+          >
+            {wallpaperBusy
+              ? "Uploading…"
+              : profile.wallpaper_url
+                ? "Change picture"
+                : "Choose a picture"}
+          </Button>
+          {profile.wallpaper_url ? (
+            <Button
+              variant="ghost"
+              disabled={wallpaperBusy}
+              onClick={handleRemoveWallpaper}
+              className="rounded-full"
+            >
+              Remove wallpaper
+            </Button>
+          ) : null}
+        </div>
+        <input
+          ref={wallpaperFileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            handleWallpaperFile(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
+        {wallpaperError ? (
+          <p className="text-xs text-destructive">{wallpaperError}</p>
+        ) : null}
+        <p className="text-xs text-muted-foreground">
+          Pictures are shrunk to fit before upload, so the wall still
+          loads fast for visitors.
+        </p>
+      </div>
 
       <div className="flex flex-wrap gap-2">
         <Button

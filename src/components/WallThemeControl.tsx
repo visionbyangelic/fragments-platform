@@ -21,6 +21,7 @@ import {
 } from "@/lib/custom-theme";
 import { parseThemeOverrides } from "@/lib/theme-overrides";
 import { updateProfile, type Profile } from "@/lib/platform";
+import { applyWallpaperImage, clearWallpaperImage } from "@/lib/wallpaper";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -184,9 +185,11 @@ export function WallThemeControl({ profile, onSaved, onPreviewDecorations }: Pro
   // Trying a preset: the wall wears it at once, pure — no old
   // tweaks on top — including its own decorations, so what you see
   // is the preset itself. Picking Custom goes back to the saved
-  // custom look, tweaks included.
+  // custom look, tweaks included. A wallpaper picture is lifted
+  // while trying, so the preset's own background shows.
   function preview(theme: ThemeName) {
     setPicked(theme);
+    clearWallpaperImage();
     if (theme === CUSTOM_THEME_NAME) {
       setTheme(CUSTOM_THEME_NAME, savedCustom, savedOverrides);
       onPreviewDecorations(savedOverrides?.decorations ?? []);
@@ -203,6 +206,7 @@ export function WallThemeControl({ profile, onSaved, onPreviewDecorations }: Pro
       savedOverrides,
     );
     onPreviewDecorations(null);
+    applyWallpaperImage(profile.wallpaper_url ?? null);
     setPicked(savedTheme);
     setOpen(false);
   }
@@ -230,6 +234,9 @@ export function WallThemeControl({ profile, onSaved, onPreviewDecorations }: Pro
         custom_theme: picked === CUSTOM_THEME_NAME ? savedCustom : null,
         theme_overrides: picked === CUSTOM_THEME_NAME ? savedOverrides : null,
       });
+      // The theme changed; the wallpaper is a separate setting and
+      // stays on the wall.
+      applyWallpaperImage(profile.wallpaper_url ?? null);
       toast.success("Your wall's new look is saved");
       refreshProfile(session);
       onPreviewDecorations(null);

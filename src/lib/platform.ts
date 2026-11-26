@@ -19,6 +19,9 @@ export type Profile = {
   theme: string;
   custom_theme: CustomTheme | null;
   theme_overrides: ThemeOverrides | null;
+  /** The owner's own picture behind the whole wall, or null for the
+      theme's own background. */
+  wallpaper_url: string | null;
   wall_open: boolean;
   email_notifications: boolean;
   custom_prompt: string | null;
@@ -169,7 +172,7 @@ export async function updateProfile(
   patch: Partial<
     Pick<
       Profile,
-      "display_name" | "theme" | "custom_theme" | "theme_overrides" | "wall_open" | "email_notifications" | "custom_prompt" | "suspended" | "bio" | "social_links" | "sections" | "qotd" | "featured_entry_id"
+      "display_name" | "theme" | "custom_theme" | "theme_overrides" | "wallpaper_url" | "wall_open" | "email_notifications" | "custom_prompt" | "suspended" | "bio" | "social_links" | "sections" | "qotd" | "featured_entry_id"
     >
   >, // custom_prompt is the owner's ask line, shown to every visitor.
 ): Promise<void> {

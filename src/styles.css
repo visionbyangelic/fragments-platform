@@ -1551,10 +1551,13 @@
 
   body {
     background-color: var(--color-background);
-    background-image: var(--gradient-aura);
+    /* A wall's own wallpaper picture, when its owner set one, covers
+       the theme's background; otherwise the theme's own aura shows. */
+    background-image: var(--wallpaper-image, var(--gradient-aura));
     /* Patterned themes (polka dots, stars) tile their aura by this
-       size; every other theme leaves it at auto. */
-    background-size: var(--wall-pattern-size, auto);
+       size; every other theme leaves it at auto. A wallpaper always
+       covers. */
+    background-size: var(--wallpaper-size, var(--wall-pattern-size, auto));
     background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
