@@ -162,18 +162,20 @@ function CustomTile({
 }
 
 // The theme gallery: every theme as a miniature wall, grouped by
-// category, so browsing feels like a stationery collection. The
-// twelve new themes come first, the nine originals sit under Classic
-// at the bottom — nothing anyone loved was taken away.
+// category, so browsing feels like a stationery collection. Retired
+// lookalikes are hidden, except the wall's own current theme — an
+// owner on a retired theme still sees what they have. Twenty presets
+// and four Classics, plus Custom, after the 26 Nov 2026 retirement.
 const ALL_THEMES: ThemeDef[] = [...THEMES, ...LEGACY_THEMES];
 
 export function ThemePicker({ value, onChange, customTheme }: Props) {
   const customSelected = value === CUSTOM_THEME_NAME;
+  const visibleThemes = ALL_THEMES.filter((t) => !t.retired || t.name === value);
 
   return (
     <div className="space-y-6">
       {THEME_CATEGORIES.map((category) => {
-        const themes = ALL_THEMES.filter((t) => t.category === category);
+        const themes = visibleThemes.filter((t) => t.category === category);
         if (themes.length === 0) return null;
         return (
           <div key={category}>

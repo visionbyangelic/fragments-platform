@@ -6,11 +6,17 @@
 // The presets: thirteen from the wall-themes brief (26 Nov 2026),
 // Dreamy Pink Sky from her picture brief the same day, and nine more
 // for every kind of wall — including the Stitch design as one option
-// and two for the men she asked about (football, money). Every one
-// is a different design — its own typography, background treatment,
-// card styling and decorations — not a recoloured copy of the same
-// page. Two of the earlier presets already matched the brief and
-// survived the rebuild: Matcha Garden and Cloud Nine.
+// and two for the men she asked about (football, money). Two of
+// the earlier presets already matched the brief and survived the
+// rebuild: Matcha Garden and Cloud Nine.
+//
+// The gallery still grew lookalikes — an audit on 26 Nov 2026 found
+// seven near-duplicate groups (pale pink x4, wine rose x2, dark
+// purple x2, pale blue x2, peach x2, warm paper x2, dark green x3),
+// so eight were retired from the gallery that day at her word
+// (cherry, rosewood, ocean, pink-dream, dusk, peach, vintage,
+// forest). A retired theme is not deleted: any wall already on one
+// keeps it, and the pickers still show it to that wall's owner.
 export type ThemeCategory =
   | "Pastel"
   | "Kawaii"
@@ -94,6 +100,11 @@ export interface ThemeDef {
   font: ThemeFont;
   cardStyle: CardStyle;
   decorations: Decoration[];
+  /** Retired from the gallery: the theme still works for any wall
+      already on it, it just stops being offered to new pickers.
+      Eight lookalikes were retired 26 Nov 2026, at her call, after
+      an audit found seven near-duplicate groups in the gallery. */
+  retired?: boolean;
   /** The five editor colours in hex, matching the theme's CSS.
       The customisation editor starts its pickers here, and only
       colours the owner changes are saved as overrides. */
@@ -104,6 +115,7 @@ export interface ThemeDef {
 export const THEMES: ThemeDef[] = [
   {
     name: "cherry",
+    retired: true,
     label: "Cherry Blossom",
     blurb: "Blush pink, petals, delicate serif",
     category: "Romantic",
@@ -214,6 +226,7 @@ export const THEMES: ThemeDef[] = [
   },
   {
     name: "ocean",
+    retired: true,
     label: "Ocean Blue",
     blurb: "Muted blue, seafoam, calm waves",
     category: "Nature",
@@ -302,6 +315,7 @@ export const THEMES: ThemeDef[] = [
   },
   {
     name: "rosewood",
+    retired: true,
     label: "Rosewood",
     blurb: "Deep wine, soft romance",
     category: "Romantic",
@@ -380,6 +394,7 @@ export const THEME_CATEGORIES: ThemeCategory[] = [
 export const LEGACY_THEMES: ThemeDef[] = [
   {
     name: "dusk",
+    retired: true,
     label: "Dusk",
     blurb: "Deep blue violet night",
     category: "Classic",
@@ -391,6 +406,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
   },
   {
     name: "pink-dream",
+    retired: true,
     label: "Pink Dream",
     blurb: "Soft pink sanctuary",
     category: "Classic",
@@ -413,6 +429,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
   },
   {
     name: "vintage",
+    retired: true,
     label: "Vintage Letter",
     blurb: "Warm paper and sepia ink",
     category: "Classic",
@@ -446,6 +463,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
   },
   {
     name: "forest",
+    retired: true,
     label: "Forest Night",
     blurb: "Deep green, after rain",
     category: "Classic",
@@ -457,6 +475,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
   },
   {
     name: "peach",
+    retired: true,
     label: "Peach Soda",
     blurb: "Fizzy peach, polka dots",
     category: "Classic",
@@ -484,10 +503,12 @@ export function themeDef(name: string): ThemeDef | undefined {
 }
 
 // A new wall is born in a random theme — there is no fixed default.
-// The pool is the current gallery (the 23 themes), not
-// the Classics, so every new wall starts on something designed.
+// The pool is the current gallery (the 20 presets), not the
+// Classics and not the retired lookalikes, so every new wall starts
+// on something designed.
 export function randomThemeName(): ThemeName {
-  return THEMES[Math.floor(Math.random() * THEMES.length)].name;
+  const pool = THEMES.filter((t) => !t.retired);
+  return pool[Math.floor(Math.random() * pool.length)].name;
 }
 
 // "custom" is not a preset: it means the owner picked their own three

@@ -182,6 +182,12 @@ export function WallThemeControl({ profile, onSaved, onPreviewDecorations }: Pro
   const [picked, setPicked] = useState<ThemeName>(savedTheme);
   const dirty = picked !== savedTheme;
 
+  // Retired lookalikes are hidden from the sheet, except the wall's
+  // own saved theme — an owner on a retired theme still sees it and
+  // can keep it. The gallery is 25 after the 26 Nov 2026 retirement.
+  const visibleThemes = THEMES.filter((t) => !t.retired || t.name === savedTheme);
+  const visibleLegacy = LEGACY_THEMES.filter((t) => !t.retired || t.name === savedTheme);
+
   // Trying a preset: the wall wears it at once, pure — no old
   // tweaks on top — including its own decorations, so what you see
   // is the preset itself. Picking Custom goes back to the saved
@@ -273,7 +279,7 @@ export function WallThemeControl({ profile, onSaved, onPreviewDecorations }: Pro
 
           <div className="overflow-y-auto px-4 pb-2">
             <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
-              {THEMES.map((t) => (
+              {visibleThemes.map((t) => (
                 <PresetChip key={t.name} t={t} selected={picked === t.name} onPick={preview} />
               ))}
             </div>
@@ -282,7 +288,7 @@ export function WallThemeControl({ profile, onSaved, onPreviewDecorations }: Pro
               Classic
             </p>
             <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
-              {LEGACY_THEMES.map((t) => (
+              {visibleLegacy.map((t) => (
                 <PresetChip key={t.name} t={t} selected={picked === t.name} onPick={preview} />
               ))}
             </div>
