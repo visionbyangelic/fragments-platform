@@ -50,6 +50,30 @@ export const THEMES = [
     blurb: "Deep green, after rain",
     card: { bg: ["#16261c", "#101f15", "#1d3226"], ink: "#e4f2e6", muted: "#8fae97", accent: "#6fbf7f", letter: "#fbf3df", letterInk: "#37402a" },
   },
+  {
+    name: "strawberry",
+    label: "Strawberry Milk",
+    blurb: "Pink gingham, sweet and soft",
+    card: { bg: ["#fdeef2", "#fbe3ec", "#f9d9e2"], ink: "#5c2438", muted: "#a25a72", accent: "#e85d75", letter: "#fbf3df", letterInk: "#3d2c22" },
+  },
+  {
+    name: "peach",
+    label: "Peach Soda",
+    blurb: "Fizzy peach, polka dots",
+    card: { bg: ["#fdf0e3", "#fce7d2", "#fbe3c8"], ink: "#5a3418", muted: "#a97a4e", accent: "#ef8f3c", letter: "#fbf3df", letterInk: "#3d2c22" },
+  },
+  {
+    name: "cloud",
+    label: "Cloud Nine",
+    blurb: "Soft sky, drifting clouds",
+    card: { bg: ["#e8f3fc", "#dceefb", "#eef6fd"], ink: "#23405c", muted: "#5f84a3", accent: "#5aa3d8", letter: "#fbf3df", letterInk: "#2c3a40" },
+  },
+  {
+    name: "starry",
+    label: "Starry Night",
+    blurb: "Deep blue, tiny stars",
+    card: { bg: ["#1b2340", "#141a30", "#232c4d"], ink: "#e9ecf7", muted: "#9aa5c9", accent: "#a8b8f0", letter: "#e6d9bd", letterInk: "#322c40" },
+  },
 ] as const;
 
 // "custom" is not a preset: it means the owner picked their own three

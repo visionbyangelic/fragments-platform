@@ -33,7 +33,11 @@ export function ThemePicker({ value, onChange, customTheme }: Props) {
             <div data-theme={t.name} className="pointer-events-none">
               <div
                 className="p-3"
-                style={{ background: "var(--gradient-sanctuary)" }}
+                style={{
+                  backgroundImage:
+                    "var(--gradient-aura), var(--gradient-sanctuary)",
+                  backgroundSize: "var(--wall-pattern-size, auto), auto",
+                }}
               >
                 <p
                   className="font-serif text-base leading-tight"
@@ -90,7 +94,11 @@ export function ThemePicker({ value, onChange, customTheme }: Props) {
         <div data-theme={CUSTOM_THEME_NAME} className="pointer-events-none" style={customVars}>
           <div
             className="p-3"
-            style={{ background: "var(--gradient-sanctuary)" }}
+            style={{
+              backgroundImage:
+                "var(--gradient-aura), var(--gradient-sanctuary)",
+              backgroundSize: "var(--wall-pattern-size, auto), auto",
+            }}
           >
             <p
               className="font-serif text-base leading-tight"
