@@ -234,6 +234,12 @@ function PlatformSection() {
 
   return (
     <div className="space-y-10">
+      <div className="glass rounded-3xl p-5">
+        <p className="font-serif text-3xl">{profiles.length}</p>
+        <p className="text-sm text-muted-foreground">
+          {profiles.length === 1 ? "person has" : "people have"} signed up
+        </p>
+      </div>
       <section>
         <h2 className="font-serif text-3xl">Reports</h2>
         {reports.length === 0 ? (
