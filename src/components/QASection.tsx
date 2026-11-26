@@ -151,9 +151,9 @@ function ShareCardButton({
             )}
           </div>
 
-          <div className="mt-5 space-y-2">
+          <div className="mt-5 min-w-0 space-y-2">
             <p className="text-sm font-medium">Colour</p>
-            <div className="flex gap-2.5 overflow-x-auto pb-2" role="radiogroup" aria-label="Card colour">
+            <div className="flex w-full min-w-0 gap-2.5 overflow-x-auto pb-2" role="radiogroup" aria-label="Card colour">
               {wallTheme === CUSTOM_THEME_NAME && customTheme && (
                 <button
                   key="custom"
