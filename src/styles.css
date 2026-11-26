@@ -2249,3 +2249,13 @@
 .has-wallpaper footer .text-foreground\/80 {
   color: color-mix(in srgb, var(--wallpaper-text, #fff) 85%, transparent);
 }
+
+/* The one exception to the white-over-picture rule: muted words
+   inside a card. A card carries its own pale background, so the
+   theme's own muted colour reads better there than white does —
+   the form's toggle labels went white-on-pale on the first version
+   of this fix. */
+.has-wallpaper .glass .text-muted-foreground,
+.has-wallpaper .frag-card .text-muted-foreground {
+  color: var(--muted-foreground);
+}
