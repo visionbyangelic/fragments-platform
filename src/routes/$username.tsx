@@ -24,7 +24,7 @@ import { getVisitorId } from "@/lib/visitor";
 import { parseSocialLinks, showSection } from "@/lib/social";
 import { fetchProfileByUsername, reportWall, updateProfile, USERNAME_RE } from "@/lib/platform";
 import { useSession } from "@/hooks/use-session";
-import { useTheme } from "@/context/ThemeContext";
+import { useTheme, applyThemeToDocument } from "@/context/ThemeContext";
 import { CUSTOM_THEME_NAME, isThemeName, themeDef } from "@/lib/themes";
 import { parseCustomTheme } from "@/lib/custom-theme";
 import { parseThemeOverrides } from "@/lib/theme-overrides";
@@ -166,11 +166,13 @@ function Wall() {
     if (profile && themedFor.current !== profile.id) {
       themedFor.current = profile.id;
       const name = isThemeName(profile.theme) ? profile.theme : "moonlight";
-      setTheme(
-        name,
-        name === CUSTOM_THEME_NAME ? parseCustomTheme(profile.custom_theme) : undefined,
-        parseThemeOverrides(profile.theme_overrides),
-      );
+      const custom =
+        name === CUSTOM_THEME_NAME ? parseCustomTheme(profile.custom_theme) : undefined;
+      const overrides = parseThemeOverrides(profile.theme_overrides);
+      setTheme(name, custom, overrides);
+      // The document gets the theme directly too, same as the gate:
+      // the saved look lands even if the context state is stale.
+      applyThemeToDocument(name, custom, overrides);
     }
   }, [profile, setTheme]);
 

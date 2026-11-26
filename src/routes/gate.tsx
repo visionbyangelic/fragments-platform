@@ -48,7 +48,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ThemeEditorPanel } from "@/components/ThemeEditorPanel";
-import { useTheme } from "@/context/ThemeContext";
+import { useTheme, applyThemeToDocument } from "@/context/ThemeContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -345,11 +345,16 @@ function GatePage() {
   // it manages.
   useEffect(() => {
     if (!profile) return;
-    setTheme(
-      savedTheme,
-      savedTheme === CUSTOM_THEME_NAME ? (parseCustomTheme(profile.custom_theme) ?? DEFAULT_CUSTOM_THEME) : undefined,
-      parseThemeOverrides(profile.theme_overrides),
-    );
+    const custom =
+      savedTheme === CUSTOM_THEME_NAME
+        ? (parseCustomTheme(profile.custom_theme) ?? DEFAULT_CUSTOM_THEME)
+        : undefined;
+    const overrides = parseThemeOverrides(profile.theme_overrides);
+    setTheme(savedTheme, custom, overrides);
+    // The document gets the theme directly too: the context state can
+    // sit on a stale theme from an earlier visit, and the gate kept
+    // loading dark while the saved theme said otherwise.
+    applyThemeToDocument(savedTheme, custom, overrides);
   }, [profile, savedTheme, setTheme]);
 
   // First visit after the wall is born: prompt the owner to make it
@@ -483,7 +488,7 @@ function GatePage() {
       if (!url.trim()) continue;
       const clean = validateSocialUrl(platform as SocialLink["platform"], url);
       if (!clean) {
-        toast.error(`That ${platform} link does not look right — it needs to be an https link to ${platform}`);
+        toast.error(`That ${platform} entry does not look right — type just your username, or a full link to ${platform}`);
         return;
       }
       links.push({ platform: platform as SocialLink["platform"], url: clean });
@@ -976,8 +981,9 @@ function GatePage() {
             <div className="space-y-3">
               <Label>Find me elsewhere</Label>
               <p className="text-xs text-muted-foreground">
-                Links only — a full https link to the platform it names.
-                Anything that does not match is left out.
+                Just your username works — type it alone and the link is made
+                for you. A full link works too. Anything that does not match
+                is left out.
               </p>
               {SOCIAL_PLATFORMS.map((p) => (
                 <div key={p.platform} className="flex items-center gap-3">
@@ -988,7 +994,7 @@ function GatePage() {
                     id={`social-${p.platform}`}
                     value={socialDraft[p.platform] ?? ""}
                     onChange={(e) => setSocialDraft({ ...socialDraft, [p.platform]: e.target.value })}
-                    placeholder={`https://${p.hosts ? p.hosts[0] : "your site"}/you`}
+                    placeholder={p.usernameUrl ? "yourname" : `https://${p.hosts ? p.hosts[0] : "your site"}`}
                     className="bg-background/70"
                   />
                 </div>

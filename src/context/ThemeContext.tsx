@@ -129,6 +129,38 @@ function clearOverrideVars(): void {
   }
 }
 
+/** Applies a theme straight to the document: the data-theme and
+    card style attributes plus the custom and override variables.
+    The wall and the gate call this from their profile effects as
+    well as setTheme, so the saved look lands even if the context
+    state is stale from an earlier visit — the document is what
+    the visitor actually sees. */
+export function applyThemeToDocument(
+  name: ThemeName,
+  custom?: CustomTheme | null,
+  overrides?: ThemeOverrides | null,
+): void {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  root.setAttribute("data-theme", name);
+  // The wall's card style: the editor's override wins, else the
+  // theme's own default.
+  const cardStyle = overrides?.cardStyle ?? themeDef(name)?.cardStyle ?? "rounded";
+  root.setAttribute("data-card-style", cardStyle);
+  if (name === CUSTOM_THEME_NAME) {
+    // Custom keeps its fallback block until the colours land; the
+    // inline variables then override it.
+    if (custom) applyCustomVars(custom);
+  } else {
+    clearCustomVars();
+  }
+  if (overrides) {
+    applyOverrideVars(overrides);
+  } else {
+    clearOverrideVars();
+  }
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemeName>(() => {
     if (typeof window === "undefined") return DEFAULT_THEME;
@@ -145,24 +177,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.setAttribute("data-theme", theme);
-    localStorage.setItem(THEME_KEY, theme);
-    // The wall's card style: the editor's override wins, else the
-    // theme's own default.
-    const cardStyle = overrides?.cardStyle ?? themeDef(theme)?.cardStyle ?? "rounded";
-    root.setAttribute("data-card-style", cardStyle);
-    if (theme === CUSTOM_THEME_NAME) {
-      // Custom keeps its fallback block until the colours land; the
-      // inline variables then override it.
-      if (customTheme) applyCustomVars(customTheme);
-    } else {
-      clearCustomVars();
-    }
-    if (overrides) {
-      applyOverrideVars(overrides);
-    } else {
-      clearOverrideVars();
+    applyThemeToDocument(theme, customTheme, overrides);
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch {
+      /* storage is a convenience, never a blocker */
     }
   }, [theme, customTheme, overrides]);
 
