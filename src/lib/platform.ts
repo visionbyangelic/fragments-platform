@@ -2,6 +2,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { isThemeName } from "@/lib/themes";
 import type { CustomTheme } from "@/lib/custom-theme";
 import type { ThemeOverrides } from "@/lib/theme-overrides";
+import type { SocialLink, WallSections } from "@/lib/social";
+
+// Heaven is the official test account: the only wall where the
+// Dear Future Me placeholder is switched on while email delivery
+// waits for the domain.
+export const TEST_ACCOUNT_USERNAME = "heaven";
 
 // Platform-level data: profiles (one per wall), reports, account helpers.
 // The generated Database type does not include our tables, so we use a
@@ -21,6 +27,11 @@ export type Profile = {
   wall_open: boolean;
   email_notifications: boolean;
   custom_prompt: string | null;
+  bio: string | null;
+  social_links: SocialLink[];
+  sections: WallSections;
+  qotd: string | null;
+  featured_entry_id: string | null;
   suspended: boolean;
   is_platform_admin: boolean;
   auth_user_id: string | null;
@@ -163,7 +174,7 @@ export async function updateProfile(
   patch: Partial<
     Pick<
       Profile,
-      "display_name" | "theme" | "custom_theme" | "theme_overrides" | "wall_open" | "email_notifications" | "custom_prompt" | "suspended"
+      "display_name" | "theme" | "custom_theme" | "theme_overrides" | "wall_open" | "email_notifications" | "custom_prompt" | "suspended" | "bio" | "social_links" | "sections" | "qotd" | "featured_entry_id"
     >
   >, // custom_prompt is the owner's ask line, shown to every visitor.
 ): Promise<void> {

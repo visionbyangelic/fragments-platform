@@ -6,6 +6,8 @@ import { SubmissionForm } from "@/components/SubmissionForm";
 import { FragmentCard } from "@/components/FragmentCard";
 import { QASection } from "@/components/QASection";
 import { SerendipityModal } from "@/components/SerendipityModal";
+import { PollCard } from "@/components/PollCard";
+import { CapsuleSection } from "@/components/CapsuleSection";
 import {
   fetchEntries,
   fetchSealedEntries,
@@ -14,7 +16,13 @@ import {
   type SealedEntry,
 } from "@/lib/entries";
 import { fetchQuestions, subscribeToQuestions } from "@/lib/questions";
-import { fetchProfileByUsername, reportWall, USERNAME_RE } from "@/lib/platform";
+import { fetchActivePoll, type Poll } from "@/lib/polls";
+import { fetchCapsules, type Capsule } from "@/lib/capsules";
+import { fetchReactions, type ReactionCounts } from "@/lib/reactions";
+import { fetchReplies } from "@/lib/replies";
+import { getVisitorId } from "@/lib/visitor";
+import { parseSocialLinks, showSection } from "@/lib/social";
+import { fetchProfileByUsername, reportWall, updateProfile, USERNAME_RE } from "@/lib/platform";
 import { useSession } from "@/hooks/use-session";
 import { useTheme } from "@/context/ThemeContext";
 import { CUSTOM_THEME_NAME, isThemeName, themeDef } from "@/lib/themes";
@@ -120,6 +128,27 @@ function Wall() {
     queryFn: () => fetchQuestions(profileId!),
     enabled: !!profileId,
   });
+  const { data: activePoll = null } = useQuery({
+    queryKey: ["active-poll", profileId],
+    queryFn: () => fetchActivePoll(profileId!).catch(() => null as Poll | null),
+    enabled: !!profileId,
+  });
+  const { data: capsules = [] } = useQuery({
+    queryKey: ["capsules", profileId],
+    queryFn: () => fetchCapsules(profileId!).catch(() => [] as Capsule[]),
+    enabled: !!profileId,
+  });
+  const publicEntryIds = entries.map((e: Entry) => e.id);
+  const { data: reactionsMap = new Map<string, ReactionCounts>(), refetch: refetchReactions } = useQuery({
+    queryKey: ["reactions", profileId, publicEntryIds.join(",")],
+    queryFn: () => fetchReactions(publicEntryIds, getVisitorId()).catch(() => new Map()),
+    enabled: !!profileId && publicEntryIds.length > 0,
+  });
+  const { data: repliesMap = new Map<string, string>(), refetch: refetchReplies } = useQuery({
+    queryKey: ["replies", profileId, publicEntryIds.join(",")],
+    queryFn: () => fetchReplies(publicEntryIds).catch(() => new Map()),
+    enabled: !!profileId && publicEntryIds.length > 0,
+  });
 
   useEffect(() => {
     if (!profileId) return;
@@ -199,9 +228,33 @@ function Wall() {
     );
   }
 
-  const publicFragments = entries.filter(
-    (e: Entry) => !e.is_private && (isOwner || e.is_visible),
-  );
+  const publicFragments = entries
+    .filter((e: Entry) => !e.is_private && (isOwner || e.is_visible))
+    // The featured fragment sits first on the wall.
+    .sort((a: Entry, b: Entry) => {
+      if (a.id === profile.featured_entry_id) return -1;
+      if (b.id === profile.featured_entry_id) return 1;
+      return 0;
+    });
+
+  const qaOn = showSection(profile.sections, "qa");
+  const effectiveTab = tab === "ama" && !qaOn ? "board" : tab;
+
+  async function toggleFeatured(entryId: string) {
+    try {
+      await updateProfile(profile!.id, {
+        featured_entry_id: profile!.featured_entry_id === entryId ? null : entryId,
+      });
+      toast.success(
+        profile!.featured_entry_id === entryId
+          ? "Featured fragment removed"
+          : "Fragment featured on your wall",
+      );
+      refetchProfile();
+    } catch {
+      toast.error("Could not change the featured fragment");
+    }
+  }
 
   // The wall's decorations: the owner's overrides win, else the
   // theme's own defaults — or the theme panel's preview, while it is
@@ -241,6 +294,12 @@ function Wall() {
         username={profile.username}
         isOwner={isOwner}
         onBegin={scrollToForm}
+        bio={profile.bio}
+        socialLinks={
+          showSection(profile.sections, "social")
+            ? parseSocialLinks(profile.social_links)
+            : []
+        }
         themeControl={
           isOwner ? (
             <WallThemeControl
@@ -286,39 +345,66 @@ function Wall() {
 
       <main className="mx-auto max-w-6xl px-6 py-20">
         <div className="mb-12 flex justify-center">
-          <div className="glass grid w-full max-w-md grid-cols-2 rounded-4xl p-1">
+          <div className={`glass grid w-full max-w-md ${qaOn ? "grid-cols-2" : "grid-cols-1"} rounded-4xl p-1`}>
             <button
               onClick={() => setTab("board")}
               className={`inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
-                tab === "board" ? "bg-primary text-primary-foreground" : "text-foreground/70"
+                effectiveTab === "board" ? "bg-primary text-primary-foreground" : "text-foreground/70"
               }`}
             >
               <Sparkles className="h-4 w-4" aria-hidden />
               Fragments
             </button>
-            <button
-              onClick={() => setTab("ama")}
-              className={`inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
-                tab === "ama" ? "bg-primary text-primary-foreground" : "text-foreground/70"
-              }`}
-            >
-              <MessageCircleQuestion className="h-4 w-4" aria-hidden />
-              Q&A
-            </button>
+            {qaOn && (
+              <button
+                onClick={() => setTab("ama")}
+                className={`inline-flex items-center justify-center gap-2 rounded-full px-4 py-3 text-sm font-medium transition ${
+                  effectiveTab === "ama" ? "bg-primary text-primary-foreground" : "text-foreground/70"
+                }`}
+              >
+                <MessageCircleQuestion className="h-4 w-4" aria-hidden />
+                Q&A
+              </button>
+            )}
           </div>
         </div>
 
-        {tab === "board" ? (
+        {effectiveTab === "board" ? (
           <>
+            {activePoll && showSection(profile.sections, "poll") && (
+              <div className="mx-auto mb-12 max-w-2xl">
+                <PollCard poll={activePoll} visitorId={getVisitorId()} />
+              </div>
+            )}
+
+            {profile.qotd?.trim() && (
+              <div className="frag-card mx-auto mb-12 max-w-2xl rounded-[var(--card-radius)] p-6 text-center sm:p-7">
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                  Question of the day
+                </p>
+                <p className="mt-3 font-serif text-2xl leading-snug">{profile.qotd}</p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Answer it below, as a fragment.
+                </p>
+              </div>
+            )}
+
+            {showSection(profile.sections, "guestbook") && publicFragments.length > 0 && (
+              <h2 className="mb-6 text-center font-serif text-3xl text-gradient">
+                Guestbook — signatures from visitors
+              </h2>
+            )}
+
             {publicFragments.length === 0 && sealed.length === 0 ? (
               <p className="mb-16 text-center text-muted-foreground">
                 No fragments yet. Be the first to leave one.
               </p>
             ) : (
               <div className="mb-20 columns-1 gap-5 sm:columns-2 lg:columns-3">
-                {sealed.map((entry, i) => (
-                  <SealedCard key={entry.id} entry={entry} index={i} />
-                ))}
+                {showSection(profile.sections, "sealed") &&
+                  sealed.map((entry, i) => (
+                    <SealedCard key={entry.id} entry={entry} index={i} />
+                  ))}
                 {publicFragments.map((entry: Entry, i: number) => (
                   <FragmentCard
                     key={entry.id}
@@ -326,9 +412,27 @@ function Wall() {
                     index={i}
                     isOwner={isOwner}
                     editMode={editMode}
+                    ownerName={ownerName}
+                    reactions={reactionsMap.get(entry.id)}
+                    reply={repliesMap.get(entry.id) ?? null}
+                    onReacted={() => {
+                      refetchReactions();
+                      refetchReplies();
+                    }}
+                    featured={profile.featured_entry_id === entry.id}
+                    onFeature={isOwner && editMode ? () => toggleFeatured(entry.id) : undefined}
                   />
                 ))}
               </div>
+            )}
+
+            {capsules.length > 0 && (
+              <CapsuleSection
+                capsules={capsules}
+                profileId={profile.id}
+                wallOpen={profile.wall_open}
+                myUsername={myProfile?.username ?? null}
+              />
             )}
 
             <div ref={formRef} className="mx-auto max-w-2xl scroll-mt-24">
@@ -340,7 +444,7 @@ function Wall() {
                 </p>
               </div>
               {profile.wall_open ? (
-                <SubmissionForm profileId={profile.id} ownerName={ownerName} />
+                <SubmissionForm profileId={profile.id} ownerName={ownerName} qaEnabled={qaOn} />
               ) : (
                 <div className="glass rounded-4xl p-8 text-center text-muted-foreground">
                   This wall is closed to new fragments for now.

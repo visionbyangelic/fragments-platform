@@ -14,9 +14,11 @@ import { toast } from "sonner";
 interface Props {
   profileId: string;
   ownerName: string;
+  /** When the wall's question box is switched off, visitors only leave fragments. */
+  qaEnabled?: boolean;
 }
 
-export function SubmissionForm({ profileId, ownerName }: Props) {
+export function SubmissionForm({ profileId, ownerName, qaEnabled = true }: Props) {
   const { profile: myProfile } = useSession();
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
@@ -120,10 +122,14 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
             </Label>
           </div>
           <div className="flex items-center gap-3 pt-1">
+          {qaEnabled && (
             <Switch id="as-question" checked={asQuestion} onCheckedChange={setAsQuestion} />
+          )}
+          {qaEnabled && (
             <Label htmlFor="as-question" className="text-sm text-muted-foreground">
               Ask a question {ownerName} can answer
             </Label>
+          )}
           </div>
           {!asQuestion && (
             <div className="flex items-center gap-3 pt-1">
