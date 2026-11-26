@@ -2117,43 +2117,6 @@
     color: transparent;
   }
 
-  /* Photo-safe text: while a wallpaper picture is the wall's
-     background, the words that sit bare on the picture go white
-     over the dark scrim, because a theme's ink colour was chosen
-     against its own background, not against somebody's photo.
-     Cards keep their own backgrounds, so the text inside them is
-     untouched. The gradient word in the hero title ("fragments")
-     goes solid white too — a colour gradient over a bright photo
-     was the least readable word on the wall. */
-  .has-wallpaper .text-gradient {
-    background: none;
-    -webkit-background-clip: border-box;
-    background-clip: border-box;
-    -webkit-text-fill-color: #fff;
-    color: #fff;
-  }
-  .has-wallpaper header {
-    color: #fff;
-  }
-  .has-wallpaper header .text-primary {
-    color: rgb(255 255 255 / 0.92);
-  }
-  .has-wallpaper header .text-foreground\/80 {
-    color: rgb(255 255 255 / 0.85);
-  }
-  .has-wallpaper header .text-muted-foreground {
-    color: rgb(255 255 255 / 0.7);
-  }
-  .has-wallpaper main .text-muted-foreground {
-    color: rgb(255 255 255 / 0.7);
-  }
-  .has-wallpaper footer {
-    color: rgb(255 255 255 / 0.7);
-  }
-  .has-wallpaper footer .text-foreground\/80 {
-    color: rgb(255 255 255 / 0.85);
-  }
-
   /* Post-it Note / Letter styling for Q&A answers */
   .letter-note {
     background: var(--letter-cream);
@@ -2245,3 +2208,44 @@
   background: oklch(0.65 0.14 340 / 0.75);
 }
 
+
+/* Photo-safe text — deliberately UNLAYERED, not inside @layer
+   components. While a wallpaper picture is the wall's background,
+   the words that sit bare on the picture go white over the dark
+   scrim, because a theme's ink colour was chosen against its own
+   background, not against somebody's photo. Cards keep their own
+   backgrounds, so the text inside them is untouched. The gradient
+   word in the hero title ("fragments") goes solid white too — a
+   colour gradient over a bright photo was the least readable word
+   on the wall. Unlayered on purpose: Tailwind's utilities live in
+   a layer, and a layered rule loses to them no matter its
+   specificity — that is how the @username line stayed gold on the
+   first version of this fix. */
+.has-wallpaper .text-gradient {
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+  -webkit-text-fill-color: #fff;
+  color: #fff;
+}
+.has-wallpaper header {
+  color: #fff;
+}
+.has-wallpaper header .text-primary {
+  color: rgb(255 255 255 / 0.92);
+}
+.has-wallpaper header .text-foreground\/80 {
+  color: rgb(255 255 255 / 0.85);
+}
+.has-wallpaper header .text-muted-foreground {
+  color: rgb(255 255 255 / 0.7);
+}
+.has-wallpaper main .text-muted-foreground {
+  color: rgb(255 255 255 / 0.7);
+}
+.has-wallpaper footer {
+  color: rgb(255 255 255 / 0.7);
+}
+.has-wallpaper footer .text-foreground\/80 {
+  color: rgb(255 255 255 / 0.85);
+}
