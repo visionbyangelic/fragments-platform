@@ -1,5 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useSession } from "@/hooks/use-session";
+import { fetchProfileByUsername } from "@/lib/platform";
+import { fetchEntries } from "@/lib/entries";
+import { FragmentCard } from "@/components/FragmentCard";
 import {
   BarChart3,
   Heart,
@@ -26,6 +30,75 @@ export const Route = createFileRoute("/")({
   }),
   component: Landing,
 });
+
+// The hero preview is the example wall itself, live: Angelic's real
+// fragments, rendered with the wall's own FragmentCard, newest first,
+// public ones only — the same filter the wall uses. Nothing here is
+// invented; while it loads, or if it fails, the panel shows the
+// wall's name and a link to the real thing instead of made-up words.
+function WallPreview() {
+  const { data: profile } = useQuery({
+    queryKey: ["landing-preview-profile"],
+    queryFn: () => fetchProfileByUsername("angelic"),
+  });
+  const { data: entries } = useQuery({
+    queryKey: ["landing-preview-entries", profile?.id],
+    queryFn: () => fetchEntries(profile!.id),
+    enabled: !!profile?.id,
+  });
+  const shown = (entries ?? [])
+    .filter((e) => !e.is_private && e.is_visible)
+    .slice(0, 3);
+  const name = profile?.display_name?.trim() || "Angelic";
+
+  return (
+    <div className="relative mx-auto w-full max-w-md">
+      <div className="glass rounded-4xl p-6 shadow-[var(--shadow-soft)] sm:p-7">
+        <p className="font-serif text-2xl leading-snug">
+          {name}'s <span className="text-gradient">sanctuary of fragments</span>
+        </p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {profile?.bio?.trim() ||
+            "A living archive of memories, questions, little truths and kind words from the people who pass through. Leave something behind, signed or anonymous."}
+        </p>
+        <Link
+          to="/$username"
+          params={{ username: "angelic" }}
+          className="mt-4 inline-block rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+        >
+          Leave a fragment +
+        </Link>
+
+        <p className="mt-7 text-[11px] font-medium tracking-[0.18em] text-muted-foreground">
+          GUESTBOOK
+        </p>
+        <div className="mt-3">
+          {shown.map((entry, i) => (
+            <FragmentCard
+              key={entry.id}
+              entry={entry}
+              index={i}
+              isOwner={false}
+            />
+          ))}
+          {shown.length === 0 && (
+            <p className="py-4 text-sm text-muted-foreground">
+              The wall is loading — or waiting for its first fragment.
+            </p>
+          )}
+        </div>
+
+        <Link
+          to="/$username"
+          params={{ username: "angelic" }}
+          className="mt-2 inline-block text-sm font-medium text-primary transition hover:opacity-80"
+        >
+          See the full wall →
+        </Link>
+      </div>
+    </div>
+  );
+}
 
 // The front door. This page is not a wall, so it wears its own look
 // (the .landing scope in styles.css) instead of any wall theme: warm
@@ -132,73 +205,14 @@ function Landing() {
             </p>
           </div>
 
-          {/* A wall, at a glance. A still preview — the real thing is
-              one tap away on the example wall. */}
-          <div className="relative mx-auto w-full max-w-md">
-            <div className="glass rounded-4xl p-6 shadow-[var(--shadow-soft)] sm:p-7">
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-serif text-lg">angelic's wall</p>
-                <span className="rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground">
-                  Leave a fragment +
-                </span>
-              </div>
-
-              <div className="mt-5 rounded-3xl border border-border bg-background/60 p-5">
-                <p className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground">
-                  A LITTLE QUESTION · POLL
-                </p>
-                <p className="mt-2 font-serif text-xl">Tea or coffee?</p>
-                <div className="mt-4 space-y-3 text-sm">
-                  <div>
-                    <div className="flex justify-between">
-                      <span>Tea</span>
-                      <span className="text-muted-foreground">62% · 79</span>
-                    </div>
-                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-border/60">
-                      <div className="h-full w-[62%] rounded-full bg-primary" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between">
-                      <span>Coffee</span>
-                      <span className="text-muted-foreground">38% · 49</span>
-                    </div>
-                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-border/60">
-                      <div className="h-full w-[38%] rounded-full bg-primary/50" />
-                    </div>
-                  </div>
-                </div>
-                <p className="mt-3 text-xs text-muted-foreground">128 votes</p>
-              </div>
-
-              <div className="mt-4 -rotate-1 rounded-3xl border border-border bg-[#fdf1f4] p-5">
-                <p className="font-serif text-lg leading-snug">
-                  “Your laugh is my favourite sound in the world.”
-                </p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  — Someone who cares
-                </p>
-              </div>
-
-              <div className="mt-4 rotate-1 rounded-3xl border border-border bg-[#f4effc] p-5">
-                <p className="font-serif text-lg leading-snug">
-                  “I still think about our walk by the river.”
-                </p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  — Anonymous
-                </p>
-              </div>
-
-              <div className="mt-4 rounded-3xl border border-border bg-background/60 p-5 text-center">
-                <p className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground">
-                  QUESTION OF THE DAY
-                </p>
-                <p className="mt-1.5 font-serif text-lg">
-                  What made you smile today?
-                </p>
-              </div>
-            </div>
-          </div>
+          {/* A wall, at a glance — the example wall itself, live:
+              Angelic's real fragments, rendered with the wall's own
+              FragmentCard. The first version of this panel faked it,
+              with invented poll numbers and invented fragments, which
+              showed a wall that does not exist. Nothing here is made
+              up: while it loads, or if it fails, the panel shows the
+              wall's name and a link to the real thing instead. */}
+          <WallPreview />
         </div>
       </header>
 
@@ -401,12 +415,14 @@ function Landing() {
           >
             Angelic's wall
           </Link>
-          <Link
-            to="/privacy"
+          <a
+            href="https://x.com/Visionbyangelic"
+            target="_blank"
+            rel="noreferrer"
             className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1.5 text-xs font-medium backdrop-blur transition hover:bg-card/70"
           >
-            Privacy
-          </Link>
+            @Visionbyangelic
+          </a>
         </div>
       </footer>
     </div>

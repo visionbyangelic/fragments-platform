@@ -219,7 +219,7 @@ async function renderAnswerCanvas(
   ctx.textAlign = "left";
   ctx.fillStyle = pal.muted;
   ctx.font = `500 30px ${SANS}`;
-  const tag = "Leave an anonymous message";
+  const tag = "Leave a little something";
   ctx.fillText(tag, (W - ctx.measureText(tag).width) / 2, H - 44);
 
   return canvas;
