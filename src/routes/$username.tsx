@@ -57,7 +57,7 @@ export const Route = createFileRoute("/$username")({
       { title: `@${params.username} · Fragments` },
       {
         name: "description",
-        content: `Leave an anonymous message for @${params.username} on Fragments.`,
+        content: `Leave a little something for @${params.username} on Fragments.`,
       },
       { property: "og:title", content: `Leave a message for @${params.username}` },
       {
