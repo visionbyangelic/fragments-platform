@@ -2259,3 +2259,28 @@
 .has-wallpaper .frag-card .text-muted-foreground {
   color: var(--muted-foreground);
 }
+
+/* The landing page is not a wall, so it wears its own look instead
+   of any wall theme: warm and bright, professional but playful.
+   These variables sit on the .landing wrapper, so every utility
+   inside it (bg-background, text-primary, .glass, .text-gradient)
+   reads the landing palette while the walls keep theirs. */
+.landing {
+  --background: oklch(0.985 0.012 30);
+  --foreground: oklch(0.28 0.05 340);
+  --muted-foreground: oklch(0.55 0.05 340);
+  --primary: oklch(0.55 0.15 350);
+  --primary-foreground: oklch(1 0 0);
+  --accent: oklch(0.72 0.12 40);
+  --card: oklch(1 0 0);
+  --border: oklch(0.88 0.04 345);
+  --glass-bg: oklch(1 0 0 / 0.72);
+  --glass-border: oklch(0.88 0.04 345 / 0.7);
+  --gradient-aura: radial-gradient(ellipse 60% 50% at 15% 10%, oklch(0.9 0.08 350 / 0.55), transparent 70%),
+    radial-gradient(ellipse 50% 45% at 85% 20%, oklch(0.92 0.07 40 / 0.5), transparent 70%),
+    radial-gradient(ellipse 55% 45% at 50% 90%, oklch(0.9 0.06 300 / 0.45), transparent 70%);
+  --gradient-sanctuary: linear-gradient(150deg, oklch(0.985 0.012 30), oklch(0.97 0.03 345) 55%, oklch(0.96 0.03 310));
+  --shadow-glow: 0 0 44px -8px oklch(0.55 0.15 350 / 0.45);
+  background: var(--gradient-sanctuary);
+  color: var(--foreground);
+}

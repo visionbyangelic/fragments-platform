@@ -1,30 +1,44 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSession } from "@/hooks/use-session";
-import { Link2, Lock, MessagesSquare, Sparkles } from "lucide-react";
+import {
+  BarChart3,
+  Heart,
+  Hourglass,
+  Image,
+  Link2,
+  Mail,
+  MessageCircleQuestion,
+  MessagesSquare,
+  Palette,
+  Sparkles,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Fragments — Leave an anonymous message" },
+      { title: "Fragments — your corner of the internet" },
       {
         name: "description",
         content:
-          "Claim your link, share it anywhere, and collect anonymous fragments: kind words, memories and questions from the people who pass through.",
+          "Claim a wall of your own, share the link anywhere, and let the people who pass through leave you kind words, memories, questions, votes and notes sealed for later.",
       },
     ],
   }),
   component: Landing,
 });
 
+// The front door. This page is not a wall, so it wears its own look
+// (the .landing scope in styles.css) instead of any wall theme: warm
+// and bright, professional but playful. And it sells what Fragments
+// actually is — a wall of your own where people leave a little
+// something behind — not just an anonymous-message app. Anonymous is
+// one choice a writer can make, not the product.
 function Landing() {
   const { profile, user, loading } = useSession();
 
   return (
-    <div className="min-h-screen">
+    <div className="landing min-h-screen">
       <header className="relative overflow-hidden">
-        {/* Same as the wall hero: the pattern shows here too, and the
-            background fades out at the bottom instead of ending on a
-            solid band. */}
         <div
           className="absolute inset-0"
           style={{
@@ -73,82 +87,305 @@ function Landing() {
                   to="/signup"
                   className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
                 >
-                  Claim your link
+                  Claim your wall
                 </Link>
               </>
             )}
           </div>
         </nav>
 
-        <div className="relative z-10 mx-auto max-w-3xl px-6 py-24 text-center sm:py-32">
-          <h1 className="font-serif text-5xl leading-tight sm:text-7xl">
-            Leave an <span className="text-gradient">anonymous</span> message
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-foreground/80">
-            Fragments is a wall of your own. Claim a link, share it anywhere,
-            and the people who pass through your life leave you fragments:
-            memories, kind words and questions. You read everything, answer
-            what you want, and keep what you love.
-          </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <Link
-              to="/signup"
-              className="rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
-            >
-              Claim your link
-            </Link>
-            <Link
-              to="/$username"
-              params={{ username: "angelic" }}
-              className="rounded-full border border-border bg-card/40 px-8 py-3 font-medium backdrop-blur transition hover:bg-card/70"
-            >
-              See an example wall
-            </Link>
+        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-10 sm:pt-16 lg:grid-cols-2 lg:pb-28">
+          <div className="text-center lg:text-left">
+            <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-xs font-medium tracking-wide text-muted-foreground backdrop-blur">
+              <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
+              A wall that's yours
+            </p>
+            <h1 className="mt-6 font-serif text-5xl leading-tight sm:text-6xl">
+              Your corner of the internet, where people leave{" "}
+              <span className="text-gradient">a little something</span>{" "}
+              behind
+            </h1>
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-foreground/80 lg:mx-0">
+              Fragments is a wall of your own. Claim a link, share it
+              anywhere, and the people who pass through your life leave you
+              kind words, memories, questions, votes in your poll and notes
+              sealed for later. Signed or anonymous — you read everything,
+              answer what you want, and keep what you love.
+            </p>
+            <div className="mt-10 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <Link
+                to="/signup"
+                className="rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
+              >
+                Claim your wall
+              </Link>
+              <Link
+                to="/$username"
+                params={{ username: "angelic" }}
+                className="rounded-full border border-border bg-card/40 px-8 py-3 font-medium backdrop-blur transition hover:bg-card/70"
+              >
+                See an example wall
+              </Link>
+            </div>
+            <p className="mt-6 text-sm text-muted-foreground">
+              Free to start · No app to install · Your wall, your rules
+            </p>
+          </div>
+
+          {/* A wall, at a glance. A still preview — the real thing is
+              one tap away on the example wall. */}
+          <div className="relative mx-auto w-full max-w-md">
+            <div className="glass rounded-4xl p-6 shadow-[var(--shadow-soft)] sm:p-7">
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-serif text-lg">angelic's wall</p>
+                <span className="rounded-full bg-primary px-3.5 py-1.5 text-xs font-medium text-primary-foreground">
+                  Leave a fragment +
+                </span>
+              </div>
+
+              <div className="mt-5 rounded-3xl border border-border bg-background/60 p-5">
+                <p className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground">
+                  A LITTLE QUESTION · POLL
+                </p>
+                <p className="mt-2 font-serif text-xl">Tea or coffee?</p>
+                <div className="mt-4 space-y-3 text-sm">
+                  <div>
+                    <div className="flex justify-between">
+                      <span>Tea</span>
+                      <span className="text-muted-foreground">62% · 79</span>
+                    </div>
+                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-border/60">
+                      <div className="h-full w-[62%] rounded-full bg-primary" />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between">
+                      <span>Coffee</span>
+                      <span className="text-muted-foreground">38% · 49</span>
+                    </div>
+                    <div className="mt-1 h-2 overflow-hidden rounded-full bg-border/60">
+                      <div className="h-full w-[38%] rounded-full bg-primary/50" />
+                    </div>
+                  </div>
+                </div>
+                <p className="mt-3 text-xs text-muted-foreground">128 votes</p>
+              </div>
+
+              <div className="mt-4 -rotate-1 rounded-3xl border border-border bg-[#fdf1f4] p-5">
+                <p className="font-serif text-lg leading-snug">
+                  “Your laugh is my favourite sound in the world.”
+                </p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  — Someone who cares
+                </p>
+              </div>
+
+              <div className="mt-4 rotate-1 rounded-3xl border border-border bg-[#f4effc] p-5">
+                <p className="font-serif text-lg leading-snug">
+                  “I still think about our walk by the river.”
+                </p>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  — Anonymous
+                </p>
+              </div>
+
+              <div className="mt-4 rounded-3xl border border-border bg-background/60 p-5 text-center">
+                <p className="text-[11px] font-medium tracking-[0.18em] text-muted-foreground">
+                  QUESTION OF THE DAY
+                </p>
+                <p className="mt-1.5 font-serif text-lg">
+                  What made you smile today?
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-6xl px-6 py-20">
-        <div className="grid gap-5 md:grid-cols-3">
-          <div className="glass rounded-4xl p-8">
-            <Link2 className="h-7 w-7 text-primary" aria-hidden />
-            <h2 className="mt-4 font-serif text-2xl">1. Claim your link</h2>
-            <p className="mt-2 text-foreground/75">
-              Pick a name and your wall is live instantly, with its own link
-              and its own private backend that only you can open.
-            </p>
-          </div>
-          <div className="glass rounded-4xl p-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="font-serif text-4xl leading-tight">
+            One wall,{" "}
+            <span className="text-gradient">everything people want</span>{" "}
+            to leave you
+          </h2>
+          <p className="mt-4 text-lg text-foreground/75">
+            A fragment is only the start. Your wall holds the whole
+            conversation with the people who pass through.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="glass rounded-4xl p-7">
             <MessagesSquare className="h-7 w-7 text-primary" aria-hidden />
-            <h2 className="mt-4 font-serif text-2xl">2. Share it anywhere</h2>
-            <p className="mt-2 text-foreground/75">
-              Your story, your bio, your status. Visitors write signed or
-              anonymous, and they can ask you questions too.
+            <h3 className="mt-4 font-serif text-xl">Fragments</h3>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/75">
+              Kind words, memories and confessions — signed, or with no name
+              at all. You read them all.
             </p>
           </div>
-          <div className="glass rounded-4xl p-8">
-            <Lock className="h-7 w-7 text-primary" aria-hidden />
-            <h2 className="mt-4 font-serif text-2xl">3. Or seal it shut</h2>
-            <p className="mt-2 text-foreground/75">
-              A fragment can be sealed until a future day. Nobody can read it
-              before then, not even you. It opens itself when the day comes.
+          <div className="glass rounded-4xl p-7">
+            <BarChart3 className="h-7 w-7 text-primary" aria-hidden />
+            <h3 className="mt-4 font-serif text-xl">Polls</h3>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/75">
+              Ask your wall a question and watch the votes come in. Results
+              show after people vote.
+            </p>
+          </div>
+          <div className="glass rounded-4xl p-7">
+            <Sparkles className="h-7 w-7 text-primary" aria-hidden />
+            <h3 className="mt-4 font-serif text-xl">Question of the day</h3>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/75">
+              A daily prompt on your wall, answered as fragments by whoever
+              passes by.
+            </p>
+          </div>
+          <div className="glass rounded-4xl p-7">
+            <MessageCircleQuestion
+              className="h-7 w-7 text-primary"
+              aria-hidden
+            />
+            <h3 className="mt-4 font-serif text-xl">Question box</h3>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/75">
+              Visitors ask, you answer — and you choose which answers go
+              public.
+            </p>
+          </div>
+          <div className="glass rounded-4xl p-7">
+            <Hourglass className="h-7 w-7 text-primary" aria-hidden />
+            <h3 className="mt-4 font-serif text-xl">Time capsules</h3>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/75">
+              Sealed for a future day. Friends contribute while it is shut,
+              and it opens itself when the day comes.
+            </p>
+          </div>
+          <div className="glass rounded-4xl p-7">
+            <Mail className="h-7 w-7 text-primary" aria-hidden />
+            <h3 className="mt-4 font-serif text-xl">Dear Future Me</h3>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/75">
+              A private letter to your future self, kept safe until its day
+              arrives.
+            </p>
+          </div>
+          <div className="glass rounded-4xl p-7">
+            <Palette className="h-7 w-7 text-primary" aria-hidden />
+            <h3 className="mt-4 font-serif text-xl">Themes</h3>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/75">
+              Twenty-five looks to choose from, from dreamy pink skies to a
+              night match under the lights — and you can fine-tune the
+              colours.
+            </p>
+          </div>
+          <div className="glass rounded-4xl p-7">
+            <Image className="h-7 w-7 text-primary" aria-hidden />
+            <h3 className="mt-4 font-serif text-xl">Your picture</h3>
+            <p className="mt-2 text-sm leading-relaxed text-foreground/75">
+              Put your own photo behind the wall and pick the colour of the
+              words over it.
             </p>
           </div>
         </div>
 
+        <div className="mt-20">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="font-serif text-4xl leading-tight">
+              Up in <span className="text-gradient">three steps</span>
+            </h2>
+          </div>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            <div className="glass rounded-4xl p-8">
+              <Link2 className="h-7 w-7 text-primary" aria-hidden />
+              <h3 className="mt-4 font-serif text-2xl">1. Claim your wall</h3>
+              <p className="mt-2 text-foreground/75">
+                Pick a name and your wall is live instantly, with its own
+                link and its own space that only you can open.
+              </p>
+            </div>
+            <div className="glass rounded-4xl p-8">
+              <MessagesSquare className="h-7 w-7 text-primary" aria-hidden />
+              <h3 className="mt-4 font-serif text-2xl">2. Share it anywhere</h3>
+              <p className="mt-2 text-foreground/75">
+                Your story, your bio, your status. Anyone with the link can
+                leave something — no account needed.
+              </p>
+            </div>
+            <div className="glass rounded-4xl p-8">
+              <Heart className="h-7 w-7 text-primary" aria-hidden />
+              <h3 className="mt-4 font-serif text-2xl">3. Read, answer, keep</h3>
+              <p className="mt-2 text-foreground/75">
+                Everything lands in your hands. Answer the questions you
+                want, keep the fragments you love, close the ones you
+                don't.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mx-auto mt-20 max-w-3xl">
+          <h2 className="text-center font-serif text-4xl leading-tight">
+            Asked <span className="text-gradient">often</span>
+          </h2>
+          <div className="mt-10 space-y-5">
+            <div className="glass rounded-4xl p-7">
+              <h3 className="font-serif text-xl">Is Fragments free?</h3>
+              <p className="mt-2 leading-relaxed text-foreground/75">
+                Yes. Claiming a wall is free, and everything on it —
+                fragments, polls, questions, capsules, themes — is free
+                too.
+              </p>
+            </div>
+            <div className="glass rounded-4xl p-7">
+              <h3 className="font-serif text-xl">
+                Do visitors need an account to leave something?
+              </h3>
+              <p className="mt-2 leading-relaxed text-foreground/75">
+                No. Anyone with your link can leave a fragment, vote in
+                your poll or ask you a question. Signing in is optional.
+              </p>
+            </div>
+            <div className="glass rounded-4xl p-7">
+              <h3 className="font-serif text-xl">
+                Can I see who wrote a fragment?
+              </h3>
+              <p className="mt-2 leading-relaxed text-foreground/75">
+                A fragment left without a name shows no name on your wall.
+                If someone signs theirs, you see it.
+              </p>
+            </div>
+            <div className="glass rounded-4xl p-7">
+              <h3 className="font-serif text-xl">What is a sealed fragment?</h3>
+              <p className="mt-2 leading-relaxed text-foreground/75">
+                A note that stays hidden until the day its writer chose.
+                Nobody can read it before then — not even you. It opens
+                itself when the day comes.
+              </p>
+            </div>
+            <div className="glass rounded-4xl p-7">
+              <h3 className="font-serif text-xl">
+                Can I make my wall look like me?
+              </h3>
+              <p className="mt-2 leading-relaxed text-foreground/75">
+                Yes. Pick from twenty-five themes, fine-tune the colours,
+                or put your own picture behind everything and choose the
+                colour of the words over it.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="mx-auto mt-20 max-w-3xl text-center">
-          <Sparkles className="mx-auto h-7 w-7 text-primary" aria-hidden />
-          <h2 className="mt-4 font-serif text-4xl text-gradient">Anonymous means anonymous</h2>
-          <p className="mt-4 text-lg leading-relaxed text-foreground/75">
-            Some apps tease you with paid hints about who wrote what. We will
-            never do that. A fragment with no name on it stays nameless
-            forever, and every wall is moderated by the person it belongs to.
+          <h2 className="font-serif text-4xl leading-tight">
+            Your wall is <span className="text-gradient">waiting</span>
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-lg text-foreground/75">
+            Someone out there has something kind to tell you. Give them a
+            place to leave it.
           </p>
           <Link
             to="/signup"
             className="mt-8 inline-block rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
           >
-            Get your wall
+            Claim your wall
           </Link>
         </div>
       </main>
