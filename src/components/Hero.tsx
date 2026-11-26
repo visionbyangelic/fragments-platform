@@ -105,11 +105,8 @@ export function Hero({ displayName, username, isOwner, onBegin, themeControl, bi
         </div>
       </nav>
 
-      <div className="relative z-10 mx-auto max-w-3xl px-6 py-24 text-center sm:py-36">
-        <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary">
-          @{username}
-        </p>
-        <h1 className="mt-4 font-serif text-5xl leading-tight sm:text-7xl">
+      <div className="relative z-10 mx-auto max-w-3xl px-6 py-14 text-center sm:py-20">
+        <h1 className="font-serif text-5xl leading-tight sm:text-7xl">
           {name}&rsquo;s sanctuary of <span className="text-gradient">fragments</span>
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-lg text-foreground/80">
@@ -144,7 +141,7 @@ export function Hero({ displayName, username, isOwner, onBegin, themeControl, bi
         )}
         <button
           onClick={onBegin}
-          className="mt-10 rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
+          className="mt-8 rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
         >
           Leave a fragment
         </button>
