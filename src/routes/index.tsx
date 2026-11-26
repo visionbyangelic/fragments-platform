@@ -110,7 +110,65 @@ function Landing() {
   const { profile, user, loading } = useSession();
 
   return (
-    <div className="min-h-screen">
+    <div className="fragments-home min-h-screen">
+      <style>{`
+        .fragments-home {
+          --background: #F5F6F1;
+          --foreground: #203A3A;
+          --card: #FFFFFF;
+          --card-foreground: #203A3A;
+          --primary: #286B67;
+          --primary-foreground: #FFFFFF;
+          --accent: #B9854F;
+          --secondary: #E5ECE7;
+          --secondary-foreground: #284B48;
+          --muted: #EDEFEB;
+          --muted-foreground: #667674;
+          --border: #DCE4DE;
+          --ring: #286B67;
+          --glass-bg: rgba(255, 255, 255, 0.76);
+          --glass-border: rgba(44, 87, 81, 0.14);
+          --gradient-sanctuary: linear-gradient(145deg, #F7F6F0 0%, #EAF1EC 54%, #F0EEE6 100%);
+          --gradient-aura: radial-gradient(circle at 82% 12%, rgba(185, 133, 79, 0.16), transparent 34%), radial-gradient(circle at 12% 38%, rgba(40, 107, 103, 0.15), transparent 38%);
+          --shadow-soft: 0 18px 50px -28px rgba(32, 58, 58, 0.28);
+          --shadow-glow: 0 8px 24px rgba(40, 107, 103, 0.22);
+          color: var(--foreground);
+          background: var(--background);
+        }
+        .fragments-home .glass {
+          border-color: var(--glass-border);
+          background: var(--glass-bg);
+          backdrop-filter: blur(16px) saturate(115%);
+        }
+        .fragments-home .text-gradient {
+          background: linear-gradient(115deg, #286B67 0%, #4D796B 62%, #B9854F 100%);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
+        .fragments-home a:focus-visible {
+          outline: 3px solid rgba(40, 107, 103, 0.5);
+          outline-offset: 3px;
+        }
+        @media (max-width: 640px) {
+          .fragments-home .landing-nav { padding-left: 1rem; padding-right: 1rem; }
+          .fragments-home .landing-hero { padding: 1.5rem 1rem 2.5rem; gap: 2rem; }
+          .fragments-home .landing-hero h1 { font-size: clamp(2.35rem, 10.5vw, 3.25rem); line-height: 1.08; letter-spacing: -0.035em; }
+          .fragments-home .landing-hero-copy { font-size: 1rem; line-height: 1.65; }
+          .fragments-home .landing-hero-actions { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+          .fragments-home .landing-hero-actions a { width: 100%; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; }
+          .fragments-home .landing-main { padding: 2.75rem 1rem 3rem; }
+          .fragments-home .landing-feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; margin-top: 2rem; }
+          .fragments-home .landing-feature-grid > div { padding: 1rem; border-radius: 1.25rem; }
+          .fragments-home .landing-feature-grid h3 { font-size: 1.05rem; }
+          .fragments-home .landing-feature-grid p { font-size: 0.82rem; line-height: 1.5; }
+          .fragments-home .landing-steps { gap: 0.75rem; margin-top: 2rem; }
+          .fragments-home .landing-steps > div { padding: 1.25rem; }
+        }
+        @media (max-width: 360px) {
+          .fragments-home .landing-feature-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
       <header className="relative overflow-hidden">
         <div
           className="absolute inset-0"
@@ -122,7 +180,7 @@ function Landing() {
           }}
         />
 
-        <nav className="relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-6">
+        <nav className="landing-nav relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-6">
           <span className="font-serif text-xl tracking-tight">Fragments</span>
           <div className="flex items-center gap-2">
             {!loading && profile ? (
@@ -154,21 +212,21 @@ function Landing() {
                   to="/login"
                   className="rounded-full border border-border bg-card/40 px-4 py-2 text-sm font-medium backdrop-blur transition hover:bg-card/70"
                 >
-                  Log in
+                  Sign in
                 </Link>
                 <Link
                   to="/signup"
                   className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
                 >
-                  Claim your wall
+                  Create your wall
                 </Link>
               </>
             )}
           </div>
         </nav>
 
-        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-6 pb-14 pt-8 sm:pt-16 lg:grid-cols-2 lg:pb-28">
-          <div className="text-center lg:text-left">
+        <div className="landing-hero relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-6 pb-14 pt-8 sm:pt-16 lg:grid-cols-2 lg:pb-28">
+          <div className="landing-hero-content text-center lg:text-left">
             <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-xs font-medium tracking-wide text-muted-foreground backdrop-blur">
               <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
               A wall that's yours
@@ -177,13 +235,13 @@ function Landing() {
               Your corner of the{" "}
               <span className="text-gradient">internet</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-foreground/80 sm:text-lg lg:mx-0">
+            <p className="landing-hero-copy mx-auto mt-6 max-w-xl text-base leading-relaxed text-foreground/80 sm:text-lg lg:mx-0">
               Claim a link, share it anywhere, and the people who pass
               through your life leave you kind words, memories and
               questions. Signed or anonymous — you read everything, and
               keep what you love.
             </p>
-            <div className="mt-10 flex flex-wrap justify-center gap-3 lg:justify-start">
+            <div className="landing-hero-actions mt-10 flex flex-wrap justify-center gap-3 lg:justify-start">
               <Link
                 to="/signup"
                 className="rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-[var(--shadow-glow)] transition hover:opacity-90"
@@ -214,7 +272,7 @@ function Landing() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-14 sm:py-20">
+      <main className="landing-main mx-auto max-w-6xl px-6 py-14 sm:py-20">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-serif text-3xl leading-tight sm:text-4xl">
             One wall,{" "}
@@ -227,7 +285,7 @@ function Landing() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="landing-feature-grid mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <div className="glass rounded-4xl p-7">
             <MessagesSquare className="h-7 w-7 text-primary" aria-hidden />
             <h3 className="mt-4 font-serif text-xl">Fragments</h3>
@@ -304,7 +362,7 @@ function Landing() {
               Up in <span className="text-gradient">three steps</span>
             </h2>
           </div>
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
+          <div className="landing-steps mt-12 grid gap-5 md:grid-cols-3">
             <div className="glass rounded-4xl p-8">
               <Link2 className="h-7 w-7 text-primary" aria-hidden />
               <h3 className="mt-4 font-serif text-2xl">1. Claim your wall</h3>
