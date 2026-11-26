@@ -19,10 +19,8 @@ import {
 import { toast } from "sonner";
 import { CUSTOM_THEME_NAME, THEMES, themeLabel } from "@/lib/themes";
 import {
-  CARD_SIZES,
   renderFragmentCardPreview,
   shareFragmentCard,
-  type CardSize,
 } from "@/lib/share-card";
 import type { CustomTheme } from "@/lib/custom-theme";
 import {
@@ -141,12 +139,14 @@ function FragmentShareButton({
 }) {
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState(wallTheme);
-  const [size, setSize] = useState<CardSize>("story");
   const [preview, setPreview] = useState<string | null>(null);
   const [rendering, setRendering] = useState(false);
   const [sharing, setSharing] = useState(false);
 
-  // Live preview, re-drawn whenever the colour or size changes.
+  // Live preview, re-drawn whenever the colour changes. Every card
+  // is Compact — the small size is drawn from the same big canvas,
+  // so it stays sharp on a phone and costs less data, and there is
+  // no size choice to understand.
   useEffect(() => {
     if (!open) return;
     let cancelled = false;
@@ -160,7 +160,7 @@ function FragmentShareButton({
         theme: wallTheme,
         customTheme,
       },
-      { theme, size, customTheme },
+      { theme, size: "compact", customTheme },
     )
       .then((url) => {
         if (!cancelled) setPreview(url);
@@ -174,7 +174,7 @@ function FragmentShareButton({
     return () => {
       cancelled = true;
     };
-  }, [open, theme, size, message, author, wallUsername, ownerName, wallTheme, customTheme]);
+  }, [open, theme, message, author, wallUsername, ownerName, wallTheme, customTheme]);
 
   async function handleShare() {
     setSharing(true);
@@ -188,7 +188,7 @@ function FragmentShareButton({
           theme: wallTheme,
           customTheme,
         },
-        { theme, size, customTheme },
+        { theme, size: "compact", customTheme },
       );
       if (how === "downloaded") toast.success("Card saved. Post it anywhere 🤍");
       setOpen(false);
@@ -220,8 +220,8 @@ function FragmentShareButton({
           <DialogHeader>
             <DialogTitle className="font-serif text-2xl">Save your card</DialogTitle>
             <DialogDescription>
-              Pick a colour and a size, then save it. The file is a JPEG,
-              so it stays light on data.
+              Pick a colour, then save it. The file is a JPEG, so it
+              stays light on data.
             </DialogDescription>
           </DialogHeader>
 
@@ -241,7 +241,7 @@ function FragmentShareButton({
 
           <div className="mt-5 space-y-2">
             <p className="text-sm font-medium">Colour</p>
-            <div className="flex flex-wrap gap-2.5" role="radiogroup" aria-label="Card colour">
+            <div className="flex gap-2.5 overflow-x-auto pb-2" role="radiogroup" aria-label="Card colour">
               {wallTheme === CUSTOM_THEME_NAME && customTheme && (
                 <button
                   key="custom"
@@ -251,7 +251,7 @@ function FragmentShareButton({
                   aria-label="Custom — the wall's own colours"
                   title="Custom — the wall's own colours"
                   onClick={() => setTheme(CUSTOM_THEME_NAME)}
-                  className={`h-10 w-10 rounded-full transition ${
+                  className={`h-10 w-10 shrink-0 rounded-full transition ${
                     theme === CUSTOM_THEME_NAME
                       ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
                       : "ring-1 ring-border"
@@ -270,7 +270,7 @@ function FragmentShareButton({
                   aria-label={t.label}
                   title={t.label}
                   onClick={() => setTheme(t.name)}
-                  className={`h-10 w-10 rounded-full transition ${
+                  className={`h-10 w-10 shrink-0 rounded-full transition ${
                     theme === t.name
                       ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
                       : "ring-1 ring-border"
@@ -287,35 +287,6 @@ function FragmentShareButton({
                 ? "Your colours, your wall"
                 : (THEMES.find((t) => t.name === theme)?.blurb ?? "")}
             </p>
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <p className="text-sm font-medium">Size</p>
-            <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Card size">
-              {(Object.keys(CARD_SIZES) as CardSize[]).map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  role="radio"
-                  aria-checked={size === key}
-                  onClick={() => setSize(key)}
-                  className={`rounded-2xl border px-3 py-2.5 text-left transition ${
-                    size === key
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-card/40"
-                  }`}
-                >
-                  <span className="block text-sm font-medium">{CARD_SIZES[key].label}</span>
-                  <span
-                    className={`mt-0.5 block text-xs ${
-                      size === key ? "text-primary-foreground/80" : "text-muted-foreground"
-                    }`}
-                  >
-                    {CARD_SIZES[key].blurb}
-                  </span>
-                </button>
-              ))}
-            </div>
           </div>
 
           <div className="mt-6 flex justify-end gap-2">
