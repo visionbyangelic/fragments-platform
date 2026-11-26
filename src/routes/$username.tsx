@@ -378,7 +378,7 @@ function Wall() {
             )}
 
             {profile.qotd?.trim() && (
-              <div className="frag-card mx-auto mb-12 max-w-2xl rounded-[var(--card-radius)] p-6 text-center sm:p-7">
+              <div className="frag-card glass mx-auto mb-12 max-w-2xl rounded-[var(--card-radius)] p-6 text-center sm:p-7">
                 <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                   Question of the day
                 </p>

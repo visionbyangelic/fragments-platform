@@ -88,7 +88,7 @@ export function CapsuleSection({
           return (
             <div
               key={capsule.id}
-              className="frag-card mb-5 break-inside-avoid rounded-[var(--card-radius)] p-6 sm:p-7"
+              className="frag-card glass mb-5 break-inside-avoid rounded-[var(--card-radius)] p-6 sm:p-7"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>

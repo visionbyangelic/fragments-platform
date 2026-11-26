@@ -48,7 +48,7 @@ export function PollCard({ poll, visitorId }: { poll: Poll; visitorId: string | 
   const showResults = myVote !== null || !open;
 
   return (
-    <div className="frag-card mb-5 break-inside-avoid rounded-[var(--card-radius)] p-6 sm:p-7">
+    <div className="frag-card glass mb-5 break-inside-avoid rounded-[var(--card-radius)] p-6 sm:p-7">
       <div className="flex items-center justify-between gap-3">
         <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
           A little question
