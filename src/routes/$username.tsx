@@ -17,8 +17,10 @@ import { fetchQuestions, subscribeToQuestions } from "@/lib/questions";
 import { fetchProfileByUsername, reportWall, USERNAME_RE } from "@/lib/platform";
 import { useSession } from "@/hooks/use-session";
 import { useTheme } from "@/context/ThemeContext";
-import { CUSTOM_THEME_NAME, isThemeName } from "@/lib/themes";
+import { CUSTOM_THEME_NAME, isThemeName, themeDef } from "@/lib/themes";
 import { parseCustomTheme } from "@/lib/custom-theme";
+import { parseThemeOverrides } from "@/lib/theme-overrides";
+import { WallDecorations } from "@/components/WallDecorations";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -129,10 +131,11 @@ function Wall() {
   useEffect(() => {
     if (profile && themedFor.current !== profile.id) {
       themedFor.current = profile.id;
-      const name = isThemeName(profile.theme) ? profile.theme : "dusk";
+      const name = isThemeName(profile.theme) ? profile.theme : "moonlight";
       setTheme(
         name,
         name === CUSTOM_THEME_NAME ? parseCustomTheme(profile.custom_theme) : undefined,
+        parseThemeOverrides(profile.theme_overrides),
       );
     }
   }, [profile, setTheme]);
@@ -195,6 +198,14 @@ function Wall() {
     (e: Entry) => !e.is_private && (isOwner || e.is_visible),
   );
 
+  // The wall's decorations: the owner's overrides win, else the
+  // theme's own defaults.
+  const wallThemeName = isThemeName(profile.theme) ? profile.theme : "moonlight";
+  const wallDecorations =
+    parseThemeOverrides(profile.theme_overrides)?.decorations ??
+    themeDef(wallThemeName)?.decorations ??
+    [];
+
   function scrollToForm() {
     setTab("board");
     setTimeout(() => formRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
@@ -216,6 +227,8 @@ function Wall() {
 
   return (
     <div className="min-h-screen">
+      <WallDecorations decorations={wallDecorations} />
+      <div className="relative">
       <Hero
         displayName={profile.display_name}
         username={profile.username}
@@ -386,6 +399,7 @@ function Wall() {
           </div>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }

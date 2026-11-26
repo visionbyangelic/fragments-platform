@@ -66,7 +66,9 @@ export function shapeClass(shape: string): string {
     case "cloud":
       return "rounded-[2.5rem]";
     default:
-      return "rounded-3xl";
+      // The wall's card radius: the theme's own corner, or the card
+      // style the owner picked in the editor.
+      return "rounded-[var(--card-radius)]";
   }
 }
 

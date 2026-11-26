@@ -103,7 +103,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     scripts: [
       {
         children:
-          "try{var ok=['dusk','pink-dream','midnight','vintage','lagoon','matcha','ember','forest','peach','cloud','starry','custom'];var t=localStorage.getItem('fragments-theme');document.documentElement.setAttribute('data-theme',ok.indexOf(t)>=0?t:'dusk');if(t==='custom'){var v=JSON.parse(localStorage.getItem('fragments-custom-vars')||'null');if(v){for(var k in v)document.documentElement.style.setProperty(k,v[k])}}}catch(e){document.documentElement.setAttribute('data-theme','dusk')}",
+          "try{var ok=['cherry','cloud','moonlight','matcha','love-letter','y2k','lavender','sunshine','dark-academia','ocean','pixel','minimal','custom','dusk','pink-dream','midnight','vintage','lagoon','ember','forest','peach','starry'];var t=localStorage.getItem('fragments-theme');document.documentElement.setAttribute('data-theme',ok.indexOf(t)>=0?t:'moonlight');if(t==='custom'){var v=JSON.parse(localStorage.getItem('fragments-custom-vars')||'null');if(v){for(var k in v)document.documentElement.style.setProperty(k,v[k])}}var o=JSON.parse(localStorage.getItem('fragments-theme-overrides')||'null');if(o){var ov=JSON.parse(localStorage.getItem('fragments-override-vars')||'null');if(ov){for(var k in ov)document.documentElement.style.setProperty(k,ov[k])}var sc=localStorage.getItem('fragments-override-scheme');if(sc)document.documentElement.style.colorScheme=sc;if(o.cardStyle)document.documentElement.setAttribute('data-card-style',o.cardStyle)}}catch(e){document.documentElement.setAttribute('data-theme','moonlight')}",
       },
     ],
     links: [
@@ -115,7 +115,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=Baloo+2:wght@500;600;700;800&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&family=Baloo+2:wght@500;600;700;800&family=Caveat:wght@400;600;700&family=VT323&display=swap",
       },
     ],
   }),

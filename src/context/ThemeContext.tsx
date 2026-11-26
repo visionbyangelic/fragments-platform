@@ -1,21 +1,41 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { CUSTOM_THEME_NAME, DEFAULT_THEME, isThemeName, type ThemeName } from "@/lib/themes";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  CUSTOM_THEME_NAME,
+  DEFAULT_THEME,
+  isThemeName,
+  themeDef,
+  type ThemeName,
+} from "@/lib/themes";
 import {
   buildCustomThemeVars,
   DEFAULT_CUSTOM_THEME,
   parseCustomTheme,
   type CustomTheme,
 } from "@/lib/custom-theme";
+import {
+  buildOverrideVars,
+  OVERRIDE_VAR_KEYS,
+  parseThemeOverrides,
+  type ThemeOverrides,
+} from "@/lib/theme-overrides";
 
 export type { ThemeName };
 export type { CustomTheme };
+export type { ThemeOverrides };
 
 interface ThemeContextValue {
   theme: ThemeName;
   /** The owner's own colours when the theme is Custom, else null. */
   customTheme: CustomTheme | null;
-  /** Switch theme; pass the custom colours when switching to Custom. */
-  setTheme: (theme: ThemeName, custom?: CustomTheme | null) => void;
+  /** The owner's editor overrides on top of the theme, else null. */
+  overrides: ThemeOverrides | null;
+  /** Switch theme; pass the custom colours when switching to Custom,
+      and the editor overrides (null clears them). */
+  setTheme: (
+    theme: ThemeName,
+    custom?: CustomTheme | null,
+    overrides?: ThemeOverrides | null,
+  ) => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -23,6 +43,9 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 const THEME_KEY = "fragments-theme";
 const CUSTOM_KEY = "fragments-custom-theme";
 const CUSTOM_VARS_KEY = "fragments-custom-vars";
+const OVERRIDES_KEY = "fragments-theme-overrides";
+const OVERRIDE_VARS_KEY = "fragments-override-vars";
+const OVERRIDE_SCHEME_KEY = "fragments-override-scheme";
 
 // The variable names a custom theme sets. They are the same for every
 // custom palette, so leaving Custom means removing exactly these.
@@ -32,6 +55,15 @@ function readStoredCustom(): CustomTheme | null {
   if (typeof window === "undefined") return null;
   try {
     return parseCustomTheme(JSON.parse(localStorage.getItem(CUSTOM_KEY) ?? "null"));
+  } catch {
+    return null;
+  }
+}
+
+function readStoredOverrides(): ThemeOverrides | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return parseThemeOverrides(JSON.parse(localStorage.getItem(OVERRIDES_KEY) ?? "null"));
   } catch {
     return null;
   }
@@ -63,22 +95,63 @@ function clearCustomVars(): void {
   }
 }
 
+function applyOverrideVars(overrides: ThemeOverrides): void {
+  const root = document.documentElement;
+  const built = buildOverrideVars(overrides);
+  for (const [key, value] of Object.entries(built.vars)) {
+    root.style.setProperty(key, value);
+  }
+  if (built.colorScheme) {
+    root.style.colorScheme = built.colorScheme;
+    try {
+      localStorage.setItem(OVERRIDE_SCHEME_KEY, built.colorScheme);
+    } catch {
+      /* ignore */
+    }
+  }
+  try {
+    localStorage.setItem(OVERRIDES_KEY, JSON.stringify(overrides));
+    localStorage.setItem(OVERRIDE_VARS_KEY, JSON.stringify(built.vars));
+  } catch {
+    /* ignore */
+  }
+}
+
+function clearOverrideVars(): void {
+  const root = document.documentElement;
+  for (const key of OVERRIDE_VAR_KEYS) root.style.removeProperty(key);
+  try {
+    localStorage.removeItem(OVERRIDES_KEY);
+    localStorage.removeItem(OVERRIDE_VARS_KEY);
+    localStorage.removeItem(OVERRIDE_SCHEME_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemeName>(() => {
     if (typeof window === "undefined") return DEFAULT_THEME;
     const stored = localStorage.getItem(THEME_KEY);
-    // Dusk is the default. A stored choice wins; anything unknown
-    // (including retired theme names) falls back to Dusk.
+    // Moonlight is the default. A stored choice wins; anything unknown
+    // (including retired theme names) falls back to Moonlight.
     return isThemeName(stored) ? stored : DEFAULT_THEME;
   });
   const [customTheme, setCustomThemeState] = useState<CustomTheme | null>(() =>
     readStoredCustom(),
+  );
+  const [overrides, setOverridesState] = useState<ThemeOverrides | null>(() =>
+    readStoredOverrides(),
   );
 
   useEffect(() => {
     const root = document.documentElement;
     root.setAttribute("data-theme", theme);
     localStorage.setItem(THEME_KEY, theme);
+    // The wall's card style: the editor's override wins, else the
+    // theme's own default.
+    const cardStyle = overrides?.cardStyle ?? themeDef(theme)?.cardStyle ?? "rounded";
+    root.setAttribute("data-card-style", cardStyle);
     if (theme === CUSTOM_THEME_NAME) {
       // Custom keeps its fallback block until the colours land; the
       // inline variables then override it.
@@ -86,15 +159,30 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } else {
       clearCustomVars();
     }
-  }, [theme, customTheme]);
+    if (overrides) {
+      applyOverrideVars(overrides);
+    } else {
+      clearOverrideVars();
+    }
+  }, [theme, customTheme, overrides]);
 
-  const setTheme = (newTheme: ThemeName, custom?: CustomTheme | null) => {
-    if (custom) setCustomThemeState(custom);
-    setThemeState(newTheme);
-  };
+  // Stable on purpose: effects in the wall and the gate depend on it,
+  // and a new identity every render would re-run them forever.
+  const setTheme = useCallback(
+    (
+      newTheme: ThemeName,
+      custom?: CustomTheme | null,
+      newOverrides?: ThemeOverrides | null,
+    ) => {
+      if (custom) setCustomThemeState(custom);
+      if (newOverrides !== undefined) setOverridesState(newOverrides);
+      setThemeState(newTheme);
+    },
+    [],
+  );
 
   return (
-    <ThemeContext.Provider value={{ theme, customTheme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, customTheme, overrides, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );

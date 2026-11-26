@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { isThemeName } from "@/lib/themes";
 import type { CustomTheme } from "@/lib/custom-theme";
+import type { ThemeOverrides } from "@/lib/theme-overrides";
 
 // Platform-level data: profiles (one per wall), reports, account helpers.
 // The generated Database type does not include our tables, so we use a
@@ -16,6 +17,7 @@ export type Profile = {
   display_name: string;
   theme: string;
   custom_theme: CustomTheme | null;
+  theme_overrides: ThemeOverrides | null;
   wall_open: boolean;
   email_notifications: boolean;
   custom_prompt: string | null;
@@ -121,7 +123,7 @@ export async function updateProfile(
   patch: Partial<
     Pick<
       Profile,
-      "display_name" | "theme" | "custom_theme" | "wall_open" | "email_notifications" | "custom_prompt" | "suspended"
+      "display_name" | "theme" | "custom_theme" | "theme_overrides" | "wall_open" | "email_notifications" | "custom_prompt" | "suspended"
     >
   >, // custom_prompt is the owner's ask line, shown to every visitor.
 ): Promise<void> {

@@ -391,7 +391,7 @@ export function QASection({ questions, isOwner, ownerName, editMode, wallUsernam
             visibleQuestions.map((q, idx) => (
               <article key={q.id} className="relative">
                 {/* Question card - glass style */}
-                <div className="glass rounded-3xl p-6 sm:p-7">
+                <div className="frag-card glass rounded-[var(--card-radius)] p-6 sm:p-7">
                   <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
                     <span>
                       Asked by {askerName(q)}

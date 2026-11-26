@@ -1,15 +1,21 @@
 import { Palette } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
-import { THEMES, themeLabel } from "@/lib/themes";
+import { isLegacyTheme, LEGACY_PICKER_NAMES, THEMES, themeDef, themeLabel } from "@/lib/themes";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   const cycleTheme = () => {
-    // From a custom wall, cycling lands on the first preset.
-    const idx = THEMES.findIndex((t) => t.name === theme);
-    const next = THEMES[(idx + 1) % THEMES.length];
-    setTheme(next.name);
+    // From a custom wall, cycling lands on the first preset. The
+    // cycle stays in the theme's own era: a wall on a retired theme
+    // cycles the old set, a wall on a new theme cycles the new one,
+    // so the toggle never drags a trial wall onto the other set.
+    const list = isLegacyTheme(theme)
+      ? LEGACY_PICKER_NAMES.map((n) => themeDef(n)!)
+      : THEMES;
+    const idx = list.findIndex((t) => t.name === theme);
+    const next = list[(idx + 1) % list.length];
+    setTheme(next.name, undefined, null);
   };
 
   const currentLabel = themeLabel(theme);

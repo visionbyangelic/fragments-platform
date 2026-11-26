@@ -78,7 +78,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
         <button
           onClick={() => setOpen(true)}
           style={colorStyle(entry.color)}
-          className={`group relative block w-full p-6 text-left shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-glow)] ${shapeClass(
+          className={`frag-card group relative block w-full p-6 text-left shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-glow)] ${shapeClass(
             entry.shape,
           )} ${hidden ? "opacity-50" : ""}`}
         >
@@ -147,7 +147,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="glass border-none p-0 sm:max-w-2xl overflow-hidden">
           <div
-            className={`animate-unfold p-6 sm:p-10 max-h-[80vh] overflow-y-auto custom-scrollbar ${shapeClass(
+            className={`frag-card animate-unfold p-6 sm:p-10 max-h-[80vh] overflow-y-auto custom-scrollbar ${shapeClass(
               entry.shape,
             )}`}
             style={colorStyle(entry.color)}
