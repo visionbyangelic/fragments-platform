@@ -100,9 +100,9 @@ function WallPreview() {
   );
 }
 
-// The front door. This page is not a wall, so it wears its own look
-// (the .landing scope in styles.css) instead of any wall theme: warm
-// and bright, professional but playful. And it sells what Fragments
+// The front door. It wears the normal site theme, like every other
+// page that is not a wall — I tried giving it its own bright pink
+// look and it was wrong for the site. And it sells what Fragments
 // actually is — a wall of your own where people leave a little
 // something behind — not just an anonymous-message app. Anonymous is
 // one choice a writer can make, not the product.
@@ -110,7 +110,7 @@ function Landing() {
   const { profile, user, loading } = useSession();
 
   return (
-    <div className="landing min-h-screen">
+    <div className="min-h-screen">
       <header className="relative overflow-hidden">
         <div
           className="absolute inset-0"
@@ -330,58 +330,6 @@ function Landing() {
                 Everything lands in your hands. Answer the questions you
                 want, keep the fragments you love, close the ones you
                 don't.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mx-auto mt-20 max-w-3xl">
-          <h2 className="text-center font-serif text-4xl leading-tight">
-            Asked <span className="text-gradient">often</span>
-          </h2>
-          <div className="mt-10 space-y-5">
-            <div className="glass rounded-4xl p-7">
-              <h3 className="font-serif text-xl">Is Fragments free?</h3>
-              <p className="mt-2 leading-relaxed text-foreground/75">
-                Yes. Claiming a wall is free, and everything on it —
-                fragments, polls, questions, capsules, themes — is free
-                too.
-              </p>
-            </div>
-            <div className="glass rounded-4xl p-7">
-              <h3 className="font-serif text-xl">
-                Do visitors need an account to leave something?
-              </h3>
-              <p className="mt-2 leading-relaxed text-foreground/75">
-                No. Anyone with your link can leave a fragment, vote in
-                your poll or ask you a question. Signing in is optional.
-              </p>
-            </div>
-            <div className="glass rounded-4xl p-7">
-              <h3 className="font-serif text-xl">
-                Can I see who wrote a fragment?
-              </h3>
-              <p className="mt-2 leading-relaxed text-foreground/75">
-                A fragment left without a name shows no name on your wall.
-                If someone signs theirs, you see it.
-              </p>
-            </div>
-            <div className="glass rounded-4xl p-7">
-              <h3 className="font-serif text-xl">What is a sealed fragment?</h3>
-              <p className="mt-2 leading-relaxed text-foreground/75">
-                A note that stays hidden until the day its writer chose.
-                Nobody can read it before then — not even you. It opens
-                itself when the day comes.
-              </p>
-            </div>
-            <div className="glass rounded-4xl p-7">
-              <h3 className="font-serif text-xl">
-                Can I make my wall look like me?
-              </h3>
-              <p className="mt-2 leading-relaxed text-foreground/75">
-                Yes. Pick from twenty-five themes, fine-tune the colours,
-                or put your own picture behind everything and choose the
-                colour of the words over it.
               </p>
             </div>
           </div>
