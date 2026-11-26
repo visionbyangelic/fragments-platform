@@ -54,13 +54,6 @@ function WallPreview() {
   return (
     <div className="relative mx-auto w-full max-w-md">
       <div className="glass rounded-4xl p-6 shadow-[var(--shadow-soft)] sm:p-7">
-        <p className="font-serif text-2xl leading-snug">
-          {name}'s <span className="text-gradient">sanctuary of fragments</span>
-        </p>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          {profile?.bio?.trim() ||
-            "A living archive of memories, questions, little truths and kind words from the people who pass through. Leave something behind, signed or anonymous."}
-        </p>
         <Link
           to="/$username"
           params={{ username: "angelic" }}
@@ -113,62 +106,67 @@ function Landing() {
     <div className="fragments-home min-h-screen">
       <style>{`
         .fragments-home {
-          background: #ffffff !important;
-          color: #172b2b !important;
-          --background: #ffffff;
-          --foreground: #172b2b;
-          --card: #ffffff;
-          --card-foreground: #172b2b;
-          --primary: #286b67;
-          --primary-foreground: #ffffff;
-          --accent: #286b67;
-          --secondary: #edf3f1;
-          --secondary-foreground: #244b47;
-          --muted: #f4f6f5;
-          --muted-foreground: #596b69;
-          --border: #dce5e2;
-          --ring: #286b67;
-          --color-background: #ffffff;
-          --color-foreground: #172b2b;
-          --color-card: #ffffff;
-          --color-card-foreground: #172b2b;
-          --color-primary: #286b67;
-          --color-primary-foreground: #ffffff;
-          --color-secondary: #edf3f1;
-          --color-secondary-foreground: #244b47;
-          --color-muted: #f4f6f5;
-          --color-muted-foreground: #596b69;
-          --color-border: #dce5e2;
+          background: #10111f !important;
+          color: #f2f0fa !important;
+          --background: #10111f;
+          --foreground: #f2f0fa;
+          --card: #191b2d;
+          --card-foreground: #f2f0fa;
+          --popover: #191b2d;
+          --popover-foreground: #f2f0fa;
+          --primary: #b9a4ff;
+          --primary-foreground: #171326;
+          --secondary: #272940;
+          --secondary-foreground: #e7e2ff;
+          --muted: #222438;
+          --muted-foreground: #aaa9c2;
+          --accent: #8c7cf0;
+          --accent-foreground: #ffffff;
+          --border: #34364e;
+          --input: #272940;
+          --ring: #b9a4ff;
+          --color-background: #10111f;
+          --color-foreground: #f2f0fa;
+          --color-card: #191b2d;
+          --color-card-foreground: #f2f0fa;
+          --color-primary: #b9a4ff;
+          --color-primary-foreground: #171326;
+          --color-secondary: #272940;
+          --color-secondary-foreground: #e7e2ff;
+          --color-muted: #222438;
+          --color-muted-foreground: #aaa9c2;
+          --color-accent: #8c7cf0;
+          --color-accent-foreground: #ffffff;
+          --color-border: #34364e;
           --gradient-sanctuary: none;
           --gradient-aura: none;
-          --glass-bg: #ffffff;
-          --glass-border: #dce5e2;
-          --shadow-soft: 0 8px 28px rgba(20, 45, 43, 0.06);
-          --shadow-glow: 0 6px 16px rgba(40, 107, 103, 0.14);
+          --glass-bg: #191b2d;
+          --glass-border: #34364e;
+          --shadow-soft: 0 16px 44px rgba(0, 0, 0, 0.22);
+          --shadow-glow: 0 8px 24px rgba(140, 124, 240, 0.2);
         }
-        .fragments-home header { background: #ffffff !important; }
-        .fragments-home header > div:first-child { display: none !important; }
+        .fragments-home header { background: #10111f !important; }
         .fragments-home .glass {
-          background: #ffffff !important;
-          border: 1px solid #e1e8e5 !important;
-          box-shadow: 0 8px 28px rgba(20, 45, 43, 0.06) !important;
+          background: #191b2d !important;
+          border: 1px solid #34364e !important;
+          box-shadow: 0 16px 44px rgba(0, 0, 0, 0.22) !important;
           backdrop-filter: none !important;
         }
         .fragments-home .text-gradient {
           background: none !important;
-          color: #286b67 !important;
-          -webkit-text-fill-color: #286b67 !important;
+          color: #b9a4ff !important;
+          -webkit-text-fill-color: #b9a4ff !important;
         }
-        .fragments-home .landing-hero-copy { color: #4b5d5b !important; }
-        .fragments-home .text-muted-foreground { color: #596b69 !important; }
+        .fragments-home .landing-hero-copy,
         .fragments-home .text-foreground\/80,
-        .fragments-home .text-foreground\/75 { color: #4b5d5b !important; }
-        .fragments-home .bg-primary { background: #286b67 !important; color: #ffffff !important; }
-        .fragments-home .text-primary { color: #286b67 !important; }
-        .fragments-home .border-border { border-color: #dce5e2 !important; }
+        .fragments-home .text-foreground\/75 { color: #c5c3d8 !important; }
+        .fragments-home .text-muted-foreground { color: #aaa9c2 !important; }
+        .fragments-home .bg-primary { background: #b9a4ff !important; color: #171326 !important; }
+        .fragments-home .text-primary { color: #b9a4ff !important; }
+        .fragments-home .border-border { border-color: #34364e !important; }
         .fragments-home .bg-card\/40,
-        .fragments-home .bg-card\/60 { background: #ffffff !important; }
-        .fragments-home a:focus-visible { outline: 3px solid rgba(40, 107, 103, 0.45); outline-offset: 3px; }
+        .fragments-home .bg-card\/60 { background: #191b2d !important; }
+        .fragments-home a:focus-visible { outline: 3px solid rgba(185, 164, 255, 0.6); outline-offset: 3px; }
         .fragments-home .landing-hero-actions a { min-height: 48px; }
         @media (max-width: 640px) {
           .fragments-home .landing-nav { padding: 1.1rem 1rem; }
