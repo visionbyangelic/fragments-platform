@@ -18,6 +18,7 @@ import {
 } from "@/lib/entries";
 import { submitQuestion } from "@/lib/questions";
 import { notifyWallOwner } from "@/lib/notify";
+import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
 
 interface Props {
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export function SubmissionForm({ profileId, ownerName }: Props) {
+  const { profile: myProfile } = useSession();
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [anonymous, setAnonymous] = useState(false);
@@ -38,6 +40,13 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
 
   const maxLength = asQuestion ? 800 : 3000;
   const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  // Signed in and not hiding: the fragment carries the sender's own
+  // wall username, so the wall's owner can see who it came from.
+  // Nobody else ever sees it, and anonymous means anonymous — the
+  // toggle off stores no sender at all.
+  const senderUsername =
+    !anonymous && myProfile ? myProfile.username : null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -62,6 +71,7 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
           name: anonymous ? null : name.trim() || null,
           question: clean,
           is_anonymous: anonymous,
+          sender_username: senderUsername,
         });
         notifyWallOwner("question", questionId);
         toast.success(`Question sent for ${ownerName} to answer ✨`);
@@ -73,6 +83,7 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
           color,
           shape,
           reveal_date: sealed ? new Date(`${sealDate}T00:00:00`).toISOString() : null,
+          sender_username: senderUsername,
         });
         notifyWallOwner("fragment", entryId);
         toast.success(
@@ -113,6 +124,12 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
               Leave anonymously
             </Label>
           </div>
+          {senderUsername && (
+            <p className="pt-1 text-xs text-muted-foreground">
+              Signed in as @{senderUsername} — {ownerName} will see it came
+              from you.
+            </p>
+          )}
           <div className="flex items-center gap-3 pt-1">
             <Switch id="as-question" checked={asQuestion} onCheckedChange={setAsQuestion} />
             <Label htmlFor="as-question" className="text-sm text-muted-foreground">

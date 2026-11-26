@@ -12,8 +12,21 @@ export function Hero({ displayName, username, isOwner, onBegin }: Props) {
   const name = displayName.trim() || username;
   return (
     <header className="relative overflow-hidden">
-      <div className="absolute inset-0" style={{ background: "var(--gradient-sanctuary)" }} />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background" />
+      {/* The wall's pattern lives here too, layered over the
+          sanctuary gradient: before this, the hero's two opaque
+          layers hid the pattern, so a theme like Starry Night only
+          showed below the hero, where the fragments are. The
+          background fades out toward the bottom instead of ending
+          on a solid band, so the pattern carries on down the page. */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: "var(--gradient-aura), var(--gradient-sanctuary)",
+          backgroundSize: "var(--wall-pattern-size, auto), auto",
+          maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
+        }}
+      />
 
       <nav className="relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-6">
         <Link to="/" className="font-serif text-xl tracking-tight">

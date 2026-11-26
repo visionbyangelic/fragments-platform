@@ -51,12 +51,6 @@ export const THEMES = [
     card: { bg: ["#16261c", "#101f15", "#1d3226"], ink: "#e4f2e6", muted: "#8fae97", accent: "#6fbf7f", letter: "#fbf3df", letterInk: "#37402a" },
   },
   {
-    name: "strawberry",
-    label: "Strawberry Milk",
-    blurb: "Pink gingham, sweet and soft",
-    card: { bg: ["#fdeef2", "#fbe3ec", "#f9d9e2"], ink: "#5c2438", muted: "#a25a72", accent: "#e85d75", letter: "#fbf3df", letterInk: "#3d2c22" },
-  },
-  {
     name: "peach",
     label: "Peach Soda",
     blurb: "Fizzy peach, polka dots",

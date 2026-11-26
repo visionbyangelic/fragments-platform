@@ -11,6 +11,9 @@ export type Entry = {
   is_private: boolean;
   is_favorite: boolean;
   reveal_date: string | null;
+  /** The sender's wall username when they were signed in and not
+      anonymous. Only ever shown to the wall's owner. */
+  sender_username: string | null;
   created_at: string;
 };
 
@@ -94,6 +97,9 @@ export async function submitEntry(input: {
   color: string;
   shape: string;
   reveal_date?: string | null;
+  /** The sender's own wall username. Only the caller ever passes
+      their own — the database refuses anyone else's. */
+  sender_username?: string | null;
 }): Promise<string> {
   const { data, error } = await sb
     .from("entries")
@@ -106,6 +112,7 @@ export async function submitEntry(input: {
       is_private: false,
       is_visible: true,
       reveal_date: input.reveal_date ?? null,
+      sender_username: input.sender_username ?? null,
     })
     .select("id")
     .single();

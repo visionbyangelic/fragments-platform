@@ -99,6 +99,11 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
               </span>
             )}
           </div>
+          {isOwner && entry.sender_username && (
+            <p className="mt-1 text-xs font-medium opacity-70">
+              Signed in as @{entry.sender_username}
+            </p>
+          )}
 
           {isOwner && editMode && (
             <div className="mt-4 flex gap-2 border-t border-black/5 pt-3">
@@ -153,6 +158,11 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
             </DialogHeader>
             <p className="font-serif text-xl sm:text-2xl leading-relaxed whitespace-pre-wrap break-words">{entry.message}</p>
             <p className="mt-6 text-base italic opacity-70">— {displayName}</p>
+            {isOwner && entry.sender_username && (
+              <p className="mt-1 text-sm font-medium opacity-70">
+                Signed in as @{entry.sender_username}
+              </p>
+            )}
           </div>
         </DialogContent>
       </Dialog>

@@ -9,6 +9,9 @@ export type Question = {
   is_anonymous: boolean;
   is_published: boolean;
   answered_at: string | null;
+  /** The sender's wall username when they were signed in and not
+      anonymous. Only ever shown to the wall's owner. */
+  sender_username: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -34,6 +37,9 @@ export async function submitQuestion(input: {
   name: string | null;
   question: string;
   is_anonymous: boolean;
+  /** The sender's own wall username. Only the caller ever passes
+      their own — the database refuses anyone else's. */
+  sender_username?: string | null;
 }): Promise<string> {
   const cleanQuestion = input.question.trim();
   if (cleanQuestion.length < 3 || cleanQuestion.length > 800) {
@@ -50,6 +56,7 @@ export async function submitQuestion(input: {
       is_published: false,
       answer: null,
       answered_at: null,
+      sender_username: input.is_anonymous ? null : (input.sender_username ?? null),
     })
     .select("id")
     .single();

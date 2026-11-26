@@ -23,8 +23,18 @@ function Landing() {
   return (
     <div className="min-h-screen">
       <header className="relative overflow-hidden">
-        <div className="absolute inset-0" style={{ background: "var(--gradient-sanctuary)" }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background" />
+        {/* Same as the wall hero: the pattern shows here too, and the
+            background fades out at the bottom instead of ending on a
+            solid band. */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "var(--gradient-aura), var(--gradient-sanctuary)",
+            backgroundSize: "var(--wall-pattern-size, auto), auto",
+            maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
+          }}
+        />
 
         <nav className="relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-6">
           <span className="font-serif text-xl tracking-tight">Fragments</span>

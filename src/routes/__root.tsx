@@ -103,7 +103,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     scripts: [
       {
         children:
-          "try{var ok=['dusk','pink-dream','midnight','vintage','lagoon','matcha','ember','forest','strawberry','peach','cloud','starry','custom'];var t=localStorage.getItem('fragments-theme');document.documentElement.setAttribute('data-theme',ok.indexOf(t)>=0?t:'dusk');if(t==='custom'){var v=JSON.parse(localStorage.getItem('fragments-custom-vars')||'null');if(v){for(var k in v)document.documentElement.style.setProperty(k,v[k])}}}catch(e){document.documentElement.setAttribute('data-theme','dusk')}",
+          "try{var ok=['dusk','pink-dream','midnight','vintage','lagoon','matcha','ember','forest','peach','cloud','starry','custom'];var t=localStorage.getItem('fragments-theme');document.documentElement.setAttribute('data-theme',ok.indexOf(t)>=0?t:'dusk');if(t==='custom'){var v=JSON.parse(localStorage.getItem('fragments-custom-vars')||'null');if(v){for(var k in v)document.documentElement.style.setProperty(k,v[k])}}}catch(e){document.documentElement.setAttribute('data-theme','dusk')}",
       },
     ],
     links: [

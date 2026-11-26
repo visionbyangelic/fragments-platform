@@ -393,7 +393,14 @@ export function QASection({ questions, isOwner, ownerName, editMode, wallUsernam
                 {/* Question card - glass style */}
                 <div className="glass rounded-3xl p-6 sm:p-7">
                   <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
-                    <span>Asked by {askerName(q)}</span>
+                    <span>
+                      Asked by {askerName(q)}
+                      {isOwner && q.sender_username && (
+                        <span className="ml-2 font-medium text-primary">
+                          · Signed in as @{q.sender_username}
+                        </span>
+                      )}
+                    </span>
                     {isOwner && (
                       <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
                         {q.is_published ? "Published" : "Draft"}
