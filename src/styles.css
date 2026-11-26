@@ -2080,12 +2080,14 @@
   body {
     background-color: var(--color-background);
     /* A wall's own wallpaper picture, when its owner set one, covers
-       the theme's background; otherwise the theme's own aura shows. */
-    background-image: var(--wallpaper-image, var(--gradient-aura));
+       the theme's background; otherwise the theme's own aura shows.
+       With a picture up, a dark scrim sits over it (see
+       wallpaper.ts) so the wall's text stays readable. */
+    background-image: var(--wallpaper-overlay, none), var(--wallpaper-image, var(--gradient-aura));
     /* Patterned themes (polka dots, stars) tile their aura by this
        size; every other theme leaves it at auto. A wallpaper always
        covers. */
-    background-size: var(--wallpaper-size, var(--wall-pattern-size, auto));
+    background-size: var(--wallpaper-size, var(--wall-pattern-size, auto)), var(--wallpaper-size, var(--wall-pattern-size, auto));
     background-attachment: fixed;
     color: var(--color-foreground);
     font-family: var(--font-sans);
@@ -2113,6 +2115,43 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+  }
+
+  /* Photo-safe text: while a wallpaper picture is the wall's
+     background, the words that sit bare on the picture go white
+     over the dark scrim, because a theme's ink colour was chosen
+     against its own background, not against somebody's photo.
+     Cards keep their own backgrounds, so the text inside them is
+     untouched. The gradient word in the hero title ("fragments")
+     goes solid white too — a colour gradient over a bright photo
+     was the least readable word on the wall. */
+  .has-wallpaper .text-gradient {
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: #fff;
+    color: #fff;
+  }
+  .has-wallpaper header {
+    color: #fff;
+  }
+  .has-wallpaper header .text-primary {
+    color: rgb(255 255 255 / 0.92);
+  }
+  .has-wallpaper header .text-foreground\/80 {
+    color: rgb(255 255 255 / 0.85);
+  }
+  .has-wallpaper header .text-muted-foreground {
+    color: rgb(255 255 255 / 0.7);
+  }
+  .has-wallpaper main .text-muted-foreground {
+    color: rgb(255 255 255 / 0.7);
+  }
+  .has-wallpaper footer {
+    color: rgb(255 255 255 / 0.7);
+  }
+  .has-wallpaper footer .text-foreground\/80 {
+    color: rgb(255 255 255 / 0.85);
   }
 
   /* Post-it Note / Letter styling for Q&A answers */

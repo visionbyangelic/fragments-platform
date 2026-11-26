@@ -19,6 +19,13 @@ export function isWallpaperUrl(url: string): boolean {
   );
 }
 
+/** The dark scrim that sits between a wallpaper picture and the
+    wall's text, so words stay readable no matter how bright the
+    picture is: darkest behind the hero title, lighter toward the
+    edges. ChatGPT's suggestion, applied as given. */
+const WALLPAPER_OVERLAY =
+  "linear-gradient(to bottom, rgba(20, 15, 25, 0.35), rgba(20, 15, 25, 0.55), rgba(20, 15, 25, 0.4))";
+
 /** Paints the wallpaper over the theme's background on this page.
     Pass null (or anything that is not one of our storage URLs) and
     the theme's own background comes back. */
@@ -31,6 +38,10 @@ export function applyWallpaperImage(url: string | null): void {
   }
   root.style.setProperty("--wallpaper-image", `url("${url}")`);
   root.style.setProperty("--wallpaper-size", "cover");
+  root.style.setProperty("--wallpaper-overlay", WALLPAPER_OVERLAY);
+  // The wall's bare text (hero, headings, footer) goes photo-safe
+  // white while a picture is behind it — see styles.css.
+  root.classList.add("has-wallpaper");
 }
 
 export function clearWallpaperImage(): void {
@@ -38,6 +49,8 @@ export function clearWallpaperImage(): void {
   const root = document.documentElement;
   root.style.removeProperty("--wallpaper-image");
   root.style.removeProperty("--wallpaper-size");
+  root.style.removeProperty("--wallpaper-overlay");
+  root.classList.remove("has-wallpaper");
 }
 
 async function loadImage(file: File): Promise<HTMLImageElement> {

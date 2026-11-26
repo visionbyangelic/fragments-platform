@@ -69,12 +69,13 @@ export function Hero({ displayName, username, isOwner, onBegin, themeControl, bi
           background fades out toward the bottom instead of ending
           on a solid band, so the pattern carries on down the page.
           A wallpaper picture, when the owner set one, takes the
-          pattern's place here as well as on the page behind it. */}
+          pattern's place here as well as on the page behind it, with
+          the dark scrim over it so the hero's words stay readable. */}
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: "var(--wallpaper-image, var(--gradient-aura)), var(--gradient-sanctuary)",
-          backgroundSize: "var(--wallpaper-size, var(--wall-pattern-size, auto)), auto",
+          backgroundImage: "var(--wallpaper-overlay, none), var(--wallpaper-image, var(--gradient-aura)), var(--gradient-sanctuary)",
+          backgroundSize: "var(--wallpaper-size, var(--wall-pattern-size, auto)), var(--wallpaper-size, var(--wall-pattern-size, auto)), auto",
           maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
           WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
         }}
