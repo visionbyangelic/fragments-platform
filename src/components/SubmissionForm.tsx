@@ -105,7 +105,7 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
             onChange={(e) => setName(e.target.value)}
             disabled={anonymous}
             placeholder={anonymous ? "Anonymous" : "Who is this from?"}
-            className="bg-white/60"
+            className="bg-background/70"
           />
           <div className="flex items-center gap-3 pt-1">
             <Switch id="anon" checked={anonymous} onCheckedChange={setAnonymous} />
@@ -136,7 +136,7 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
                 min={tomorrow}
                 value={sealDate}
                 onChange={(e) => setSealDate(e.target.value)}
-                className="bg-white/60"
+                className="bg-background/70"
               />
               <p className="text-xs text-muted-foreground">
                 Nobody can read it before that day, not even {ownerName}.
@@ -150,7 +150,7 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
             <div className="space-y-2">
               <Label>Color</Label>
               <Select value={color} onValueChange={setColor}>
-                <SelectTrigger className="bg-white/60">
+                <SelectTrigger className="bg-background/70">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -165,7 +165,7 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
             <div className="space-y-2">
               <Label>Shape</Label>
               <Select value={shape} onValueChange={setShape}>
-                <SelectTrigger className="bg-white/60">
+                <SelectTrigger className="bg-background/70">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,7 +198,7 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
               : "Share a memory, a wish, or a few kind words…"
           }
           rows={5}
-          className="bg-white/60 custom-scrollbar"
+          className="bg-background/70 custom-scrollbar"
           maxLength={maxLength}
         />
       </div>

@@ -139,7 +139,7 @@ function SignupPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="yourname"
-              className="bg-white/60"
+              className="bg-background/70"
               autoComplete="username"
             />
             <p className="text-xs text-muted-foreground">
@@ -158,7 +158,7 @@ function SignupPage() {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="How your wall greets people"
-              className="bg-white/60"
+              className="bg-background/70"
             />
           </div>
           <div className="space-y-2">
@@ -183,7 +183,7 @@ function SignupPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="bg-white/60"
+              className="bg-background/70"
               autoComplete="email"
             />
           </div>
@@ -196,7 +196,7 @@ function SignupPage() {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-white/60"
+              className="bg-background/70"
               autoComplete="new-password"
             />
           </div>

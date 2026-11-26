@@ -130,7 +130,7 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="yourname"
-              className="bg-white/60"
+              className="bg-background/70"
             />
             <p className="text-xs text-muted-foreground">
               {state === "checking" && "Checking…"}
@@ -146,7 +146,7 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="How your wall greets people"
-              className="bg-white/60"
+              className="bg-background/70"
             />
           </div>
           <div className="space-y-2">
@@ -406,7 +406,7 @@ function GatePage() {
             Everything left for you
           </h1>
           <div className="mx-auto mt-6 flex max-w-xl items-center gap-2">
-            <Input value={wallUrl} readOnly className="bg-white/60 text-center" />
+            <Input value={wallUrl} readOnly className="bg-background/70 text-center" />
             <Button onClick={copyLink} className="shrink-0 rounded-full">
               <Copy className="mr-2 h-4 w-4" /> Copy link
             </Button>
@@ -480,7 +480,7 @@ function GatePage() {
                 id="settings-name"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                className="bg-white/60"
+                className="bg-background/70"
               />
             </div>
             <div className="space-y-2">
@@ -500,7 +500,7 @@ function GatePage() {
                 placeholder="Tell me something you've never told anyone…"
                 rows={3}
                 maxLength={140}
-                className="bg-white/60"
+                className="bg-background/70"
               />
               <p className="text-xs text-muted-foreground">
                 This shows above the fragment form instead of the usual line.

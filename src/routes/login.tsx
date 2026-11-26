@@ -106,7 +106,7 @@ function LoginPage() {
               value={login}
               onChange={(e) => setLogin(e.target.value)}
               placeholder="you@example.com or yourname"
-              className="bg-white/60"
+              className="bg-background/70"
               autoComplete="username"
             />
             <p className="text-xs text-muted-foreground">
@@ -122,7 +122,7 @@ function LoginPage() {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="bg-white/60"
+              className="bg-background/70"
               autoComplete="current-password"
             />
           </div>
@@ -140,7 +140,7 @@ function LoginPage() {
               value={resetEmail}
               onChange={(e) => setResetEmail(e.target.value)}
               placeholder="you@example.com"
-              className="bg-white/60"
+              className="bg-background/70"
               autoComplete="email"
             />
             <Button

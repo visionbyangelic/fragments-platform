@@ -368,7 +368,7 @@ function Wall() {
             placeholder="What happened? (optional)"
             rows={4}
             maxLength={500}
-            className="bg-white/60"
+            className="bg-background/70"
           />
           <div className="flex justify-end gap-2">
             <Button variant="secondary" onClick={() => setReportOpen(false)} className="rounded-full">

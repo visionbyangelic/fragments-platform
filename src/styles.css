@@ -112,6 +112,7 @@
 
 /* ============ DUSK THEME ============ */
 [data-theme="dusk"] {
+  color-scheme: dark;
   --background: oklch(0.18 0.025 280);
   --foreground: oklch(0.92 0.02 300);
   --card: oklch(0.22 0.03 280);
@@ -173,6 +174,7 @@
 
 /* ============ PINK DREAM (explicit, mirrors :root so previews can scope it) ============ */
 [data-theme="pink-dream"] {
+  color-scheme: light;
   --background: oklch(0.985 0.012 330);
   --foreground: oklch(0.32 0.05 320);
   --card: oklch(0.995 0.006 330);
@@ -223,6 +225,7 @@
 
 /* ============ MIDNIGHT INK THEME ============ */
 [data-theme="midnight"] {
+  color-scheme: dark;
   --background: oklch(0.13 0.012 260);
   --foreground: oklch(0.9 0.008 250);
   --card: oklch(0.17 0.014 260);
@@ -273,6 +276,7 @@
 
 /* ============ VINTAGE LETTER THEME ============ */
 [data-theme="vintage"] {
+  color-scheme: light;
   --background: oklch(0.95 0.03 85);
   --foreground: oklch(0.3 0.045 55);
   --card: oklch(0.97 0.022 85);
@@ -323,6 +327,7 @@
 
 /* ============ LAGOON THEME ============ */
 [data-theme="lagoon"] {
+  color-scheme: dark;
   --background: oklch(0.19 0.035 200);
   --foreground: oklch(0.92 0.02 190);
   --card: oklch(0.23 0.04 200);
@@ -373,6 +378,7 @@
 
 /* ============ MATCHA GARDEN THEME ============ */
 [data-theme="matcha"] {
+  color-scheme: light;
   --background: oklch(0.96 0.025 130);
   --foreground: oklch(0.32 0.045 140);
   --card: oklch(0.985 0.015 130);

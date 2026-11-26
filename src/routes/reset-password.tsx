@@ -90,7 +90,7 @@ function ResetPasswordPage() {
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="bg-white/60"
+                className="bg-background/70"
                 autoComplete="new-password"
               />
             </div>

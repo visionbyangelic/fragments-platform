@@ -106,7 +106,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
                 onClick={toggleVisibility}
                 role="button"
                 tabIndex={0}
-                className="inline-flex items-center gap-1 rounded-full bg-white/50 px-3 py-1 text-xs font-medium backdrop-blur transition hover:bg-white/80"
+                className="inline-flex items-center gap-1 rounded-full bg-background/55 px-3 py-1 text-xs font-medium backdrop-blur transition hover:bg-background/75"
               >
                 {entry.is_visible ? (
                   <>
@@ -122,7 +122,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
                 onClick={toggleFavorite}
                 role="button"
                 tabIndex={0}
-                className="inline-flex items-center gap-1 rounded-full bg-white/50 px-3 py-1 text-xs font-medium backdrop-blur transition hover:bg-white/80"
+                className="inline-flex items-center gap-1 rounded-full bg-background/55 px-3 py-1 text-xs font-medium backdrop-blur transition hover:bg-background/75"
               >
                 <Star className="h-3 w-3" /> {entry.is_favorite ? "Unkeep" : "Keep"}
               </span>
@@ -130,7 +130,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
                 onClick={remove}
                 role="button"
                 tabIndex={0}
-                className="inline-flex items-center gap-1 rounded-full bg-white/50 px-3 py-1 text-xs font-medium text-destructive backdrop-blur transition hover:bg-white/80"
+                className="inline-flex items-center gap-1 rounded-full bg-background/55 px-3 py-1 text-xs font-medium text-destructive backdrop-blur transition hover:bg-background/75"
               >
                 <Trash2 className="h-3 w-3" /> Delete
               </span>
