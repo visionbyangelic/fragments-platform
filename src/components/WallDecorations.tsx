@@ -53,6 +53,21 @@ const MOTIFS: Record<Decoration, ReactNode> = {
       <circle cx="12" cy="11.5" r="2.6" />
     </g>
   ),
+  // A football: a ball with the pentagon cut out of it. One fill
+  // colour only, like every other motif — the pentagon is a hole
+  // (evenodd), so it reads at 30px.
+  football: (
+    <path
+      fillRule="evenodd"
+      d="M12 1.5a10.5 10.5 0 1 0 .01 0Z M12 7.8 16 10.7 14.47 15.4 9.53 15.4 8 10.7Z"
+    />
+  ),
+  // A dollar sign, set in type — the motif is the glyph itself.
+  dollar: (
+    <text x="12" y="17.5" textAnchor="middle" fontSize="19" fontWeight="700">
+      $
+    </text>
+  ),
 };
 
 // Motifs hug the edges so they never sit on the hero text or the

@@ -3,11 +3,14 @@
 // style, decorations), defined as CSS variables under
 // [data-theme="..."] in styles.css.
 //
-// The thirteen presets come from the wall-themes brief (26 Nov 2026):
-// every one is a different design — its own typography, background
-// treatment, card styling and decorations — not a recoloured copy of
-// the same page. Two of the earlier presets already matched the brief
-// and survived the rebuild: Matcha Garden and Cloud Nine.
+// The presets: thirteen from the wall-themes brief (26 Nov 2026),
+// Dreamy Pink Sky from her picture brief the same day, and nine more
+// for every kind of wall — including the Stitch design as one option
+// and two for the men she asked about (football, money). Every one
+// is a different design — its own typography, background treatment,
+// card styling and decorations — not a recoloured copy of the same
+// page. Two of the earlier presets already matched the brief and
+// survived the rebuild: Matcha Garden and Cloud Nine.
 export type ThemeCategory =
   | "Pastel"
   | "Kawaii"
@@ -17,6 +20,8 @@ export type ThemeCategory =
   | "Dark Academia"
   | "Dreamy"
   | "Y2K"
+  | "Dark"
+  | "Bold"
   | "Classic";
 
 export type ThemeFont = "cormorant" | "inter" | "baloo" | "caveat" | "vt323" | "great-vibes";
@@ -62,7 +67,9 @@ export type Decoration =
   | "sparkles"
   | "butterflies"
   | "bows"
-  | "daisies";
+  | "daisies"
+  | "football"
+  | "dollar";
 
 export const DECORATIONS: { name: Decoration; label: string }[] = [
   { name: "hearts", label: "Hearts" },
@@ -73,6 +80,8 @@ export const DECORATIONS: { name: Decoration; label: string }[] = [
   { name: "butterflies", label: "Butterflies" },
   { name: "bows", label: "Bows" },
   { name: "daisies", label: "Daisies" },
+  { name: "football", label: "Football" },
+  { name: "dollar", label: "Dollar sign" },
 ];
 
 export interface ThemeDef {
@@ -80,7 +89,7 @@ export interface ThemeDef {
   label: string;
   blurb: string;
   /** Gallery category. The nine retired presets sit under Classic,
-      below the new twelve, so nothing anyone loved is taken away. */
+      below the current presets, so nothing anyone loved is taken away. */
   category: ThemeCategory;
   font: ThemeFont;
   cardStyle: CardStyle;
@@ -247,6 +256,105 @@ export const THEMES: ThemeDef[] = [
     defaults: { bg: "#fceaf4", accent: "#d96fa5", secondary: "#f8e8fa", card: "#fffafd", ink: "#542747" },
     card: { bg: ["#fffafd", "#fceaf4", "#f8e8fa"], ink: "#542747", muted: "#956d89", accent: "#d96fa5", letter: "#fdeef5", letterInk: "#542747" },
   },
+  {
+    name: "sunset-blaze",
+    label: "Sunset Blaze",
+    blurb: "Golden hour, warm and bold",
+    category: "Pastel",
+    font: "cormorant",
+    cardStyle: "rounded",
+    decorations: ["clouds", "stars", "sparkles"],
+    defaults: { bg: "#fff1e6", accent: "#e85d3d", secondary: "#ffe3d0", card: "#fffbf5", ink: "#4a2318" },
+    card: { bg: ["#fff8f0", "#ffefe0", "#ffe9d6"], ink: "#4a2318", muted: "#9a6b52", accent: "#e85d3d", letter: "#fdebd7", letterInk: "#4a2318" },
+  },
+  {
+    name: "noir-gold",
+    label: "Noir Gold",
+    blurb: "Charcoal and gold, quietly luxurious",
+    category: "Dark",
+    font: "cormorant",
+    cardStyle: "minimal",
+    decorations: ["stars", "sparkles"],
+    defaults: { bg: "#1a1a1e", accent: "#d4af37", secondary: "#232329", card: "#26262c", ink: "#f5f1e8" },
+    card: { bg: ["#26262c", "#1e1e24", "#2e2e36"], ink: "#f5f1e8", muted: "#a8a29a", accent: "#d4af37", letter: "#efe6c8", letterInk: "#2a2118" },
+  },
+  {
+    name: "desert-dunes",
+    label: "Desert Dunes",
+    blurb: "Warm sand, terracotta, open sky",
+    category: "Nature",
+    font: "caveat",
+    cardStyle: "paper",
+    decorations: ["flowers", "sparkles"],
+    defaults: { bg: "#f7efe3", accent: "#b4552d", secondary: "#f1e3ce", card: "#fdf8ef", ink: "#3d2c1e" },
+    card: { bg: ["#faf3e6", "#f5e9d3", "#fbf6ea"], ink: "#3d2c1e", muted: "#8a7260", accent: "#b4552d", letter: "#f7ead0", letterInk: "#3d2c1e" },
+  },
+  {
+    name: "mint-cloud",
+    label: "Mint Cloud",
+    blurb: "Fresh mint, soft and clean",
+    category: "Pastel",
+    font: "baloo",
+    cardStyle: "floating",
+    decorations: ["daisies", "butterflies", "sparkles"],
+    defaults: { bg: "#eaf7f0", accent: "#2e9e6b", secondary: "#ddf2e6", card: "#f7fcf9", ink: "#1f3d2e" },
+    card: { bg: ["#f2faf5", "#e6f5ec", "#f7fcf9"], ink: "#1f3d2e", muted: "#6b8a7a", accent: "#2e9e6b", letter: "#eff7e8", letterInk: "#1f3d2e" },
+  },
+  {
+    name: "rosewood",
+    label: "Rosewood",
+    blurb: "Deep wine, soft romance",
+    category: "Romantic",
+    font: "cormorant",
+    cardStyle: "rounded",
+    decorations: ["flowers", "hearts", "sparkles"],
+    defaults: { bg: "#f9ecec", accent: "#9b2c3a", secondary: "#f5dfdf", card: "#fdfaf8", ink: "#3d1f24" },
+    card: { bg: ["#fdf6f4", "#f9e9e6", "#fdefec"], ink: "#3d1f24", muted: "#96686e", accent: "#9b2c3a", letter: "#f9e8e0", letterInk: "#3d1f24" },
+  },
+  {
+    name: "arctic",
+    label: "Arctic",
+    blurb: "Ice blue, crisp and calm",
+    category: "Minimalist",
+    font: "inter",
+    cardStyle: "minimal",
+    decorations: ["clouds", "stars", "sparkles"],
+    defaults: { bg: "#edf4f8", accent: "#3a7ca5", secondary: "#e0edf3", card: "#ffffff", ink: "#1e2f3d" },
+    card: { bg: ["#f4f9fb", "#e8f2f7", "#f8fbfd"], ink: "#1e2f3d", muted: "#6b8598", accent: "#3a7ca5", letter: "#eaf2f7", letterInk: "#1e2f3d" },
+  },
+  {
+    name: "dreamy-rose",
+    label: "Dreamy Rose",
+    blurb: "Soft rose, deep plum, quiet romance",
+    category: "Dreamy",
+    font: "cormorant",
+    cardStyle: "rounded",
+    decorations: ["clouds", "stars", "sparkles", "flowers", "butterflies"],
+    defaults: { bg: "#fff7fa", accent: "#92415b", secondary: "#fbe9f0", card: "#fff7fa", ink: "#2b122d" },
+    card: { bg: ["#fff7fa", "#fbe9f0", "#f6dde8"], ink: "#2b122d", muted: "#8a5a6e", accent: "#92415b", letter: "#fdeef5", letterInk: "#2b122d" },
+  },
+  {
+    name: "match-day",
+    label: "Match Day",
+    blurb: "Pitch green, match-night energy",
+    category: "Bold",
+    font: "inter",
+    cardStyle: "rounded",
+    decorations: ["football", "stars", "sparkles"],
+    defaults: { bg: "#eaf5ec", accent: "#1b7a3d", secondary: "#d8eddc", card: "#f7fcf8", ink: "#12291a" },
+    card: { bg: ["#f2faf5", "#e6f5ec", "#f7fcf9"], ink: "#12291a", muted: "#5e7a66", accent: "#1b7a3d", letter: "#eff7e8", letterInk: "#12291a" },
+  },
+  {
+    name: "money-moves",
+    label: "Money Moves",
+    blurb: "Money green and gold, big plans",
+    category: "Bold",
+    font: "inter",
+    cardStyle: "rounded",
+    decorations: ["dollar", "stars", "sparkles"],
+    defaults: { bg: "#edf7ee", accent: "#1e7a34", secondary: "#dff0e2", card: "#f8fcf8", ink: "#14261a" },
+    card: { bg: ["#f2faf5", "#e6f5ec", "#f7fcf9"], ink: "#14261a", muted: "#5e7a66", accent: "#1e7a34", letter: "#f3f0d8", letterInk: "#14261a" },
+  },
 ];
 
 export const THEME_CATEGORIES: ThemeCategory[] = [
@@ -258,12 +366,14 @@ export const THEME_CATEGORIES: ThemeCategory[] = [
   "Dark Academia",
   "Kawaii",
   "Minimalist",
+  "Dark",
+  "Bold",
   "Classic",
 ];
 
 // The nine retired presets (26 Nov 2026). They were never removed —
 // the trial only hid them — and now they sit in the gallery under
-// Classic, below the new twelve, so a wall that loved one keeps it.
+// Classic, below the current presets, so a wall that loved one keeps it.
 // Matcha and Cloud Nine are not listed here: they survived the
 // rebuild as new themes with the same names and the same CSS, so a
 // wall on either resolves through THEMES and looks identical.
@@ -374,7 +484,7 @@ export function themeDef(name: string): ThemeDef | undefined {
 }
 
 // A new wall is born in a random theme — there is no fixed default.
-// The pool is the current gallery (the 13 themes), not
+// The pool is the current gallery (the 23 themes), not
 // the Classics, so every new wall starts on something designed.
 export function randomThemeName(): ThemeName {
   return THEMES[Math.floor(Math.random() * THEMES.length)].name;
