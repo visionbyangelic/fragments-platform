@@ -981,8 +981,10 @@ function GatePage() {
             <div className="space-y-3">
               <Label>Find me elsewhere</Label>
               <p className="text-xs text-muted-foreground">
-                Just your username works — type it alone and the link is made
-                for you. A full link works too. Anything that does not match
+                For most, just your username works — type it alone and the
+                link is made for you. Spotify and LinkedIn need your full
+                profile link, so paste that in instead. Your website takes
+                a link or just your domain. Anything that does not match
                 is left out.
               </p>
               {SOCIAL_PLATFORMS.map((p) => (
@@ -994,7 +996,7 @@ function GatePage() {
                     id={`social-${p.platform}`}
                     value={socialDraft[p.platform] ?? ""}
                     onChange={(e) => setSocialDraft({ ...socialDraft, [p.platform]: e.target.value })}
-                    placeholder={p.usernameUrl ? "yourname" : `https://${p.hosts ? p.hosts[0] : "your site"}`}
+                    placeholder={p.placeholder}
                     className="bg-background/70"
                   />
                 </div>

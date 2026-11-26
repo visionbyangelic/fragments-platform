@@ -1,9 +1,12 @@
 // Social links: links only, never uploads — a photo upload would
-// eat the free storage tier, a link costs nothing. A bare username
-// works too: type just your handle and the link is built for you
-// (instagram.com/you, tiktok.com/@you, and so on). Every url is
-// checked before it is shown: https only, and the host must belong
-// to the platform it claims to be.
+// eat the free storage tier, a link costs nothing. Most platforms
+// take just a username: type your handle and the link is built for
+// you (instagram.com/you, tiktok.com/@you, and so on). Two do not:
+// Spotify profiles live under an opaque user id, not a handle, and
+// almost nobody knows their LinkedIn /in/ slug by heart — those two
+// need the full profile link pasted in. Every url is checked before
+// it is shown: https only, and the host must belong to the platform
+// it claims to be.
 
 export type SocialPlatform =
   | "instagram"
@@ -26,18 +29,22 @@ export const SOCIAL_PLATFORMS: {
       means the platform takes full links only (a bare username
       has nowhere to go). */
   usernameUrl: ((u: string) => string) | null;
+  /** What the field shows before anything is typed: "yourname"
+      where a username works, a paste-your-link prompt where a
+      full link is needed. */
+  placeholder: string;
 }[] = [
-  { platform: "instagram", label: "Instagram", hosts: ["instagram.com", "www.instagram.com"], usernameUrl: (u) => `https://instagram.com/${u}` },
-  { platform: "tiktok", label: "TikTok", hosts: ["tiktok.com", "www.tiktok.com"], usernameUrl: (u) => `https://tiktok.com/@${u}` },
-  { platform: "x", label: "X", hosts: ["x.com", "twitter.com", "www.x.com", "www.twitter.com"], usernameUrl: (u) => `https://x.com/${u}` },
-  { platform: "facebook", label: "Facebook", hosts: ["facebook.com", "www.facebook.com", "fb.com", "www.fb.com"], usernameUrl: (u) => `https://facebook.com/${u}` },
-  { platform: "snapchat", label: "Snapchat", hosts: ["snapchat.com", "www.snapchat.com"], usernameUrl: (u) => `https://snapchat.com/add/${u}` },
-  { platform: "youtube", label: "YouTube", hosts: ["youtube.com", "www.youtube.com", "youtu.be"], usernameUrl: (u) => `https://youtube.com/@${u}` },
-  { platform: "pinterest", label: "Pinterest", hosts: ["pinterest.com", "www.pinterest.com"], usernameUrl: (u) => `https://pinterest.com/${u}` },
-  { platform: "linkedin", label: "LinkedIn", hosts: ["linkedin.com", "www.linkedin.com"], usernameUrl: (u) => `https://linkedin.com/in/${u}` },
-  { platform: "spotify", label: "Spotify", hosts: ["open.spotify.com", "spotify.com"], usernameUrl: (u) => `https://open.spotify.com/user/${u}` },
-  { platform: "twitch", label: "Twitch", hosts: ["twitch.tv", "www.twitch.tv"], usernameUrl: (u) => `https://twitch.tv/${u}` },
-  { platform: "website", label: "Website", hosts: null, usernameUrl: null },
+  { platform: "instagram", label: "Instagram", hosts: ["instagram.com", "www.instagram.com"], usernameUrl: (u) => `https://instagram.com/${u}`, placeholder: "yourname" },
+  { platform: "tiktok", label: "TikTok", hosts: ["tiktok.com", "www.tiktok.com"], usernameUrl: (u) => `https://tiktok.com/@${u}`, placeholder: "yourname" },
+  { platform: "x", label: "X", hosts: ["x.com", "twitter.com", "www.x.com", "www.twitter.com"], usernameUrl: (u) => `https://x.com/${u}`, placeholder: "yourname" },
+  { platform: "facebook", label: "Facebook", hosts: ["facebook.com", "www.facebook.com", "fb.com", "www.fb.com"], usernameUrl: (u) => `https://facebook.com/${u}`, placeholder: "yourname" },
+  { platform: "snapchat", label: "Snapchat", hosts: ["snapchat.com", "www.snapchat.com"], usernameUrl: (u) => `https://snapchat.com/add/${u}`, placeholder: "yourname" },
+  { platform: "youtube", label: "YouTube", hosts: ["youtube.com", "www.youtube.com", "youtu.be"], usernameUrl: (u) => `https://youtube.com/@${u}`, placeholder: "yourname" },
+  { platform: "pinterest", label: "Pinterest", hosts: ["pinterest.com", "www.pinterest.com"], usernameUrl: (u) => `https://pinterest.com/${u}`, placeholder: "yourname" },
+  { platform: "linkedin", label: "LinkedIn", hosts: ["linkedin.com", "www.linkedin.com"], usernameUrl: null, placeholder: "paste your profile link" },
+  { platform: "spotify", label: "Spotify", hosts: ["open.spotify.com", "spotify.com"], usernameUrl: null, placeholder: "paste your profile link" },
+  { platform: "twitch", label: "Twitch", hosts: ["twitch.tv", "www.twitch.tv"], usernameUrl: (u) => `https://twitch.tv/${u}`, placeholder: "yourname" },
+  { platform: "website", label: "Website", hosts: null, usernameUrl: null, placeholder: "https://your site" },
 ];
 
 export type SocialLink = { platform: SocialPlatform; url: string };
