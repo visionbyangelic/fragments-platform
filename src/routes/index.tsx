@@ -113,56 +113,76 @@ function Landing() {
     <div className="fragments-home min-h-screen">
       <style>{`
         .fragments-home {
-          --background: #F5F6F1;
-          --foreground: #203A3A;
-          --card: #FFFFFF;
-          --card-foreground: #203A3A;
-          --primary: #286B67;
-          --primary-foreground: #FFFFFF;
-          --accent: #B9854F;
-          --secondary: #E5ECE7;
-          --secondary-foreground: #284B48;
-          --muted: #EDEFEB;
-          --muted-foreground: #667674;
-          --border: #DCE4DE;
-          --ring: #286B67;
-          --glass-bg: rgba(255, 255, 255, 0.76);
-          --glass-border: rgba(44, 87, 81, 0.14);
-          --gradient-sanctuary: linear-gradient(145deg, #F7F6F0 0%, #EAF1EC 54%, #F0EEE6 100%);
-          --gradient-aura: radial-gradient(circle at 82% 12%, rgba(185, 133, 79, 0.16), transparent 34%), radial-gradient(circle at 12% 38%, rgba(40, 107, 103, 0.15), transparent 38%);
-          --shadow-soft: 0 18px 50px -28px rgba(32, 58, 58, 0.28);
-          --shadow-glow: 0 8px 24px rgba(40, 107, 103, 0.22);
-          color: var(--foreground);
-          background: var(--background);
+          background: #ffffff !important;
+          color: #172b2b !important;
+          --background: #ffffff;
+          --foreground: #172b2b;
+          --card: #ffffff;
+          --card-foreground: #172b2b;
+          --primary: #286b67;
+          --primary-foreground: #ffffff;
+          --accent: #286b67;
+          --secondary: #edf3f1;
+          --secondary-foreground: #244b47;
+          --muted: #f4f6f5;
+          --muted-foreground: #596b69;
+          --border: #dce5e2;
+          --ring: #286b67;
+          --color-background: #ffffff;
+          --color-foreground: #172b2b;
+          --color-card: #ffffff;
+          --color-card-foreground: #172b2b;
+          --color-primary: #286b67;
+          --color-primary-foreground: #ffffff;
+          --color-secondary: #edf3f1;
+          --color-secondary-foreground: #244b47;
+          --color-muted: #f4f6f5;
+          --color-muted-foreground: #596b69;
+          --color-border: #dce5e2;
+          --gradient-sanctuary: none;
+          --gradient-aura: none;
+          --glass-bg: #ffffff;
+          --glass-border: #dce5e2;
+          --shadow-soft: 0 8px 28px rgba(20, 45, 43, 0.06);
+          --shadow-glow: 0 6px 16px rgba(40, 107, 103, 0.14);
         }
+        .fragments-home header { background: #ffffff !important; }
+        .fragments-home header > div:first-child { display: none !important; }
         .fragments-home .glass {
-          border-color: var(--glass-border);
-          background: var(--glass-bg);
-          backdrop-filter: blur(16px) saturate(115%);
+          background: #ffffff !important;
+          border: 1px solid #e1e8e5 !important;
+          box-shadow: 0 8px 28px rgba(20, 45, 43, 0.06) !important;
+          backdrop-filter: none !important;
         }
         .fragments-home .text-gradient {
-          background: linear-gradient(115deg, #286B67 0%, #4D796B 62%, #B9854F 100%);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
+          background: none !important;
+          color: #286b67 !important;
+          -webkit-text-fill-color: #286b67 !important;
         }
-        .fragments-home a:focus-visible {
-          outline: 3px solid rgba(40, 107, 103, 0.5);
-          outline-offset: 3px;
-        }
+        .fragments-home .landing-hero-copy { color: #4b5d5b !important; }
+        .fragments-home .text-muted-foreground { color: #596b69 !important; }
+        .fragments-home .text-foreground\/80,
+        .fragments-home .text-foreground\/75 { color: #4b5d5b !important; }
+        .fragments-home .bg-primary { background: #286b67 !important; color: #ffffff !important; }
+        .fragments-home .text-primary { color: #286b67 !important; }
+        .fragments-home .border-border { border-color: #dce5e2 !important; }
+        .fragments-home .bg-card\/40,
+        .fragments-home .bg-card\/60 { background: #ffffff !important; }
+        .fragments-home a:focus-visible { outline: 3px solid rgba(40, 107, 103, 0.45); outline-offset: 3px; }
+        .fragments-home .landing-hero-actions a { min-height: 48px; }
         @media (max-width: 640px) {
-          .fragments-home .landing-nav { padding-left: 1rem; padding-right: 1rem; }
+          .fragments-home .landing-nav { padding: 1.1rem 1rem; }
           .fragments-home .landing-nav > div { gap: 0.5rem; }
-          .fragments-home .landing-nav a { padding-left: 0.75rem; padding-right: 0.75rem; font-size: 0.75rem; white-space: nowrap; }
+          .fragments-home .landing-nav a { padding: 0.65rem 0.75rem; font-size: 0.75rem; white-space: nowrap; }
           .fragments-home .landing-nav > span { font-size: 1.1rem; }
           .fragments-home .landing-hero { padding: 1.5rem 1rem 2.5rem; gap: 2rem; }
           .fragments-home .landing-hero h1 { font-size: clamp(2.35rem, 10.5vw, 3.25rem); line-height: 1.08; letter-spacing: -0.035em; }
           .fragments-home .landing-hero-copy { font-size: 1rem; line-height: 1.65; }
           .fragments-home .landing-hero-actions { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
-          .fragments-home .landing-hero-actions a { width: 100%; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; }
+          .fragments-home .landing-hero-actions a { width: 100%; display: flex; align-items: center; justify-content: center; }
           .fragments-home .landing-main { padding: 2.75rem 1rem 3rem; }
           .fragments-home .landing-feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; margin-top: 2rem; }
-          .fragments-home .landing-feature-grid > div { padding: 1rem; border-radius: 1.25rem; }
+          .fragments-home .landing-feature-grid > div { padding: 1rem; border-radius: 1rem; }
           .fragments-home .landing-feature-grid h3 { font-size: 1.05rem; }
           .fragments-home .landing-feature-grid p { font-size: 0.82rem; line-height: 1.5; }
           .fragments-home .landing-steps { gap: 0.75rem; margin-top: 2rem; }
@@ -172,17 +192,7 @@ function Landing() {
           .fragments-home .landing-feature-grid { grid-template-columns: 1fr; }
         }
       `}</style>
-      <header className="relative overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: "var(--gradient-aura), var(--gradient-sanctuary)",
-            backgroundSize: "var(--wall-pattern-size, auto), auto",
-            maskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 100%)",
-          }}
-        />
-
+      <header className="relative overflow-hidden bg-white">
         <nav className="landing-nav relative z-10 mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-6">
           <span className="font-serif text-xl tracking-tight">Fragments</span>
           <div className="flex items-center gap-2">
