@@ -11,9 +11,16 @@ export type Entry = {
   is_private: boolean;
   is_favorite: boolean;
   reveal_date: string | null;
-  /** The sender's wall username when they were signed in and not
-      anonymous. Only ever shown to the wall's owner. */
+  /** The sender's wall username when they were signed in. Only ever
+      shown to the wall's owner, and only when sender_hidden is false. */
   sender_username: string | null;
+  /** True when the sender left it anonymously: the name is recorded
+      for a possible future reveal, but the owner cannot see it now. */
+  sender_hidden: boolean;
+  /** A stable id for the browser it came from (localStorage), so
+      fragments from the same browser can be linked even when the
+      sender was not logged in. Never a name on its own. */
+  sender_visitor_id: string | null;
   created_at: string;
 };
 
@@ -43,12 +50,11 @@ export const FRAGMENT_COLORS = [
   { value: "sky", label: "Sky", token: "--frag-sky" },
   { value: "mint", label: "Mint", token: "--frag-mint" },
   { value: "peach", label: "Peach", token: "--frag-peach" },
-] as const;
-
-export const FRAGMENT_SHAPES = [
-  { value: "rounded", label: "Rounded" },
-  { value: "cloud", label: "Cloud" },
-  { value: "square", label: "Square" },
+  // Theme-derived, not fixed tints: they are mixed from the wall's
+  // own palette at runtime, so they can never clash with the theme.
+  { value: "accent", label: "Accent", token: "--frag-accent" },
+  { value: "muted", label: "Muted", token: "--frag-muted" },
+  { value: "plain", label: "Plain", token: "--card" },
 ] as const;
 
 export function colorStyle(color: string): React.CSSProperties {
@@ -59,18 +65,11 @@ export function colorStyle(color: string): React.CSSProperties {
   };
 }
 
-export function shapeClass(shape: string): string {
-  switch (shape) {
-    case "square":
-      return "rounded-md";
-    case "cloud":
-      return "rounded-[2.5rem]";
-    default:
-      // The wall's card radius: the theme's own corner, or the card
-      // style the owner picked in the editor.
-      return "rounded-[var(--card-radius)]";
-  }
-}
+// The wall owns the corners now: every fragment card uses the wall's
+// own radius (the theme's, or the card style the owner picked). The
+// sender's old shape choice is gone from the form, and stored shapes
+// no longer change how a card looks — a cloud corner on a Polaroid
+// wall was the bug. The shape column stays in the database, unread.
 
 export async function fetchEntries(profileId: string): Promise<Entry[]> {
   const { data, error } = await sb
@@ -97,11 +96,16 @@ export async function submitEntry(input: {
   name: string | null;
   message: string;
   color: string;
-  shape: string;
   reveal_date?: string | null;
   /** The sender's own wall username. Only the caller ever passes
-      their own — the database refuses anyone else's. */
+      their own — the database refuses anyone else's. Recorded even
+      when the sender chose anonymous (see sender_hidden). */
   sender_username?: string | null;
+  /** True when the sender left it anonymously: the name is stored
+      but the owner cannot see it. */
+  sender_hidden?: boolean;
+  /** The browser's visitor id, if one could be made. */
+  sender_visitor_id?: string | null;
 }): Promise<string> {
   const { data, error } = await sb
     .from("entries")
@@ -110,11 +114,12 @@ export async function submitEntry(input: {
       name: input.name,
       message: input.message,
       color: input.color,
-      shape: input.shape,
       is_private: false,
       is_visible: true,
       reveal_date: input.reveal_date ?? null,
       sender_username: input.sender_username ?? null,
+      sender_hidden: input.sender_hidden ?? false,
+      sender_visitor_id: input.sender_visitor_id ?? null,
     })
     .select("id")
     .single();

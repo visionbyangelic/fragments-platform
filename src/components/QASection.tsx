@@ -395,7 +395,7 @@ export function QASection({ questions, isOwner, ownerName, editMode, wallUsernam
                   <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-muted-foreground">
                     <span>
                       Asked by {askerName(q)}
-                      {isOwner && q.sender_username && (
+                      {isOwner && q.sender_username && !q.is_anonymous && (
                         <span className="ml-2 font-medium text-primary">
                           · Signed in as @{q.sender_username}
                         </span>

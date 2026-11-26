@@ -11,7 +11,7 @@ import { fetchRandomEntry, type Entry } from "@/lib/entries";
 import { fetchRandomQuestion, type Question } from "@/lib/questions";
 import { Sparkles, MessageCircleQuestionMark as MessageCircleQuestion, RefreshCw, X } from "lucide-react";
 import { toast } from "sonner";
-import { colorStyle, shapeClass } from "@/lib/entries";
+import { colorStyle } from "@/lib/entries";
 
 interface Props {
   open: boolean;
@@ -99,7 +99,7 @@ export function SerendipityModal({ open, onOpenChange, profileId, ownerName }: P
               <div className="mt-6 animate-unfold">
                 {item.type === "fragment" ? (
                   <div
-                    className={`p-6 sm:p-8 max-h-[50vh] overflow-y-auto custom-scrollbar ${shapeClass(item.data.shape)}`}
+                    className={`p-6 sm:p-8 max-h-[50vh] overflow-y-auto custom-scrollbar rounded-[var(--card-radius)]`}
                     style={colorStyle(item.data.color)}
                   >
                     <p className="font-serif text-xl sm:text-2xl leading-relaxed whitespace-pre-wrap break-words">{item.data.message}</p>

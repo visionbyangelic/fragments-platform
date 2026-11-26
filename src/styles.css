@@ -93,6 +93,11 @@
   --frag-peach: oklch(0.3 0.06 40);
   --frag-lilac: oklch(0.3 0.08 300);
   --frag-foreground: oklch(0.92 0.02 290);
+  /* Theme-derived fragment tints, defined once here: they mix the
+     wall's own palette at runtime, so every theme inherits them and
+     they can never clash with it. */
+  --frag-accent: color-mix(in oklch, var(--primary) 24%, var(--card));
+  --frag-muted: color-mix(in oklch, var(--secondary) 65%, var(--card));
 
   /* Letter/Post-it note colors for answers */
   --letter-cream: oklch(0.85 0.03 70);

@@ -9,9 +9,13 @@ export type Question = {
   is_anonymous: boolean;
   is_published: boolean;
   answered_at: string | null;
-  /** The sender's wall username when they were signed in and not
-      anonymous. Only ever shown to the wall's owner. */
+  /** The sender's wall username when they were signed in. Only ever
+      shown to the wall's owner, and only when is_anonymous is false. */
   sender_username: string | null;
+  /** A stable id for the browser it came from (localStorage), so
+      questions from the same browser can be linked even when the
+      sender was not logged in. Never a name on its own. */
+  sender_visitor_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -38,8 +42,12 @@ export async function submitQuestion(input: {
   question: string;
   is_anonymous: boolean;
   /** The sender's own wall username. Only the caller ever passes
-      their own — the database refuses anyone else's. */
+      their own — the database refuses anyone else's. Recorded even
+      when is_anonymous is true; the owner only sees it when it is
+      false, so the name is banked for a possible future reveal. */
   sender_username?: string | null;
+  /** The browser's visitor id, if one could be made. */
+  sender_visitor_id?: string | null;
 }): Promise<string> {
   const cleanQuestion = input.question.trim();
   if (cleanQuestion.length < 3 || cleanQuestion.length > 800) {
@@ -56,7 +64,8 @@ export async function submitQuestion(input: {
       is_published: false,
       answer: null,
       answered_at: null,
-      sender_username: input.is_anonymous ? null : (input.sender_username ?? null),
+      sender_username: input.sender_username ?? null,
+      sender_visitor_id: input.sender_visitor_id ?? null,
     })
     .select("id")
     .single();

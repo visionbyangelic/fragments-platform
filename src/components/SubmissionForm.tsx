@@ -4,19 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  FRAGMENT_COLORS,
-  FRAGMENT_SHAPES,
-  submitEntry,
-} from "@/lib/entries";
+import { FRAGMENT_COLORS, submitEntry } from "@/lib/entries";
 import { submitQuestion } from "@/lib/questions";
+import { getVisitorId } from "@/lib/visitor";
 import { notifyWallOwner } from "@/lib/notify";
 import { useSession } from "@/hooks/use-session";
 import { toast } from "sonner";
@@ -35,16 +25,19 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
   const [sealed, setSealed] = useState(false);
   const [sealDate, setSealDate] = useState("");
   const [color, setColor] = useState<string>(FRAGMENT_COLORS[0].value);
-  const [shape, setShape] = useState<string>(FRAGMENT_SHAPES[0].value);
   const [submitting, setSubmitting] = useState(false);
 
   const maxLength = asQuestion ? 800 : 3000;
   const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
-  // Signed in and not hiding: the fragment carries the sender's own
-  // wall username, so the wall's owner can see who it came from.
-  // Nobody else ever sees it, and anonymous means anonymous — the
-  // toggle off stores no sender at all.
+  // Who sent it, for the record — not for display. A logged-in
+  // sender's username is always stored, even with the anonymous
+  // toggle on, and the browser's visitor id is stored with every
+  // fragment and question. The wall's owner sees the name only when
+  // the sender did not hide: the toggle hides it from the owner for
+  // now, and the stored name is banked in case revealing senders
+  // ever becomes a paid feature. Anonymous still looks anonymous.
+  const recordedSender = myProfile ? myProfile.username : null;
   const senderUsername =
     !anonymous && myProfile ? myProfile.username : null;
 
@@ -71,7 +64,8 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
           name: anonymous ? null : name.trim() || null,
           question: clean,
           is_anonymous: anonymous,
-          sender_username: senderUsername,
+          sender_username: recordedSender,
+          sender_visitor_id: getVisitorId(),
         });
         notifyWallOwner("question", questionId);
         toast.success(`Question sent for ${ownerName} to answer ✨`);
@@ -81,9 +75,10 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
           name: anonymous ? null : name.trim() || null,
           message: clean,
           color,
-          shape,
           reveal_date: sealed ? new Date(`${sealDate}T00:00:00`).toISOString() : null,
-          sender_username: senderUsername,
+          sender_username: recordedSender,
+          sender_hidden: anonymous,
+          sender_visitor_id: getVisitorId(),
         });
         notifyWallOwner("fragment", entryId);
         toast.success(
@@ -163,37 +158,31 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
         </div>
 
         {!asQuestion && (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Color</Label>
-              <Select value={color} onValueChange={setColor}>
-                <SelectTrigger className="bg-background/70">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {FRAGMENT_COLORS.map((c) => (
-                    <SelectItem key={c.value} value={c.value}>
-                      {c.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          <div className="space-y-2">
+            <Label>Color</Label>
+            <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Fragment color">
+              {FRAGMENT_COLORS.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={color === c.value}
+                  aria-label={c.label}
+                  title={c.label}
+                  onClick={() => setColor(c.value)}
+                  className={`h-9 w-9 rounded-full transition ${
+                    color === c.value
+                      ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                      : "ring-1 ring-border hover:scale-110"
+                  }`}
+                  style={{ background: `var(${c.token})` }}
+                />
+              ))}
             </div>
-            <div className="space-y-2">
-              <Label>Shape</Label>
-              <Select value={shape} onValueChange={setShape}>
-                <SelectTrigger className="bg-background/70">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {FRAGMENT_SHAPES.map((s) => (
-                    <SelectItem key={s.value} value={s.value}>
-                      {s.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <p className="text-xs text-muted-foreground">
+              The dots are this wall's own colors — pick the one your
+              fragment wears.
+            </p>
           </div>
         )}
       </div>

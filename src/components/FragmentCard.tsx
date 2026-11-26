@@ -3,7 +3,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   type Entry,
   colorStyle,
-  shapeClass,
   setEntryVisibility,
   setEntryFavorite,
   deleteEntry,
@@ -78,9 +77,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
         <button
           onClick={() => setOpen(true)}
           style={colorStyle(entry.color)}
-          className={`frag-card group relative block w-full p-6 text-left shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-glow)] ${shapeClass(
-            entry.shape,
-          )} ${hidden ? "opacity-50" : ""}`}
+          className={`frag-card group relative block w-full rounded-[var(--card-radius)] p-6 text-left shadow-[var(--shadow-soft)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-glow)] ${hidden ? "opacity-50" : ""}`}
         >
           {entry.is_private && (
             <Lock className="mb-2 h-4 w-4 opacity-60" aria-hidden />
@@ -99,7 +96,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
               </span>
             )}
           </div>
-          {isOwner && entry.sender_username && (
+          {isOwner && entry.sender_username && !entry.sender_hidden && (
             <p className="mt-1 text-xs font-medium opacity-70">
               Signed in as @{entry.sender_username}
             </p>
@@ -147,9 +144,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="glass border-none p-0 sm:max-w-2xl overflow-hidden">
           <div
-            className={`frag-card animate-unfold p-6 sm:p-10 max-h-[80vh] overflow-y-auto custom-scrollbar ${shapeClass(
-              entry.shape,
-            )}`}
+            className={`frag-card animate-unfold rounded-[var(--card-radius)] p-6 sm:p-10 max-h-[80vh] overflow-y-auto custom-scrollbar`}
             style={colorStyle(entry.color)}
           >
             <DialogHeader>
@@ -158,7 +153,7 @@ export function FragmentCard({ entry, index, isOwner, editMode }: Props) {
             </DialogHeader>
             <p className="font-serif text-xl sm:text-2xl leading-relaxed whitespace-pre-wrap break-words">{entry.message}</p>
             <p className="mt-6 text-base italic opacity-70">— {displayName}</p>
-            {isOwner && entry.sender_username && (
+            {isOwner && entry.sender_username && !entry.sender_hidden && (
               <p className="mt-1 text-sm font-medium opacity-70">
                 Signed in as @{entry.sender_username}
               </p>
