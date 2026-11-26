@@ -285,40 +285,49 @@ async function renderFragmentCanvas(
   ctx.fillText(`${input.displayName}'s wall`, PAD, y);
   y += 84;
 
-  // The fragment
+  // The fragment. Short fragments get big type and a centred block:
+  // the words are the poster, so they grow to fill the card and sit
+  // in the middle of it instead of floating at the top with dead
+  // space underneath. Long fragments shrink the same way they always
+  // did, down to the same floor, and fill the card as before.
   ctx.fillStyle = pal.accent;
   ctx.font = `600 26px ${SANS}`;
   ctx.fillText("A FRAGMENT", PAD, y);
   y += 26;
 
   const footerTop = H - 210;
-  let fSize = 60;
+  const contentTop = y;
+  const availH = footerTop - contentTop;
+  let fSize = 110;
   let fLines: string[] = [];
+  let blockH = 0;
   for (;;) {
     ctx.font = `500 ${fSize}px ${SERIF}`;
     fLines = wrapLines(ctx, input.message, innerW);
-    const totalH = fLines.length * fSize * 1.22 + 90;
-    if (y + totalH <= footerTop || fSize <= 30) break;
+    blockH = fLines.length * fSize * 1.22 + 100;
+    if (blockH <= availH || fSize <= 30) break;
     fSize -= 4;
   }
   // Still too long at the smallest readable size: keep what fits and
   // end with an ellipsis, the way the wall itself clamps long notes.
   const lineH = fSize * 1.22;
-  const maxLines = Math.max(1, Math.floor((footerTop - y - 90) / lineH));
+  const maxLines = Math.max(1, Math.floor((availH - 100) / lineH));
   if (fLines.length > maxLines) {
     fLines = fLines.slice(0, maxLines);
     fLines[maxLines - 1] = `${fLines[maxLines - 1].replace(/\s+\S*$/, "")}…`;
+    blockH = fLines.length * lineH + 100;
   }
+  let ty = contentTop + (availH - blockH) / 2;
   ctx.font = `500 ${fSize}px ${SERIF}`;
   ctx.fillStyle = pal.ink;
   for (const line of fLines) {
-    y += lineH;
-    ctx.fillText(line, PAD, y);
+    ty += lineH;
+    ctx.fillText(line, PAD, ty);
   }
   ctx.font = `italic 600 36px ${SERIF}`;
   ctx.fillStyle = pal.ink;
   ctx.globalAlpha = 0.75;
-  ctx.fillText(`— ${input.author}`, PAD, y + 62);
+  ctx.fillText(`— ${input.author}`, PAD, ty + 62);
   ctx.globalAlpha = 1;
 
   // Footer: the wall link, the whole point of the card
