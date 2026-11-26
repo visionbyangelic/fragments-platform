@@ -53,14 +53,14 @@ const MOTIFS: Record<Decoration, ReactNode> = {
       <circle cx="12" cy="11.5" r="2.6" />
     </g>
   ),
-  // A football: a ball with the pentagon cut out of it. One fill
-  // colour only, like every other motif — the pentagon is a hole
-  // (evenodd), so it reads at 30px.
+  // A football: a ball drawn as an outline with a solid pentagon
+  // in the middle — the pentagon alone, cut out of a filled ball,
+  // only read as a ring at 30px.
   football: (
-    <path
-      fillRule="evenodd"
-      d="M12 1.5a10.5 10.5 0 1 0 .01 0Z M12 7.8 16 10.7 14.47 15.4 9.53 15.4 8 10.7Z"
-    />
+    <g>
+      <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M12 7.8 16 10.7 14.47 15.4 9.53 15.4 8 10.7Z" />
+    </g>
   ),
   // A dollar sign, set in type — the motif is the glyph itself.
   dollar: (

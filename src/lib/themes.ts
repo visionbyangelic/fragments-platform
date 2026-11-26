@@ -341,8 +341,8 @@ export const THEMES: ThemeDef[] = [
     font: "inter",
     cardStyle: "rounded",
     decorations: ["football", "stars", "sparkles"],
-    defaults: { bg: "#eaf5ec", accent: "#1b7a3d", secondary: "#d8eddc", card: "#f7fcf8", ink: "#12291a" },
-    card: { bg: ["#f2faf5", "#e6f5ec", "#f7fcf9"], ink: "#12291a", muted: "#5e7a66", accent: "#1b7a3d", letter: "#eff7e8", letterInk: "#12291a" },
+    defaults: { bg: "#cfead3", accent: "#1b7a3d", secondary: "#bfe3c8", card: "#f4faf4", ink: "#0f2a18" },
+    card: { bg: ["#eef8f0", "#dff0e2", "#f4faf4"], ink: "#0f2a18", muted: "#4e6b57", accent: "#1b7a3d", letter: "#eff7e8", letterInk: "#0f2a18" },
   },
   {
     name: "money-moves",
@@ -352,8 +352,8 @@ export const THEMES: ThemeDef[] = [
     font: "inter",
     cardStyle: "rounded",
     decorations: ["dollar", "stars", "sparkles"],
-    defaults: { bg: "#edf7ee", accent: "#1e7a34", secondary: "#dff0e2", card: "#f8fcf8", ink: "#14261a" },
-    card: { bg: ["#f2faf5", "#e6f5ec", "#f7fcf9"], ink: "#14261a", muted: "#5e7a66", accent: "#1e7a34", letter: "#f3f0d8", letterInk: "#14261a" },
+    defaults: { bg: "#dceedb", accent: "#1e7a34", secondary: "#c9e6c6", card: "#f4faf3", ink: "#122a18" },
+    card: { bg: ["#eef8f0", "#dff0e2", "#f4faf3"], ink: "#122a18", muted: "#4e6b57", accent: "#1e7a34", letter: "#f3f0d8", letterInk: "#122a18" },
   },
 ];
 
