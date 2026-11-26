@@ -167,23 +167,21 @@ function Landing() {
           </div>
         </nav>
 
-        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-10 sm:pt-16 lg:grid-cols-2 lg:pb-28">
+        <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-6 pb-14 pt-8 sm:pt-16 lg:grid-cols-2 lg:pb-28">
           <div className="text-center lg:text-left">
             <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-xs font-medium tracking-wide text-muted-foreground backdrop-blur">
               <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
               A wall that's yours
             </p>
-            <h1 className="mt-6 font-serif text-5xl leading-tight sm:text-6xl">
-              Your corner of the internet, where people leave{" "}
-              <span className="text-gradient">a little something</span>{" "}
-              behind
+            <h1 className="mt-6 font-serif text-4xl leading-tight sm:text-6xl lg:text-7xl">
+              Your corner of the{" "}
+              <span className="text-gradient">internet</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-foreground/80 lg:mx-0">
-              Fragments is a wall of your own. Claim a link, share it
-              anywhere, and the people who pass through your life leave you
-              kind words, memories, questions, votes in your poll and notes
-              sealed for later. Signed or anonymous — you read everything,
-              answer what you want, and keep what you love.
+            <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-foreground/80 sm:text-lg lg:mx-0">
+              Claim a link, share it anywhere, and the people who pass
+              through your life leave you kind words, memories and
+              questions. Signed or anonymous — you read everything, and
+              keep what you love.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-3 lg:justify-start">
               <Link
@@ -216,14 +214,14 @@ function Landing() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-20">
+      <main className="mx-auto max-w-6xl px-6 py-14 sm:py-20">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="font-serif text-4xl leading-tight">
+          <h2 className="font-serif text-3xl leading-tight sm:text-4xl">
             One wall,{" "}
             <span className="text-gradient">everything people want</span>{" "}
             to leave you
           </h2>
-          <p className="mt-4 text-lg text-foreground/75">
+          <p className="mt-4 text-base text-foreground/75 sm:text-lg">
             A fragment is only the start. Your wall holds the whole
             conversation with the people who pass through.
           </p>
@@ -300,9 +298,9 @@ function Landing() {
           </div>
         </div>
 
-        <div className="mt-20">
+        <div className="mt-14 sm:mt-20">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="font-serif text-4xl leading-tight">
+            <h2 className="font-serif text-3xl leading-tight sm:text-4xl">
               Up in <span className="text-gradient">three steps</span>
             </h2>
           </div>
@@ -335,11 +333,11 @@ function Landing() {
           </div>
         </div>
 
-        <div className="mx-auto mt-20 max-w-3xl text-center">
-          <h2 className="font-serif text-4xl leading-tight">
+        <div className="mx-auto mt-14 max-w-3xl text-center sm:mt-20">
+          <h2 className="font-serif text-3xl leading-tight sm:text-4xl">
             Your wall is <span className="text-gradient">waiting</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-foreground/75">
+          <p className="mx-auto mt-4 max-w-xl text-base text-foreground/75 sm:text-lg">
             Someone out there has something kind to tell you. Give them a
             place to leave it.
           </p>
