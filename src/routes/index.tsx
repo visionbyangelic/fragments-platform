@@ -149,22 +149,12 @@ function Landing() {
         <p className="font-serif text-base text-foreground/80">Fragments</p>
         <p className="mt-1">Made with care by Angelic Charles</p>
         <div className="mt-4 flex flex-wrap justify-center gap-3">
-          <a
-            href="https://x.com/visionbyangelic"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/angelic"
             className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1.5 text-xs font-medium backdrop-blur transition hover:bg-card/70"
           >
-            X
-          </a>
-          <a
-            href="https://angelic.pxxlspace.cv"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1.5 text-xs font-medium backdrop-blur transition hover:bg-card/70"
-          >
-            Portfolio
-          </a>
+            Angelic's wall
+          </Link>
         </div>
       </footer>
     </div>
