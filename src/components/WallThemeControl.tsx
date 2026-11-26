@@ -212,7 +212,7 @@ export function WallThemeControl({ profile, onSaved, onPreviewDecorations }: Pro
       savedOverrides,
     );
     onPreviewDecorations(null);
-    applyWallpaperImage(profile.wallpaper_url ?? null);
+    applyWallpaperImage(profile.wallpaper_url ?? null, profile.wallpaper_text_color ?? null);
     setPicked(savedTheme);
     setOpen(false);
   }
@@ -242,7 +242,7 @@ export function WallThemeControl({ profile, onSaved, onPreviewDecorations }: Pro
       });
       // The theme changed; the wallpaper is a separate setting and
       // stays on the wall.
-      applyWallpaperImage(profile.wallpaper_url ?? null);
+      applyWallpaperImage(profile.wallpaper_url ?? null, profile.wallpaper_text_color ?? null);
       toast.success("Your wall's new look is saved");
       refreshProfile(session);
       onPreviewDecorations(null);

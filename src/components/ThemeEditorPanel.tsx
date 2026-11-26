@@ -6,7 +6,7 @@ import { CUSTOM_THEME_NAME, isThemeName, themeDef, type ThemeName } from "@/lib/
 import { DEFAULT_CUSTOM_THEME, parseCustomTheme, type CustomTheme } from "@/lib/custom-theme";
 import { parseThemeOverrides, type ThemeOverrides } from "@/lib/theme-overrides";
 import { updateProfile, type Profile } from "@/lib/platform";
-import { deleteWallpaperByUrl, uploadWallpaper } from "@/lib/wallpaper";
+import { deleteWallpaperByUrl, uploadWallpaper, WALLPAPER_TEXT_COLORS } from "@/lib/wallpaper";
 import { ThemePicker } from "@/components/ThemePicker";
 import { ThemeEditor } from "@/components/ThemeEditor";
 import { Button } from "@/components/ui/button";
@@ -94,6 +94,27 @@ export function ThemeEditorPanel({ profile, onSaved, onPreviewDecorations }: Pro
       setWallpaperError("Could not remove the wallpaper — try again.");
     } finally {
       setWallpaperBusy(false);
+    }
+  }
+
+  // The colour of the words over the wallpaper picture. It saves
+  // the moment it is picked, like the picture itself — and only
+  // light colours are offered, because a dark colour would vanish
+  // into the darkened picture.
+  const [textColorBusy, setTextColorBusy] = useState(false);
+  async function handleWallpaperTextColor(value: string) {
+    if (textColorBusy) return;
+    const current = profile.wallpaper_text_color ?? WALLPAPER_TEXT_COLORS[0].value;
+    if (current.toLowerCase() === value.toLowerCase()) return;
+    setTextColorBusy(true);
+    try {
+      await updateProfile(profile.id, { wallpaper_text_color: value });
+      refreshProfile(session);
+      onSaved?.();
+    } catch {
+      setWallpaperError("Could not save that colour — try again.");
+    } finally {
+      setTextColorBusy(false);
     }
   }
 
@@ -249,6 +270,42 @@ export function ThemeEditorPanel({ profile, onSaved, onPreviewDecorations }: Pro
         {wallpaperError ? (
           <p className="text-xs text-destructive">{wallpaperError}</p>
         ) : null}
+        {profile.wallpaper_url ? (
+          <div>
+            <p className="text-xs font-medium">Words over your picture</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {WALLPAPER_TEXT_COLORS.map((c) => {
+                const selected =
+                  (profile.wallpaper_text_color ?? WALLPAPER_TEXT_COLORS[0].value).toLowerCase() ===
+                  c.value.toLowerCase();
+                return (
+                  <button
+                    key={c.name}
+                    type="button"
+                    onClick={() => handleWallpaperTextColor(c.value)}
+                    disabled={textColorBusy}
+                    aria-label={c.label}
+                    aria-pressed={selected}
+                    title={c.label}
+                    className={`h-8 w-8 rounded-full border transition ${
+                      selected
+                        ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                        : "border-border hover:scale-110"
+                    }`}
+                    style={{ background: c.value }}
+                  />
+                );
+              })}
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Only light colours — dark words would vanish into the picture.
+            </p>
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Add a picture first — then pick the colour of the words over it.
+          </p>
+        )}
         <p className="text-xs text-muted-foreground">
           Pictures are shrunk to fit before upload, so the wall still
           loads fast for visitors.

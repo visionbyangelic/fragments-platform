@@ -2225,27 +2225,27 @@
   background: none;
   -webkit-background-clip: border-box;
   background-clip: border-box;
-  -webkit-text-fill-color: #fff;
-  color: #fff;
+  -webkit-text-fill-color: var(--wallpaper-text, #fff);
+  color: var(--wallpaper-text, #fff);
 }
 .has-wallpaper header {
-  color: #fff;
+  color: var(--wallpaper-text, #fff);
 }
 .has-wallpaper header .text-primary {
-  color: rgb(255 255 255 / 0.92);
+  color: color-mix(in srgb, var(--wallpaper-text, #fff) 92%, transparent);
 }
 .has-wallpaper header .text-foreground\/80 {
-  color: rgb(255 255 255 / 0.85);
+  color: color-mix(in srgb, var(--wallpaper-text, #fff) 85%, transparent);
 }
 .has-wallpaper header .text-muted-foreground {
-  color: rgb(255 255 255 / 0.7);
+  color: color-mix(in srgb, var(--wallpaper-text, #fff) 70%, transparent);
 }
 .has-wallpaper main .text-muted-foreground {
-  color: rgb(255 255 255 / 0.7);
+  color: color-mix(in srgb, var(--wallpaper-text, #fff) 70%, transparent);
 }
 .has-wallpaper footer {
-  color: rgb(255 255 255 / 0.7);
+  color: color-mix(in srgb, var(--wallpaper-text, #fff) 70%, transparent);
 }
 .has-wallpaper footer .text-foreground\/80 {
-  color: rgb(255 255 255 / 0.85);
+  color: color-mix(in srgb, var(--wallpaper-text, #fff) 85%, transparent);
 }

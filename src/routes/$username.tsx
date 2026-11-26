@@ -178,13 +178,16 @@ function Wall() {
   }, [profile, setTheme]);
 
   // A wall with a wallpaper picture wears the picture instead of the
-  // theme's background. The effect cleans up when the wall unmounts,
-  // so the picture never leaks onto the next page.
+  // theme's background, and the words over it wear the owner's
+  // picked text colour (white when nothing was picked). The effect
+  // cleans up when the wall unmounts, so the picture never leaks
+  // onto the next page.
   const wallpaperUrl = profile?.wallpaper_url ?? null;
+  const wallpaperTextColor = profile?.wallpaper_text_color ?? null;
   useEffect(() => {
-    applyWallpaperImage(wallpaperUrl);
+    applyWallpaperImage(wallpaperUrl, wallpaperTextColor);
     return () => clearWallpaperImage();
-  }, [wallpaperUrl]);
+  }, [wallpaperUrl, wallpaperTextColor]);
 
   if (profileLoading) {
     return <div className="flex min-h-screen items-center justify-center">Loading...</div>;

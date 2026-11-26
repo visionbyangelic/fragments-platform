@@ -26,10 +26,36 @@ export function isWallpaperUrl(url: string): boolean {
 const WALLPAPER_OVERLAY =
   "linear-gradient(to bottom, rgba(20, 15, 25, 0.35), rgba(20, 15, 25, 0.55), rgba(20, 15, 25, 0.4))";
 
+/** The words over a wallpaper picture can only ever be light: a
+    dark colour would vanish into the darkened picture. Six light
+    choices, white first — the default when nothing is picked. */
+export const WALLPAPER_TEXT_COLORS = [
+  { name: "white", label: "White", value: "#ffffff" },
+  { name: "cream", label: "Cream", value: "#fff3d6" },
+  { name: "gold", label: "Soft gold", value: "#efd9a0" },
+  { name: "blush", label: "Blush", value: "#fbdce8" },
+  { name: "lavender", label: "Pale lavender", value: "#e3d9f8" },
+  { name: "sky", label: "Pale sky", value: "#d6e9f8" },
+] as const;
+
+export type WallpaperTextColor = (typeof WALLPAPER_TEXT_COLORS)[number]["value"];
+
+/** Only our own six light colours ever become wallpaper text. */
+export function isWallpaperTextColor(value: unknown): value is WallpaperTextColor {
+  return (
+    typeof value === "string" &&
+    (WALLPAPER_TEXT_COLORS as readonly { value: string }[]).some(
+      (c) => c.value.toLowerCase() === value.toLowerCase(),
+    )
+  );
+}
+
 /** Paints the wallpaper over the theme's background on this page.
     Pass null (or anything that is not one of our storage URLs) and
-    the theme's own background comes back. */
-export function applyWallpaperImage(url: string | null): void {
+    the theme's own background comes back. The text colour rides
+    along: the words over the picture wear it, white when nothing
+    was picked. */
+export function applyWallpaperImage(url: string | null, textColor?: string | null): void {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
   if (!url || !isWallpaperUrl(url)) {
@@ -39,6 +65,11 @@ export function applyWallpaperImage(url: string | null): void {
   root.style.setProperty("--wallpaper-image", `url("${url}")`);
   root.style.setProperty("--wallpaper-size", "cover");
   root.style.setProperty("--wallpaper-overlay", WALLPAPER_OVERLAY);
+  if (isWallpaperTextColor(textColor)) {
+    root.style.setProperty("--wallpaper-text", textColor);
+  } else {
+    root.style.removeProperty("--wallpaper-text");
+  }
   // The wall's bare text (hero, headings, footer) goes photo-safe
   // white while a picture is behind it — see styles.css.
   root.classList.add("has-wallpaper");
@@ -50,6 +81,7 @@ export function clearWallpaperImage(): void {
   root.style.removeProperty("--wallpaper-image");
   root.style.removeProperty("--wallpaper-size");
   root.style.removeProperty("--wallpaper-overlay");
+  root.style.removeProperty("--wallpaper-text");
   root.classList.remove("has-wallpaper");
 }
 
