@@ -1,9 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "@/hooks/use-session";
-import { fetchProfileByUsername } from "@/lib/platform";
-import { fetchEntries } from "@/lib/entries";
-import { FragmentCard } from "@/components/FragmentCard";
 import {
   BarChart3,
   Heart,
@@ -30,67 +26,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Landing,
 });
-
-// The hero preview is the example wall itself, live: Angelic's real
-// fragments, rendered with the wall's own FragmentCard, newest first,
-// public ones only — the same filter the wall uses. Nothing here is
-// invented; while it loads, or if it fails, the panel shows the
-// wall's name and a link to the real thing instead of made-up words.
-function WallPreview() {
-  const { data: profile } = useQuery({
-    queryKey: ["landing-preview-profile"],
-    queryFn: () => fetchProfileByUsername("angelic"),
-  });
-  const { data: entries } = useQuery({
-    queryKey: ["landing-preview-entries", profile?.id],
-    queryFn: () => fetchEntries(profile!.id),
-    enabled: !!profile?.id,
-  });
-  const shown = (entries ?? [])
-    .filter((e) => !e.is_private && e.is_visible)
-    .slice(0, 3);
-
-  return (
-    <div className="relative mx-auto w-full max-w-md">
-      <div className="glass rounded-4xl p-6 shadow-[var(--shadow-soft)] sm:p-7">
-        <Link
-          to="/$username"
-          params={{ username: "angelic" }}
-          className="mt-4 inline-block rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
-        >
-          Leave a fragment +
-        </Link>
-
-        <p className="mt-7 text-[11px] font-medium tracking-[0.18em] text-muted-foreground">
-          GUESTBOOK
-        </p>
-        <div className="mt-3">
-          {shown.map((entry, i) => (
-            <FragmentCard
-              key={entry.id}
-              entry={entry}
-              index={i}
-              isOwner={false}
-            />
-          ))}
-          {shown.length === 0 && (
-            <p className="py-4 text-sm text-muted-foreground">
-              The wall is loading — or waiting for its first fragment.
-            </p>
-          )}
-        </div>
-
-        <Link
-          to="/$username"
-          params={{ username: "angelic" }}
-          className="mt-2 inline-block text-sm font-medium text-primary transition hover:opacity-80"
-        >
-          See the full wall →
-        </Link>
-      </div>
-    </div>
-  );
-}
 
 // The front door. It wears the normal site theme, like every other
 // page that is not a wall — I tried giving it its own bright pink
@@ -235,7 +170,7 @@ function Landing() {
           </div>
         </nav>
 
-        <div className="landing-hero relative z-10 mx-auto grid max-w-6xl items-center gap-10 px-6 pb-14 pt-8 sm:pt-16 lg:grid-cols-2 lg:pb-28">
+        <div className="landing-hero relative z-10 mx-auto grid max-w-3xl items-center gap-10 px-6 pb-14 pt-8 sm:pt-16 lg:pb-28">
           <div className="landing-hero-content text-center lg:text-left">
             <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card/60 px-4 py-1.5 text-xs font-medium tracking-wide text-muted-foreground backdrop-blur">
               <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden />
@@ -278,7 +213,7 @@ function Landing() {
               showed a wall that does not exist. Nothing here is made
               up: while it loads, or if it fails, the panel shows the
               wall's name and a link to the real thing instead. */}
-          <WallPreview />
+
         </div>
       </header>
 
