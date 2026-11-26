@@ -36,10 +36,10 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
   // fragment and question. The wall's owner sees the name only when
   // the sender did not hide: the toggle hides it from the owner for
   // now, and the stored name is banked in case revealing senders
-  // ever becomes a paid feature. Anonymous still looks anonymous.
+  // ever becomes a paid feature. Anonymous still looks anonymous —
+  // and nothing in the form tells a sender the owner can see who
+  // they are: that stays unsaid until it ever becomes a feature.
   const recordedSender = myProfile ? myProfile.username : null;
-  const senderUsername =
-    !anonymous && myProfile ? myProfile.username : null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -119,12 +119,6 @@ export function SubmissionForm({ profileId, ownerName }: Props) {
               Leave anonymously
             </Label>
           </div>
-          {senderUsername && (
-            <p className="pt-1 text-xs text-muted-foreground">
-              Signed in as @{senderUsername} — {ownerName} will see it came
-              from you.
-            </p>
-          )}
           <div className="flex items-center gap-3 pt-1">
             <Switch id="as-question" checked={asQuestion} onCheckedChange={setAsQuestion} />
             <Label htmlFor="as-question" className="text-sm text-muted-foreground">
