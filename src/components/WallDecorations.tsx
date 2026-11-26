@@ -59,7 +59,7 @@ const MOTIFS: Record<Decoration, ReactNode> = {
   football: (
     <g>
       <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M12 7.8 16 10.7 14.47 15.4 9.53 15.4 8 10.7Z" />
+      <path d="M12 7 16.76 10.45 14.94 16.05 9.06 16.05 7.24 10.45Z" />
     </g>
   ),
   // A dollar sign, set in type — the motif is the glyph itself.
