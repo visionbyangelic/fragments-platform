@@ -174,6 +174,65 @@
 }
 
 
+/* ============ COQUETTE THEME ============ */
+/* The pretty pink wall from the mockup: bows, blush, script headings,
+   soft pink-to-lavender light, sparkles tiled across the wall. */
+[data-theme="coquette"] {
+  color-scheme: light;
+  --radius: 2rem;
+  --card-radius: var(--radius);
+  --font-serif: "Great Vibes", "Cormorant Garamond", cursive;
+  --wall-pattern-size: 140px 140px, auto;
+  --background: oklch(0.95 0.035 350);
+  --foreground: oklch(0.3 0.07 350);
+  --card: oklch(0.99 0.012 350);
+  --card-foreground: oklch(0.3 0.07 350);
+  --popover: oklch(0.99 0.012 350);
+  --popover-foreground: oklch(0.3 0.07 350);
+  --primary: oklch(0.58 0.14 350);
+  --primary-foreground: oklch(0.99 0.005 350);
+  --secondary: oklch(0.93 0.04 350);
+  --secondary-foreground: oklch(0.36 0.07 350);
+  --muted: oklch(0.94 0.03 350);
+  --muted-foreground: oklch(0.55 0.05 350);
+  --accent: oklch(0.74 0.11 345);
+  --accent-foreground: oklch(0.3 0.07 350);
+  --destructive: oklch(0.62 0.2 18);
+  --destructive-foreground: oklch(0.99 0.005 340);
+  --border: oklch(0.89 0.04 350);
+  --input: oklch(0.93 0.03 350);
+  --ring: oklch(0.58 0.14 350);
+  --sidebar: oklch(0.95 0.035 350);
+  --sidebar-foreground: oklch(0.3 0.07 350);
+  --sidebar-primary: oklch(0.58 0.14 350);
+  --sidebar-primary-foreground: oklch(0.99 0.005 350);
+  --sidebar-accent: oklch(0.93 0.04 350);
+  --sidebar-accent-foreground: oklch(0.36 0.07 350);
+  --sidebar-border: oklch(0.89 0.04 350);
+  --sidebar-ring: oklch(0.58 0.14 350);
+  --frag-blush: oklch(0.93 0.06 350);
+  --frag-lavender: oklch(0.93 0.05 320);
+  --frag-sky: oklch(0.93 0.04 300);
+  --frag-mint: oklch(0.93 0.04 160);
+  --frag-peach: oklch(0.94 0.06 45);
+  --frag-lilac: oklch(0.93 0.06 310);
+  --frag-foreground: oklch(0.3 0.06 350);
+  --letter-cream: oklch(0.97 0.025 80);
+  --letter-aged: oklch(0.93 0.04 75);
+  --letter-pink: oklch(0.95 0.06 350);
+  --letter-blue: oklch(0.94 0.04 220);
+  --letter-foreground: oklch(0.28 0.04 60);
+  --gradient-sanctuary: linear-gradient(135deg, oklch(0.96 0.04 350), oklch(0.94 0.05 320) 50%, oklch(0.93 0.04 300));
+  --gradient-aura: radial-gradient(circle, oklch(0.76 0.12 350 / 0.45) 2.5px, transparent 3.5px),
+    radial-gradient(circle at 70% 30%, oklch(0.9 0.08 320 / 0.55), transparent 55%),
+    radial-gradient(circle at 20% 80%, oklch(0.88 0.09 350 / 0.5), transparent 50%);
+  --glass-bg: oklch(1 0 0 / 0.45);
+  --glass-border: oklch(1 0 0 / 0.6);
+  --shadow-soft: 0 20px 50px -20px oklch(0.58 0.12 350 / 0.45);
+  --shadow-glow: 0 0 44px -8px oklch(0.76 0.12 350 / 0.5);
+}
+
+
 /* ============ CLOUD NINE THEME ============ */
 /* Soft sky with drifting clouds. The clouds are big soft blobs,
    placed once across the viewport, not tiled. */

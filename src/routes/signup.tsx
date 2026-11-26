@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
+  isReservedUsername,
   isUsernameAvailable,
   normalizeUsername,
   USERNAME_RE,
@@ -36,7 +37,7 @@ function SignupPage() {
   const [displayName, setDisplayName] = useState("");
   const [themeChoice, setThemeChoice] = useState<ThemeName>("dusk");
   const { setTheme } = useTheme();
-  const [usernameState, setUsernameState] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
+  const [usernameState, setUsernameState] = useState<"idle" | "checking" | "ok" | "taken" | "invalid" | "reserved">("idle");
   const [busy, setBusy] = useState(false);
   const [confirmSent, setConfirmSent] = useState(false);
 
@@ -48,6 +49,10 @@ function SignupPage() {
     }
     if (!USERNAME_RE.test(name)) {
       setUsernameState("invalid");
+      return;
+    }
+    if (isReservedUsername(name)) {
+      setUsernameState("reserved");
       return;
     }
     setUsernameState("checking");
@@ -70,6 +75,10 @@ function SignupPage() {
     }
     if (usernameState === "taken") {
       toast.error("That username is taken");
+      return;
+    }
+    if (usernameState === "reserved") {
+      toast.error("That name belongs to Fragments — pick another one");
       return;
     }
     setBusy(true);
@@ -150,6 +159,7 @@ function SignupPage() {
               {usernameState === "checking" && "Checking…"}
               {usernameState === "ok" && `Your link will be /${normalizeUsername(username)}`}
               {usernameState === "taken" && "That username is taken."}
+              {usernameState === "reserved" && "That name belongs to Fragments — pick another one."}
               {usernameState === "invalid" &&
                 "3 to 20 characters: small letters, numbers, underscores."}
               {usernameState === "idle" && "This becomes your link and your wall's name."}

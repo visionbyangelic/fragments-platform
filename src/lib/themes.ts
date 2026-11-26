@@ -19,7 +19,7 @@ export type ThemeCategory =
   | "Y2K"
   | "Classic";
 
-export type ThemeFont = "cormorant" | "inter" | "baloo" | "caveat" | "vt323";
+export type ThemeFont = "cormorant" | "inter" | "baloo" | "caveat" | "vt323" | "great-vibes";
 
 /** The heading/display font of a theme. The body font stays Inter. */
 export const THEME_FONT_STACKS: Record<ThemeFont, string> = {
@@ -28,6 +28,7 @@ export const THEME_FONT_STACKS: Record<ThemeFont, string> = {
   baloo: '"Baloo 2", "Cormorant Garamond", ui-serif, Georgia, serif',
   caveat: '"Caveat", "Cormorant Garamond", cursive',
   vt323: '"VT323", "Courier New", monospace',
+  "great-vibes": '"Great Vibes", "Cormorant Garamond", cursive',
 };
 
 export const THEME_FONTS: { name: ThemeFont; label: string }[] = [
@@ -36,6 +37,7 @@ export const THEME_FONTS: { name: ThemeFont; label: string }[] = [
   { name: "baloo", label: "Playful rounded" },
   { name: "caveat", label: "Handwritten" },
   { name: "vt323", label: "Pixel retro" },
+  { name: "great-vibes", label: "Romantic script" },
 ];
 
 /** How a wall's message cards are shaped and finished. */
@@ -101,6 +103,17 @@ export const THEMES: ThemeDef[] = [
     decorations: ["flowers"],
     defaults: { bg: "#f8e9ee", accent: "#d65a7e", secondary: "#f6dfe7", card: "#fdf3f5", ink: "#5c2a3d" },
     card: { bg: ["#fdf0f3", "#fbe4ea", "#f9dfe8"], ink: "#5a2a3a", muted: "#a86a80", accent: "#e0708f", letter: "#fbf3df", letterInk: "#3d2c22" },
+  },
+  {
+    name: "coquette",
+    label: "Coquette",
+    blurb: "Bows, blush and script — the pretty pink wall",
+    category: "Romantic",
+    font: "great-vibes",
+    cardStyle: "rounded",
+    decorations: ["bows", "hearts", "sparkles", "flowers"],
+    defaults: { bg: "#fbeef3", accent: "#cf6f92", secondary: "#f6dde8", card: "#fff8fa", ink: "#4d2a3c" },
+    card: { bg: ["#fff6f9", "#fdeef3", "#fce4ec"], ink: "#4d2a3c", muted: "#b0708a", accent: "#d67b9c", letter: "#fdf6e3", letterInk: "#3d2c22" },
   },
   {
     name: "cloud",

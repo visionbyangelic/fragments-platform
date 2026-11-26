@@ -29,9 +29,22 @@ export type Profile = {
 
 export const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
 
-// Names that would collide with routes or platform functions.
+// Names that would collide with routes or platform functions, look
+// like they belong to the site, or impersonate a well-known platform.
+// A username is one word, 3 to 20 characters (USERNAME_RE), so "less
+// than 3" means characters, not words.
 export const RESERVED_USERNAMES = new Set([
+  "owner",
   "admin",
+  "administrator",
+  "moderator",
+  "mod",
+  "staff",
+  "root",
+  "webmaster",
+  "contact",
+  "info",
+  "system",
   "support",
   "fragments",
   "login",
@@ -41,6 +54,7 @@ export const RESERVED_USERNAMES = new Set([
   "gate",
   "heavenly-gate",
   "api",
+  "app",
   "www",
   "mail",
   "help",
@@ -51,9 +65,35 @@ export const RESERVED_USERNAMES = new Set([
   "platform",
   "official",
   "team",
+  "beta",
+  "test",
   "null",
   "undefined",
+  // Popular platforms: nobody registers as one of them.
+  "facebook",
+  "instagram",
+  "twitter",
+  "tiktok",
+  "youtube",
+  "snapchat",
+  "whatsapp",
+  "telegram",
+  "linkedin",
+  "pinterest",
+  "spotify",
+  "twitch",
+  "discord",
+  "reddit",
+  "threads",
+  "meta",
+  "google",
+  "apple",
+  "netflix",
 ]);
+
+export function isReservedUsername(raw: string): boolean {
+  return RESERVED_USERNAMES.has(normalizeUsername(raw));
+}
 
 export function normalizeUsername(raw: string): string {
   return raw.trim().toLowerCase();

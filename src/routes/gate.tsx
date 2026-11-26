@@ -6,6 +6,7 @@ import {
   createProfile,
   fetchAllProfiles,
   fetchReports,
+  isReservedUsername,
   isUsernameAvailable,
   normalizeUsername,
   updateProfile,
@@ -86,13 +87,14 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
       return DEFAULT_CUSTOM_THEME;
     }
   })();
-  const [state, setState] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
+  const [state, setState] = useState<"idle" | "checking" | "ok" | "taken" | "invalid" | "reserved">("idle");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     const name = normalizeUsername(username);
     if (!name) return setState("idle");
     if (!USERNAME_RE.test(name)) return setState("invalid");
+    if (isReservedUsername(name)) return setState("reserved");
     setState("checking");
     const t = setTimeout(async () => {
       try {
@@ -109,6 +111,10 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
     const name = normalizeUsername(username);
     if (!USERNAME_RE.test(name)) {
       toast.error("Pick a username with 3 to 20 letters, numbers or underscores");
+      return;
+    }
+    if (isReservedUsername(name)) {
+      toast.error("That name belongs to Fragments — pick another one");
       return;
     }
     setBusy(true);
@@ -156,6 +162,7 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
               {state === "checking" && "Checking…"}
               {state === "ok" && `Your link will be /${normalizeUsername(username)}`}
               {state === "taken" && "That username is taken."}
+              {state === "reserved" && "That name belongs to Fragments — pick another one."}
               {state === "invalid" && "3 to 20 characters: small letters, numbers, underscores."}
             </p>
           </div>
@@ -180,7 +187,7 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
               customTheme={pendingCustomTheme}
             />
           </div>
-          <Button type="submit" disabled={busy || state === "taken"} className="w-full rounded-full">
+          <Button type="submit" disabled={busy || state === "taken" || state === "reserved"} className="w-full rounded-full">
             {busy ? "Please wait…" : "Open my wall"}
           </Button>
         </form>
