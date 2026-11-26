@@ -150,7 +150,8 @@ function Landing() {
         <p className="mt-1">Made with care by Angelic Charles</p>
         <div className="mt-4 flex flex-wrap justify-center gap-3">
           <Link
-            to="/angelic"
+            to="/$username"
+            params={{ username: "angelic" }}
             className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/40 px-3 py-1.5 text-xs font-medium backdrop-blur transition hover:bg-card/70"
           >
             Angelic's wall

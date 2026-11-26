@@ -1,4 +1,9 @@
-import { cardPalette } from "@/lib/themes";
+import { cardPalette, CUSTOM_THEME_NAME } from "@/lib/themes";
+import {
+  customCardPalette,
+  parseCustomTheme,
+  type CustomTheme,
+} from "@/lib/custom-theme";
 
 // Renders a published Q&A as a story-ready card drawn on a canvas
 // in a chosen theme, then hands it to the share sheet on mobile or
@@ -36,8 +41,10 @@ export const CARD_SIZES: Record<
 };
 
 export interface ShareCardOptions {
-  /** Any of the six wall themes; defaults to the wall's own theme. */
+  /** Any of the wall themes; defaults to the wall's own theme. */
   theme?: string;
+  /** The wall's own colours when its theme is Custom. */
+  customTheme?: CustomTheme | null;
   /** Story (1080 x 1350) or Compact (720 x 900). Defaults to Story. */
   size?: CardSize;
 }
@@ -48,6 +55,15 @@ export interface AnswerCardInput {
   username: string;
   displayName: string;
   theme: string;
+  /** The wall's own colours when its theme is Custom. */
+  customTheme?: CustomTheme | null;
+}
+
+/** A custom wall's cards wear its own colours; presets wear theirs. */
+function paletteFor(theme: string, custom?: CustomTheme | null) {
+  const picks = parseCustomTheme(custom);
+  if (theme === CUSTOM_THEME_NAME && picks) return customCardPalette(picks);
+  return cardPalette(theme);
 }
 
 function wrapLines(
@@ -91,8 +107,9 @@ function roundRect(
 async function renderAnswerCanvas(
   input: AnswerCardInput,
   theme: string,
+  custom?: CustomTheme | null,
 ): Promise<HTMLCanvasElement> {
-  const pal = cardPalette(theme);
+  const pal = paletteFor(theme, custom);
   await document.fonts.ready;
 
   const canvas = document.createElement("canvas");
@@ -237,7 +254,11 @@ export async function renderAnswerCard(
   options: ShareCardOptions = {},
 ): Promise<Blob> {
   const size = CARD_SIZES[options.size ?? "story"];
-  const canvas = await renderAnswerCanvas(input, options.theme ?? input.theme);
+  const canvas = await renderAnswerCanvas(
+    input,
+    options.theme ?? input.theme,
+    options.customTheme ?? input.customTheme,
+  );
   return canvasToJpeg(canvas, size.width, size.height, 0.85);
 }
 
@@ -246,7 +267,11 @@ export async function renderAnswerCardPreview(
   input: AnswerCardInput,
   options: ShareCardOptions = {},
 ): Promise<string> {
-  const canvas = await renderAnswerCanvas(input, options.theme ?? input.theme);
+  const canvas = await renderAnswerCanvas(
+    input,
+    options.theme ?? input.theme,
+    options.customTheme ?? input.customTheme,
+  );
   const small = document.createElement("canvas");
   small.width = 360;
   small.height = 450;

@@ -1,17 +1,18 @@
 import { Palette } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
-import { THEMES } from "@/lib/themes";
+import { THEMES, themeLabel } from "@/lib/themes";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   const cycleTheme = () => {
+    // From a custom wall, cycling lands on the first preset.
     const idx = THEMES.findIndex((t) => t.name === theme);
     const next = THEMES[(idx + 1) % THEMES.length];
     setTheme(next.name);
   };
 
-  const currentLabel = THEMES.find((t) => t.name === theme)?.label ?? "Theme";
+  const currentLabel = themeLabel(theme);
 
   return (
     <button

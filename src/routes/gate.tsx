@@ -30,7 +30,12 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { PENDING_PROFILE_KEY } from "./signup";
 import { ThemePicker } from "@/components/ThemePicker";
-import { isThemeName } from "@/lib/themes";
+import { CUSTOM_THEME_NAME, isThemeName } from "@/lib/themes";
+import {
+  DEFAULT_CUSTOM_THEME,
+  parseCustomTheme,
+  type CustomTheme,
+} from "@/lib/custom-theme";
 import { toast } from "sonner";
 import { Copy, Lock, ShieldCheck } from "lucide-react";
 
@@ -67,6 +72,19 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
       return "dusk";
     }
   });
+  // A custom pick from signup travels with the pending profile; the
+  // starter colours are what the Custom tile previews with.
+  const pendingCustomTheme = (() => {
+    try {
+      return (
+        parseCustomTheme(
+          JSON.parse(localStorage.getItem(PENDING_PROFILE_KEY) ?? "{}").custom_theme,
+        ) ?? DEFAULT_CUSTOM_THEME
+      );
+    } catch {
+      return DEFAULT_CUSTOM_THEME;
+    }
+  })();
   const [state, setState] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
   const [busy, setBusy] = useState(false);
 
@@ -99,8 +117,9 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
         display_name: displayName.trim() || name,
         auth_user_id: userId,
         theme,
+        custom_theme: theme === CUSTOM_THEME_NAME ? pendingCustomTheme : null,
       });
-      setTheme(theme === "pink-dream" ? "pink-dream" : "dusk");
+      setTheme(theme, theme === CUSTOM_THEME_NAME ? pendingCustomTheme : undefined);
       localStorage.removeItem(PENDING_PROFILE_KEY);
       toast.success("Your wall is live");
       onClaimed();
@@ -155,8 +174,9 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
               value={isThemeName(theme) ? theme : "dusk"}
               onChange={(t) => {
                 setThemeChoice(t);
-                setTheme(t);
+                setTheme(t, t === CUSTOM_THEME_NAME ? pendingCustomTheme : undefined);
               }}
+              customTheme={pendingCustomTheme}
             />
           </div>
           <Button type="submit" disabled={busy || state === "taken"} className="w-full rounded-full">
@@ -280,6 +300,7 @@ function GatePage() {
   const [wallOpen, setWallOpen] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [customPrompt, setCustomPrompt] = useState("");
+  const [customTheme, setCustomThemeState] = useState<CustomTheme>(DEFAULT_CUSTOM_THEME);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -292,6 +313,7 @@ function GatePage() {
       setWallOpen(profile.wall_open);
       setEmailNotifications(profile.email_notifications ?? true);
       setCustomPrompt(profile.custom_prompt ?? "");
+      setCustomThemeState(parseCustomTheme(profile.custom_theme) ?? DEFAULT_CUSTOM_THEME);
     }
   }, [profile]);
 
@@ -334,12 +356,24 @@ function GatePage() {
   const ownerName = profile.display_name.trim() || profile.username;
   const unanswered = questions.filter((q) => !q.answer).length;
 
+  function handleThemeChange(next: ThemeName) {
+    setTheme(next, next === CUSTOM_THEME_NAME ? customTheme : undefined);
+  }
+
+  function handleCustomChange(patch: Partial<CustomTheme>) {
+    const next = { ...customTheme, ...patch };
+    setCustomThemeState(next);
+    // Live preview while picking.
+    setTheme(CUSTOM_THEME_NAME, next);
+  }
+
   async function saveSettings() {
     setSaving(true);
     try {
       await updateProfile(profile!.id, {
         display_name: displayName.trim() || profile!.username,
         theme,
+        custom_theme: customTheme,
         wall_open: wallOpen,
         email_notifications: emailNotifications,
         custom_prompt: customPrompt.trim() || null,
@@ -469,6 +503,7 @@ function GatePage() {
             editMode
             wallUsername={profile.username}
             wallTheme={profile.theme}
+            customTheme={parseCustomTheme(profile.custom_theme)}
           />
         )}
 
@@ -485,12 +520,44 @@ function GatePage() {
             </div>
             <div className="space-y-2">
               <Label>Your wall's theme</Label>
-              <ThemePicker value={theme} onChange={setTheme} />
+              <ThemePicker value={theme} onChange={handleThemeChange} customTheme={customTheme} />
               <p className="text-xs text-muted-foreground">
                 Visitors see your wall in this theme first. They can switch it
                 for themselves. Press Save settings to keep your choice.
               </p>
             </div>
+            {theme === CUSTOM_THEME_NAME && (
+              <div className="space-y-3 rounded-3xl border border-border bg-background/40 p-4">
+                <p className="text-sm font-medium">Your colours</p>
+                <p className="text-xs text-muted-foreground">
+                  Pick three colours and the whole wall follows them. The
+                  preview above changes as you pick.
+                </p>
+                {(
+                  [
+                    ["bg", "Background", "The page behind everything"],
+                    ["accent", "Accent", "Buttons, links and highlights"],
+                    ["ink", "Text", "The writing on the wall"],
+                  ] as const
+                ).map(([key, label, blurb]) => (
+                  <div key={key} className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={customTheme[key]}
+                      onChange={(e) => handleCustomChange({ [key]: e.target.value })}
+                      aria-label={label}
+                      className="h-10 w-12 shrink-0 cursor-pointer rounded-full border border-border bg-transparent p-1"
+                    />
+                    <div className="min-w-0">
+                      <Label className="text-sm">{label}</Label>
+                      <p className="truncate text-xs text-muted-foreground">
+                        {blurb} · {customTheme[key]}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="settings-prompt">Your wall's prompt</Label>
               <Textarea

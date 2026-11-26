@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ThemePicker } from "@/components/ThemePicker";
 import { useTheme, type ThemeName } from "@/context/ThemeContext";
+import { CUSTOM_THEME_NAME } from "@/lib/themes";
+import { DEFAULT_CUSTOM_THEME } from "@/lib/custom-theme";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 
@@ -78,6 +80,8 @@ function SignupPage() {
           username: name,
           display_name: displayName.trim() || name,
           theme: themeChoice,
+          custom_theme:
+            themeChoice === CUSTOM_THEME_NAME ? DEFAULT_CUSTOM_THEME : null,
         }),
       );
       const { data, error } = await supabase.auth.signUp({
@@ -167,8 +171,9 @@ function SignupPage() {
               value={themeChoice}
               onChange={(t) => {
                 setThemeChoice(t);
-                setTheme(t);
+                setTheme(t, t === CUSTOM_THEME_NAME ? DEFAULT_CUSTOM_THEME : undefined);
               }}
+              customTheme={DEFAULT_CUSTOM_THEME}
             />
             <p className="text-xs text-muted-foreground">
               Tap one and this page shows it live. Your wall is born in the

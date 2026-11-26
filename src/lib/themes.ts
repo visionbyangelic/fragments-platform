@@ -38,7 +38,25 @@ export const THEMES = [
     blurb: "Soft green morning",
     card: { bg: ["#e7f0d8", "#d9ead0", "#f0efd3"], ink: "#2f4433", muted: "#6d8266", accent: "#6f9e60", letter: "#fbf3df", letterInk: "#37402a" },
   },
+  {
+    name: "ember",
+    label: "Ember",
+    blurb: "Warm sunset, low light",
+    card: { bg: ["#3a2118", "#2e1a12", "#4a2a1c"], ink: "#f7e8d8", muted: "#c9a586", accent: "#e8863c", letter: "#fbf3df", letterInk: "#3d2c22" },
+  },
+  {
+    name: "forest",
+    label: "Forest Night",
+    blurb: "Deep green, after rain",
+    card: { bg: ["#16261c", "#101f15", "#1d3226"], ink: "#e4f2e6", muted: "#8fae97", accent: "#6fbf7f", letter: "#fbf3df", letterInk: "#37402a" },
+  },
 ] as const;
+
+// "custom" is not a preset: it means the owner picked their own three
+// colours, stored on the profile as custom_theme. It is a valid theme
+// name everywhere a preset is, but it has no entry in THEMES — its
+// variables are derived at runtime (see lib/custom-theme.ts).
+export const CUSTOM_THEME_NAME = "custom" as const;
 
 export type CardPalette = (typeof THEMES)[number]["card"];
 
@@ -46,16 +64,18 @@ export function cardPalette(name: string): CardPalette {
   return (THEMES.find((t) => t.name === name) ?? THEMES[0]).card;
 }
 
-export type ThemeName = (typeof THEMES)[number]["name"];
+export type ThemeName = (typeof THEMES)[number]["name"] | typeof CUSTOM_THEME_NAME;
 
 export const DEFAULT_THEME: ThemeName = "dusk";
 
 export function isThemeName(value: unknown): value is ThemeName {
   return (
-    typeof value === "string" && THEMES.some((t) => t.name === value)
+    typeof value === "string" &&
+    (value === CUSTOM_THEME_NAME || THEMES.some((t) => t.name === value))
   );
 }
 
 export function themeLabel(name: string): string {
+  if (name === CUSTOM_THEME_NAME) return "Custom";
   return THEMES.find((t) => t.name === name)?.label ?? "Dusk";
 }

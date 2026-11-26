@@ -17,7 +17,8 @@ import { fetchQuestions, subscribeToQuestions } from "@/lib/questions";
 import { fetchProfileByUsername, reportWall, USERNAME_RE } from "@/lib/platform";
 import { useSession } from "@/hooks/use-session";
 import { useTheme } from "@/context/ThemeContext";
-import { isThemeName } from "@/lib/themes";
+import { CUSTOM_THEME_NAME, isThemeName } from "@/lib/themes";
+import { parseCustomTheme } from "@/lib/custom-theme";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -128,7 +129,11 @@ function Wall() {
   useEffect(() => {
     if (profile && themedFor.current !== profile.id) {
       themedFor.current = profile.id;
-      setTheme(isThemeName(profile.theme) ? profile.theme : "dusk");
+      const name = isThemeName(profile.theme) ? profile.theme : "dusk";
+      setTheme(
+        name,
+        name === CUSTOM_THEME_NAME ? parseCustomTheme(profile.custom_theme) : undefined,
+      );
     }
   }, [profile, setTheme]);
 
@@ -322,6 +327,7 @@ function Wall() {
             editMode={editMode}
             wallUsername={profile.username}
             wallTheme={profile.theme}
+            customTheme={parseCustomTheme(profile.custom_theme)}
           />
         )}
       </main>

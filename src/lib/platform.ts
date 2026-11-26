@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { isThemeName } from "@/lib/themes";
+import type { CustomTheme } from "@/lib/custom-theme";
 
 // Platform-level data: profiles (one per wall), reports, account helpers.
 // The generated Database type does not include our tables, so we use a
@@ -14,6 +15,7 @@ export type Profile = {
   username: string;
   display_name: string;
   theme: string;
+  custom_theme: CustomTheme | null;
   wall_open: boolean;
   email_notifications: boolean;
   custom_prompt: string | null;
@@ -96,6 +98,7 @@ export async function createProfile(input: {
   display_name: string;
   auth_user_id: string;
   theme?: string;
+  custom_theme?: CustomTheme | null;
 }): Promise<Profile> {
   const username = normalizeUsername(input.username);
   const { data, error } = await sb
@@ -105,6 +108,7 @@ export async function createProfile(input: {
       display_name: input.display_name.trim(),
       auth_user_id: input.auth_user_id,
       theme: isThemeName(input.theme) ? input.theme : "dusk",
+      custom_theme: input.custom_theme ?? null,
     })
     .select("*")
     .single();
@@ -117,7 +121,7 @@ export async function updateProfile(
   patch: Partial<
     Pick<
       Profile,
-      "display_name" | "theme" | "wall_open" | "email_notifications" | "custom_prompt" | "suspended"
+      "display_name" | "theme" | "custom_theme" | "wall_open" | "email_notifications" | "custom_prompt" | "suspended"
     >
   >, // custom_prompt is the owner's ask line, shown to every visitor.
 ): Promise<void> {

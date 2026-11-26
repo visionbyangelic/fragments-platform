@@ -23,7 +23,8 @@ import {
   shareAnswerCard,
   type CardSize,
 } from "@/lib/share-card";
-import { THEMES } from "@/lib/themes";
+import { CUSTOM_THEME_NAME, THEMES, themeLabel } from "@/lib/themes";
+import type { CustomTheme } from "@/lib/custom-theme";
 
 interface Props {
   questions: Question[];
@@ -32,6 +33,8 @@ interface Props {
   editMode?: boolean;
   wallUsername: string;
   wallTheme: string;
+  /** The wall's own colours when its theme is Custom. */
+  customTheme?: CustomTheme | null;
 }
 
 function ShareCardButton({
@@ -39,11 +42,13 @@ function ShareCardButton({
   wallUsername,
   ownerName,
   wallTheme,
+  customTheme,
 }: {
   question: Question;
   wallUsername: string;
   ownerName: string;
   wallTheme: string;
+  customTheme?: CustomTheme | null;
 }) {
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState(wallTheme);
@@ -64,8 +69,9 @@ function ShareCardButton({
         username: wallUsername,
         displayName: ownerName,
         theme: wallTheme,
+        customTheme,
       },
-      { theme, size },
+      { theme, size, customTheme },
     )
       .then((url) => {
         if (!cancelled) setPreview(url);
@@ -79,7 +85,7 @@ function ShareCardButton({
     return () => {
       cancelled = true;
     };
-  }, [open, theme, size, question, wallUsername, ownerName, wallTheme]);
+  }, [open, theme, size, question, wallUsername, ownerName, wallTheme, customTheme]);
 
   async function handleShare() {
     if (!question.answer) return;
@@ -92,8 +98,9 @@ function ShareCardButton({
           username: wallUsername,
           displayName: ownerName,
           theme: wallTheme,
+          customTheme,
         },
-        { theme, size },
+        { theme, size, customTheme },
       );
       if (how === "downloaded") toast.success("Card saved. Post it anywhere 🤍");
       setOpen(false);
@@ -147,6 +154,25 @@ function ShareCardButton({
           <div className="mt-5 space-y-2">
             <p className="text-sm font-medium">Colour</p>
             <div className="flex flex-wrap gap-2.5" role="radiogroup" aria-label="Card colour">
+              {wallTheme === CUSTOM_THEME_NAME && customTheme && (
+                <button
+                  key="custom"
+                  type="button"
+                  role="radio"
+                  aria-checked={theme === CUSTOM_THEME_NAME}
+                  aria-label="Custom — the wall's own colours"
+                  title="Custom — the wall's own colours"
+                  onClick={() => setTheme(CUSTOM_THEME_NAME)}
+                  className={`h-10 w-10 rounded-full transition ${
+                    theme === CUSTOM_THEME_NAME
+                      ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                      : "ring-1 ring-border"
+                  }`}
+                  style={{
+                    background: `linear-gradient(135deg, ${customTheme.bg}, ${customTheme.accent})`,
+                  }}
+                />
+              )}
               {THEMES.map((t) => (
                 <button
                   key={t.name}
@@ -168,8 +194,10 @@ function ShareCardButton({
               ))}
             </div>
             <p className="text-xs text-muted-foreground">
-              {THEMES.find((t) => t.name === theme)?.label ?? "Dusk"} ·{" "}
-              {THEMES.find((t) => t.name === theme)?.blurb ?? ""}
+              {themeLabel(theme)} ·{" "}
+              {theme === CUSTOM_THEME_NAME
+                ? "Your colours, your wall"
+                : (THEMES.find((t) => t.name === theme)?.blurb ?? "")}
             </p>
           </div>
 
@@ -328,7 +356,7 @@ function QuestionAdminControls({ question }: { question: Question }) {
   );
 }
 
-export function QASection({ questions, isOwner, ownerName, editMode, wallUsername, wallTheme }: Props) {
+export function QASection({ questions, isOwner, ownerName, editMode, wallUsername, wallTheme, customTheme }: Props) {
   const visibleQuestions = isOwner
     ? questions
     : questions.filter((q) => q.is_published && q.answer);
@@ -392,6 +420,7 @@ export function QASection({ questions, isOwner, ownerName, editMode, wallUsernam
                       wallUsername={wallUsername}
                       ownerName={ownerName}
                       wallTheme={wallTheme}
+                      customTheme={customTheme}
                     />
                   )}
 
