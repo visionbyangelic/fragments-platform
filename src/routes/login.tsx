@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { GoogleMark } from "@/components/GoogleMark";
 import { toast } from "sonner";
 import { ShieldCheck } from "lucide-react";
 
@@ -68,6 +69,21 @@ function LoginPage() {
     }
   }
 
+  async function handleGoogle() {
+    setBusy(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/gate` },
+      });
+      if (error) throw error;
+      // Success leaves this page for Google; nothing left to do here.
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Google sign-in failed");
+      setBusy(false);
+    }
+  }
+
   async function handleForgot(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -97,6 +113,21 @@ function LoginPage() {
           </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGoogle}
+            disabled={busy}
+            className="w-full rounded-full"
+          >
+            <GoogleMark className="h-5 w-5" />
+            Continue with Google
+          </Button>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            or with your email or wall name
+            <span className="h-px flex-1 bg-border" />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="login">Email or wall name</Label>
             <Input

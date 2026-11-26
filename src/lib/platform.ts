@@ -1,13 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
-import { isThemeName } from "@/lib/themes";
+import { isThemeName, randomThemeName } from "@/lib/themes";
 import type { CustomTheme } from "@/lib/custom-theme";
 import type { ThemeOverrides } from "@/lib/theme-overrides";
 import type { SocialLink, WallSections } from "@/lib/social";
-
-// Heaven is the official test account: the only wall where the
-// Dear Future Me placeholder is switched on while email delivery
-// waits for the domain.
-export const TEST_ACCOUNT_USERNAME = "heaven";
 
 // Platform-level data: profiles (one per wall), reports, account helpers.
 // The generated Database type does not include our tables, so we use a
@@ -160,7 +155,7 @@ export async function createProfile(input: {
       username,
       display_name: input.display_name.trim(),
       auth_user_id: input.auth_user_id,
-      theme: isThemeName(input.theme) ? input.theme : "dusk",
+      theme: isThemeName(input.theme) ? input.theme : randomThemeName(),
       custom_theme: input.custom_theme ?? null,
     })
     .select("*")

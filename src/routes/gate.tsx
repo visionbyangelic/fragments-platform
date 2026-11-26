@@ -9,7 +9,6 @@ import {
   isReservedUsername,
   isUsernameAvailable,
   normalizeUsername,
-  TEST_ACCOUNT_USERNAME,
   updateProfile,
   USERNAME_RE,
   type Profile,
@@ -41,6 +40,13 @@ import { parseSocialLinks, showSection, SOCIAL_PLATFORMS, validateSocialUrl, typ
 import { FragmentCard } from "@/components/FragmentCard";
 import { QASection } from "@/components/QASection";
 import { CreateSheet } from "@/components/CreateSheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { ThemeEditorPanel } from "@/components/ThemeEditorPanel";
 import { useTheme } from "@/context/ThemeContext";
 import { Button } from "@/components/ui/button";
@@ -49,7 +55,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { PENDING_PROFILE_KEY } from "./signup";
-import { ThemePicker } from "@/components/ThemePicker";
 import { WallDecorations } from "@/components/WallDecorations";
 import { CUSTOM_THEME_NAME, isThemeName, themeDef } from "@/lib/themes";
 import {
@@ -87,26 +92,6 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
       return "";
     }
   });
-  const [theme, setThemeChoice] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(PENDING_PROFILE_KEY) ?? "{}").theme ?? "dusk";
-    } catch {
-      return "dusk";
-    }
-  });
-  // A custom pick from signup travels with the pending profile; the
-  // starter colours are what the Custom tile previews with.
-  const pendingCustomTheme = (() => {
-    try {
-      return (
-        parseCustomTheme(
-          JSON.parse(localStorage.getItem(PENDING_PROFILE_KEY) ?? "{}").custom_theme,
-        ) ?? DEFAULT_CUSTOM_THEME
-      );
-    } catch {
-      return DEFAULT_CUSTOM_THEME;
-    }
-  })();
   const [state, setState] = useState<"idle" | "checking" | "ok" | "taken" | "invalid" | "reserved">("idle");
   const [busy, setBusy] = useState(false);
 
@@ -139,14 +124,14 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
     }
     setBusy(true);
     try {
-      await createProfile({
+      // No theme is picked here: the wall is born in a random theme,
+      // and the welcome prompt right after points at the Themes tab.
+      const created = await createProfile({
         username: name,
         display_name: displayName.trim() || name,
         auth_user_id: userId,
-        theme,
-        custom_theme: theme === CUSTOM_THEME_NAME ? pendingCustomTheme : null,
       });
-      setTheme(theme, theme === CUSTOM_THEME_NAME ? pendingCustomTheme : undefined);
+      if (isThemeName(created.theme)) setTheme(created.theme);
       localStorage.removeItem(PENDING_PROFILE_KEY);
       toast.success("Your wall is live");
       onClaimed();
@@ -194,17 +179,6 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="How your wall greets people"
               className="bg-background/70"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Your wall's theme</Label>
-            <ThemePicker
-              value={isThemeName(theme) ? theme : "dusk"}
-              onChange={(t) => {
-                setThemeChoice(t);
-                setTheme(t, t === CUSTOM_THEME_NAME ? pendingCustomTheme : undefined);
-              }}
-              customTheme={pendingCustomTheme}
             />
           </div>
           <Button type="submit" disabled={busy || state === "taken" || state === "reserved"} className="w-full rounded-full">
@@ -337,6 +311,7 @@ function GatePage() {
   const [search, setSearch] = useState("");
   const [memoryFilter, setMemoryFilter] = useState<"all" | "favourites" | string>("all");
   const [newCollectionName, setNewCollectionName] = useState("");
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
 
   // The gate wears the owner's saved look. The theme itself is
   // changed from the wall's palette button or the Themes tab here.
@@ -376,6 +351,27 @@ function GatePage() {
       parseThemeOverrides(profile.theme_overrides),
     );
   }, [profile, savedTheme, setTheme]);
+
+  // First visit after the wall is born: prompt the owner to make it
+  // theirs — a theme, a bio, a question of the day. Dismissed once
+  // (any button), it never comes back on this browser.
+  useEffect(() => {
+    if (!profile) return;
+    try {
+      if (!localStorage.getItem("fragments-welcome-seen")) setWelcomeOpen(true);
+    } catch {
+      setWelcomeOpen(true);
+    }
+  }, [profile]);
+
+  function dismissWelcome() {
+    try {
+      localStorage.setItem("fragments-welcome-seen", "1");
+    } catch {
+      /* storage is a convenience, never a blocker */
+    }
+    setWelcomeOpen(false);
+  }
 
   const profileId = profile?.id;
   const { data: entries = [], refetch } = useQuery({
@@ -480,7 +476,6 @@ function GatePage() {
   const ownerName = profile.display_name.trim() || profile.username;
   const unanswered = questions.filter((q) => !q.answer).length;
   const activePoll = polls.find((p) => !p.closed && (!p.expires_at || new Date(p.expires_at) > new Date())) ?? null;
-  const isTestAccount = profile.username === TEST_ACCOUNT_USERNAME;
 
   async function saveSettings() {
     const links: SocialLink[] = [];
@@ -592,13 +587,11 @@ function GatePage() {
           },
         ]
       : []),
-    ...(isTestAccount
-      ? letters.map((l) => ({
-          date: new Date(l.deliver_date),
-          label: "Dear Future Me",
-          detail: `Arrives ${new Date(l.deliver_date).toLocaleDateString(undefined, { month: "long", day: "numeric" })}`,
-        }))
-      : []),
+    ...(letters.map((l) => ({
+      date: new Date(l.deliver_date),
+      label: "Dear Future Me",
+      detail: `Arrives ${new Date(l.deliver_date).toLocaleDateString(undefined, { month: "long", day: "numeric" })}`,
+    }))),
   ]
     .filter((m) => m.date > new Date())
     .sort((a, b) => a.date.getTime() - b.date.getTime())
@@ -716,7 +709,7 @@ function GatePage() {
               </div>
             )}
 
-            {isTestAccount && letters.length > 0 && (
+            {letters.length > 0 && (
               <div className="glass rounded-4xl p-6 sm:p-8">
                 <div className="flex items-center gap-2">
                   <Mail className="h-5 w-5 text-primary" aria-hidden />
@@ -1138,6 +1131,54 @@ function GatePage() {
         profile={profile}
         onCreated={refreshAll}
       />
+
+      <Dialog
+        open={welcomeOpen}
+        onOpenChange={(v) => {
+          if (!v) dismissWelcome();
+        }}
+      >
+        <DialogContent className="glass max-h-[85vh] overflow-y-auto border-none sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl">
+              Your wall is live — make it yours
+            </DialogTitle>
+            <DialogDescription>
+              Your wall was born in a random theme. Take a minute to make
+              it yours: pick a theme you love, add a bio, set your
+              question of the day.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-2">
+            <Button
+              onClick={() => {
+                dismissWelcome();
+                setTab("themes");
+              }}
+              className="w-full rounded-full"
+            >
+              Choose my theme
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dismissWelcome();
+                setTab("profile");
+              }}
+              className="w-full rounded-full"
+            >
+              Add my bio
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={dismissWelcome}
+              className="w-full rounded-full"
+            >
+              Maybe later
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       </div>
     </div>
   );

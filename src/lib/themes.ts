@@ -362,6 +362,13 @@ export function themeDef(name: string): ThemeDef | undefined {
   return THEMES.find((t) => t.name === name) ?? LEGACY_THEMES.find((t) => t.name === name);
 }
 
+// A new wall is born in a random theme — there is no fixed default.
+// The pool is the current gallery (the 12 themes plus Coquette), not
+// the Classics, so every new wall starts on something designed.
+export function randomThemeName(): ThemeName {
+  return THEMES[Math.floor(Math.random() * THEMES.length)].name;
+}
+
 // "custom" is not a preset: it means the owner picked their own three
 // colours, stored on the profile as custom_theme. It is a valid theme
 // name everywhere a preset is, but it has no entry in THEMES — its

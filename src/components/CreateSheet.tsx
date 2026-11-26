@@ -15,7 +15,7 @@ import {
 import { createPoll } from "@/lib/polls";
 import { createCapsule } from "@/lib/capsules";
 import { createLetter } from "@/lib/letters";
-import { TEST_ACCOUNT_USERNAME, updateProfile, type Profile } from "@/lib/platform";
+import { updateProfile, type Profile } from "@/lib/platform";
 import { showSection } from "@/lib/social";
 
 interface Props {
@@ -30,8 +30,9 @@ type View = "menu" | "poll" | "capsule" | "letter" | "question";
 // The Create sheet: the middle button of the dashboard. One place to
 // start the things a wall can hold — a poll, a time capsule, a letter
 // to your future self, or the question box. Future Me is a
-// placeholder and only the heaven test account sees it: the email
-// that would deliver a letter waits for the domain.
+// placeholder: letters are kept and revealed on the dashboard when
+// their day comes, and the email that would deliver one still waits
+// for the domain.
 export function CreateSheet({ open, onOpenChange, profile, onCreated }: Props) {
   const [view, setView] = useState<View>("menu");
   const [busy, setBusy] = useState(false);
@@ -46,7 +47,6 @@ export function CreateSheet({ open, onOpenChange, profile, onCreated }: Props) {
   const [letterText, setLetterText] = useState("");
   const [letterDate, setLetterDate] = useState("");
 
-  const isTestAccount = profile.username === TEST_ACCOUNT_USERNAME;
   const qaOn = showSection(profile.sections, "qa");
 
   function close() {
@@ -166,16 +166,14 @@ export function CreateSheet({ open, onOpenChange, profile, onCreated }: Props) {
               <p className="font-medium">A poll</p>
               <p className="mt-1 text-xs text-muted-foreground">Ask visitors to vote.</p>
             </button>
-            {isTestAccount && (
-              <button
-                onClick={() => setView("letter")}
-                className="rounded-3xl border border-border bg-background/40 p-5 text-left transition hover:bg-background/70"
-              >
-                <Mail className="mb-3 h-6 w-6 text-primary" aria-hidden />
-                <p className="font-medium">Future me</p>
-                <p className="mt-1 text-xs text-muted-foreground">Write a letter to yourself.</p>
-              </button>
-            )}
+            <button
+              onClick={() => setView("letter")}
+              className="rounded-3xl border border-border bg-background/40 p-5 text-left transition hover:bg-background/70"
+            >
+              <Mail className="mb-3 h-6 w-6 text-primary" aria-hidden />
+              <p className="font-medium">Future me</p>
+              <p className="mt-1 text-xs text-muted-foreground">Write a letter to yourself.</p>
+            </button>
             <button
               onClick={() => setView("capsule")}
               className="rounded-3xl border border-border bg-background/40 p-5 text-left transition hover:bg-background/70"

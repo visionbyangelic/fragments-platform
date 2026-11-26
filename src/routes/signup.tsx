@@ -10,10 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ThemePicker } from "@/components/ThemePicker";
-import { useTheme, type ThemeName } from "@/context/ThemeContext";
-import { CUSTOM_THEME_NAME } from "@/lib/themes";
-import { DEFAULT_CUSTOM_THEME } from "@/lib/custom-theme";
+import { GoogleMark } from "@/components/GoogleMark";
 import { toast } from "sonner";
 import { Sparkles } from "lucide-react";
 
@@ -35,8 +32,6 @@ function SignupPage() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
-  const [themeChoice, setThemeChoice] = useState<ThemeName>("dusk");
-  const { setTheme } = useTheme();
   const [usernameState, setUsernameState] = useState<"idle" | "checking" | "ok" | "taken" | "invalid" | "reserved">("idle");
   const [busy, setBusy] = useState(false);
   const [confirmSent, setConfirmSent] = useState(false);
@@ -88,9 +83,6 @@ function SignupPage() {
         JSON.stringify({
           username: name,
           display_name: displayName.trim() || name,
-          theme: themeChoice,
-          custom_theme:
-            themeChoice === CUSTOM_THEME_NAME ? DEFAULT_CUSTOM_THEME : null,
         }),
       );
       const { data, error } = await supabase.auth.signUp({
@@ -108,6 +100,21 @@ function SignupPage() {
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Sign up failed");
     } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleGoogle() {
+    setBusy(true);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/gate` },
+      });
+      if (error) throw error;
+      // Success leaves this page for Google; nothing left to do here.
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Google sign-in failed");
       setBusy(false);
     }
   }
@@ -144,6 +151,21 @@ function SignupPage() {
           </p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGoogle}
+            disabled={busy}
+            className="w-full rounded-full"
+          >
+            <GoogleMark className="h-5 w-5" />
+            Continue with Google
+          </Button>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="h-px flex-1 bg-border" />
+            or with your email
+            <span className="h-px flex-1 bg-border" />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
             <Input
@@ -174,21 +196,6 @@ function SignupPage() {
               placeholder="How your wall greets people"
               className="bg-background/70"
             />
-          </div>
-          <div className="space-y-2">
-            <Label>Your wall's theme</Label>
-            <ThemePicker
-              value={themeChoice}
-              onChange={(t) => {
-                setThemeChoice(t);
-                setTheme(t, t === CUSTOM_THEME_NAME ? DEFAULT_CUSTOM_THEME : undefined);
-              }}
-              customTheme={DEFAULT_CUSTOM_THEME}
-            />
-            <p className="text-xs text-muted-foreground">
-              Tap one and this page shows it live. Your wall is born in the
-              theme you pick, and you can change it anytime in your gate.
-            </p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
