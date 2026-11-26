@@ -3,7 +3,7 @@
 // style, decorations), defined as CSS variables under
 // [data-theme="..."] in styles.css.
 //
-// The twelve presets come from the wall-themes brief (26 Nov 2026):
+// The thirteen presets come from the wall-themes brief (26 Nov 2026):
 // every one is a different design — its own typography, background
 // treatment, card styling and decorations — not a recoloured copy of
 // the same page. Two of the earlier presets already matched the brief
@@ -236,6 +236,17 @@ export const THEMES: ThemeDef[] = [
     defaults: { bg: "#f5f1e8", accent: "#4a463e", secondary: "#eee9dd", card: "#ffffff", ink: "#2c2a26" },
     card: { bg: ["#faf7f0", "#f4efe4", "#fbf8f1"], ink: "#2c2a26", muted: "#8a8378", accent: "#6b6357", letter: "#fbf3df", letterInk: "#3d2c22" },
   },
+  {
+    name: "dreamy-pink-sky",
+    label: "Dreamy Pink Sky",
+    blurb: "Pastel pink sky, clouds, butterflies",
+    category: "Dreamy",
+    font: "cormorant",
+    cardStyle: "rounded",
+    decorations: ["flowers", "clouds", "butterflies", "bows", "stars", "sparkles"],
+    defaults: { bg: "#fceaf4", accent: "#d96fa5", secondary: "#f8e8fa", card: "#fffafd", ink: "#542747" },
+    card: { bg: ["#fffafd", "#fceaf4", "#f8e8fa"], ink: "#542747", muted: "#956d89", accent: "#d96fa5", letter: "#fdeef5", letterInk: "#542747" },
+  },
 ];
 
 export const THEME_CATEGORIES: ThemeCategory[] = [
@@ -363,7 +374,7 @@ export function themeDef(name: string): ThemeDef | undefined {
 }
 
 // A new wall is born in a random theme — there is no fixed default.
-// The pool is the current gallery (the 12 themes plus Coquette), not
+// The pool is the current gallery (the 13 themes), not
 // the Classics, so every new wall starts on something designed.
 export function randomThemeName(): ThemeName {
   return THEMES[Math.floor(Math.random() * THEMES.length)].name;

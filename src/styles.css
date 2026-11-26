@@ -234,6 +234,72 @@
 }
 
 
+/* ============ DREAMY PINK SKY THEME ============ */
+/* A dreamy pastel digital diary: pale blush-pink and lavender sky,
+   soft clouds placed once across the wall, tiny sparkles tiled,
+   cherry blossoms, butterflies, bows and stars at the edges.
+   Elegant serif headings, rounded sans body, dusty-rose buttons. */
+[data-theme="dreamy-pink-sky"] {
+  color-scheme: light;
+  --radius: 2rem;
+  --card-radius: var(--radius);
+  --font-serif: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-sans: "Baloo 2", "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Four aura layers, so four sizes: the sparkle dots tile at
+     150px, the three cloud blobs are placed once — tiling a blob
+     is what made the old coquette wall a gingham grid. */
+  --wall-pattern-size: 150px 150px, auto, auto, auto;
+  --background: oklch(0.954 0.023 343);
+  --foreground: oklch(0.346 0.080 339);
+  --card: oklch(0.990 0.007 340);
+  --card-foreground: oklch(0.346 0.080 339);
+  --popover: oklch(0.990 0.007 340);
+  --popover-foreground: oklch(0.346 0.080 339);
+  --primary: oklch(0.680 0.146 350);
+  --primary-foreground: oklch(0.99 0.005 350);
+  --secondary: oklch(0.949 0.029 322);
+  --secondary-foreground: oklch(0.40 0.07 339);
+  --muted: oklch(0.96 0.02 340);
+  --muted-foreground: oklch(0.584 0.064 338);
+  --accent: oklch(0.736 0.095 307);
+  --accent-foreground: oklch(0.346 0.080 339);
+  --destructive: oklch(0.62 0.2 18);
+  --destructive-foreground: oklch(0.99 0.005 340);
+  --border: oklch(0.877 0.054 345);
+  --input: oklch(0.93 0.03 345);
+  --ring: oklch(0.680 0.146 350);
+  --sidebar: oklch(0.954 0.023 343);
+  --sidebar-foreground: oklch(0.346 0.080 339);
+  --sidebar-primary: oklch(0.680 0.146 350);
+  --sidebar-primary-foreground: oklch(0.99 0.005 350);
+  --sidebar-accent: oklch(0.949 0.029 322);
+  --sidebar-accent-foreground: oklch(0.40 0.07 339);
+  --sidebar-border: oklch(0.877 0.054 345);
+  --sidebar-ring: oklch(0.680 0.146 350);
+  --frag-blush: oklch(0.965 0.025 345);
+  --frag-lavender: oklch(0.955 0.03 320);
+  --frag-sky: oklch(0.95 0.025 300);
+  --frag-mint: oklch(0.95 0.02 170);
+  --frag-peach: oklch(0.96 0.03 45);
+  --frag-lilac: oklch(0.95 0.035 310);
+  --frag-foreground: oklch(0.346 0.08 339);
+  --letter-cream: oklch(0.97 0.02 80);
+  --letter-aged: oklch(0.93 0.04 75);
+  --letter-pink: oklch(0.955 0.05 345);
+  --letter-blue: oklch(0.94 0.04 220);
+  --letter-foreground: oklch(0.346 0.06 339);
+  --gradient-sanctuary: linear-gradient(135deg, oklch(0.954 0.023 343), oklch(0.949 0.029 322) 50%, oklch(0.94 0.035 300));
+  --gradient-aura: radial-gradient(circle, oklch(0.85 0.08 340 / 0.5) 2px, transparent 3px),
+    radial-gradient(ellipse 320px 90px at 18% 12%, oklch(1 0 0 / 0.65), transparent 70%),
+    radial-gradient(ellipse 280px 80px at 82% 24%, oklch(0.99 0.02 340 / 0.6), transparent 70%),
+    radial-gradient(ellipse 360px 100px at 45% 80%, oklch(1 0 0 / 0.5), transparent 70%);
+  --glass-bg: oklch(1 0 0 / 0.45);
+  --glass-border: oklch(1 0 0 / 0.6);
+  --shadow-soft: 0 20px 50px -20px oklch(0.68 0.12 350 / 0.4);
+  --shadow-glow: 0 0 44px -8px oklch(0.78 0.1 340 / 0.5);
+}
+
+
 /* ============ CLOUD NINE THEME ============ */
 /* Soft sky with drifting clouds. The clouds are big soft blobs,
    placed once across the viewport, not tiled. */
