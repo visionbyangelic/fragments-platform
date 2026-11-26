@@ -16,7 +16,8 @@ export type ThemeCategory =
   | "Nature"
   | "Dark Academia"
   | "Dreamy"
-  | "Y2K";
+  | "Y2K"
+  | "Classic";
 
 export type ThemeFont = "cormorant" | "inter" | "baloo" | "caveat" | "vt323";
 
@@ -76,9 +77,9 @@ export interface ThemeDef {
   name: string;
   label: string;
   blurb: string;
-  /** Gallery category. Legacy themes have none: they render in the
-      old flat picker, never in the new gallery. */
-  category?: ThemeCategory;
+  /** Gallery category. The nine retired presets sit under Classic,
+      below the new twelve, so nothing anyone loved is taken away. */
+  category: ThemeCategory;
   font: ThemeFont;
   cardStyle: CardStyle;
   decorations: Decoration[];
@@ -233,12 +234,13 @@ export const THEME_CATEGORIES: ThemeCategory[] = [
   "Dark Academia",
   "Kawaii",
   "Minimalist",
+  "Classic",
 ];
 
-// The nine retired presets (26 Nov 2026). They stay live while the
-// new twelve are trialled on the owner's wall only: the other walls
-// are on these names, and their look must not change under them.
-// Matcha and Cloud Nine are not listed here — they survived the
+// The nine retired presets (26 Nov 2026). They were never removed —
+// the trial only hid them — and now they sit in the gallery under
+// Classic, below the new twelve, so a wall that loved one keeps it.
+// Matcha and Cloud Nine are not listed here: they survived the
 // rebuild as new themes with the same names and the same CSS, so a
 // wall on either resolves through THEMES and looks identical.
 export const LEGACY_THEMES: ThemeDef[] = [
@@ -246,6 +248,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
     name: "dusk",
     label: "Dusk",
     blurb: "Deep blue violet night",
+    category: "Classic",
     font: "cormorant",
     cardStyle: "rounded",
     decorations: [],
@@ -256,6 +259,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
     name: "pink-dream",
     label: "Pink Dream",
     blurb: "Soft pink sanctuary",
+    category: "Classic",
     font: "cormorant",
     cardStyle: "rounded",
     decorations: [],
@@ -266,6 +270,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
     name: "midnight",
     label: "Midnight Ink",
     blurb: "Near black, silver moonlight",
+    category: "Classic",
     font: "cormorant",
     cardStyle: "rounded",
     decorations: [],
@@ -276,6 +281,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
     name: "vintage",
     label: "Vintage Letter",
     blurb: "Warm paper and sepia ink",
+    category: "Classic",
     font: "cormorant",
     cardStyle: "paper",
     decorations: [],
@@ -286,6 +292,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
     name: "lagoon",
     label: "Lagoon",
     blurb: "Deep teal, sea glass light",
+    category: "Classic",
     font: "cormorant",
     cardStyle: "rounded",
     decorations: [],
@@ -296,6 +303,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
     name: "ember",
     label: "Ember",
     blurb: "Warm sunset, low light",
+    category: "Classic",
     font: "cormorant",
     cardStyle: "rounded",
     decorations: [],
@@ -306,6 +314,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
     name: "forest",
     label: "Forest Night",
     blurb: "Deep green, after rain",
+    category: "Classic",
     font: "cormorant",
     cardStyle: "rounded",
     decorations: [],
@@ -316,6 +325,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
     name: "peach",
     label: "Peach Soda",
     blurb: "Fizzy peach, polka dots",
+    category: "Classic",
     font: "baloo",
     cardStyle: "floating",
     decorations: [],
@@ -326,6 +336,7 @@ export const LEGACY_THEMES: ThemeDef[] = [
     name: "starry",
     label: "Starry Night",
     blurb: "Deep blue, tiny stars",
+    category: "Classic",
     font: "cormorant",
     cardStyle: "rounded",
     decorations: ["stars"],
@@ -333,27 +344,6 @@ export const LEGACY_THEMES: ThemeDef[] = [
     card: { bg: ["#1b2340", "#141a30", "#232c4d"], ink: "#e9ecf7", muted: "#9aa5c9", accent: "#a8b8f0", letter: "#e6d9bd", letterInk: "#322c40" },
   },
 ];
-
-export function isLegacyTheme(value: unknown): boolean {
-  return typeof value === "string" && LEGACY_THEMES.some((t) => t.name === value);
-}
-
-/** The old picker order, for the legacy mode: the nine retired
-    presets plus Matcha and Cloud Nine, which survived the rebuild
-    with the same names and the same CSS. */
-export const LEGACY_PICKER_NAMES = [
-  "dusk",
-  "pink-dream",
-  "midnight",
-  "vintage",
-  "lagoon",
-  "matcha",
-  "ember",
-  "forest",
-  "peach",
-  "cloud",
-  "starry",
-] as const;
 
 export function themeDef(name: string): ThemeDef | undefined {
   return THEMES.find((t) => t.name === name) ?? LEGACY_THEMES.find((t) => t.name === name);

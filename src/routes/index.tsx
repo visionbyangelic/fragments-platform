@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { useSession } from "@/hooks/use-session";
 import { Link2, Lock, MessagesSquare, Sparkles } from "lucide-react";
 
@@ -78,7 +77,6 @@ function Landing() {
                 </Link>
               </>
             )}
-            <ThemeToggle />
           </div>
         </nav>
 

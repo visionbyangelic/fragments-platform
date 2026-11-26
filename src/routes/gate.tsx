@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "@/hooks/use-session";
 import {
@@ -21,8 +21,7 @@ import {
 import { fetchQuestions, subscribeToQuestions } from "@/lib/questions";
 import { FragmentCard } from "@/components/FragmentCard";
 import { QASection } from "@/components/QASection";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { useTheme, type ThemeName } from "@/context/ThemeContext";
+import { useTheme } from "@/context/ThemeContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,15 +29,14 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { PENDING_PROFILE_KEY } from "./signup";
 import { ThemePicker } from "@/components/ThemePicker";
-import { ThemeEditor } from "@/components/ThemeEditor";
 import { WallDecorations } from "@/components/WallDecorations";
-import { CUSTOM_THEME_NAME, isLegacyTheme, isThemeName, themeDef } from "@/lib/themes";
+import { CUSTOM_THEME_NAME, isThemeName, themeDef } from "@/lib/themes";
 import {
   DEFAULT_CUSTOM_THEME,
   parseCustomTheme,
   type CustomTheme,
 } from "@/lib/custom-theme";
-import { parseThemeOverrides, type ThemeOverrides } from "@/lib/theme-overrides";
+import { parseThemeOverrides } from "@/lib/theme-overrides";
 import { toast } from "sonner";
 import { Copy, Lock, ShieldCheck } from "lucide-react";
 
@@ -180,7 +178,6 @@ function ClaimWallForm({ userId, onClaimed }: { userId: string; onClaimed: () =>
                 setTheme(t, t === CUSTOM_THEME_NAME ? pendingCustomTheme : undefined);
               }}
               customTheme={pendingCustomTheme}
-              legacy
             />
           </div>
           <Button type="submit" disabled={busy || state === "taken"} className="w-full rounded-full">
@@ -296,7 +293,6 @@ function PlatformSection() {
 
 function GatePage() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { session, user, profile, loading, refreshProfile, signOut } = useSession();
   const { setTheme } = useTheme();
   const [tab, setTab] = useState<"fragments" | "questions" | "settings" | "platform">("fragments");
@@ -306,43 +302,15 @@ function GatePage() {
   const [customPrompt, setCustomPrompt] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // The theme draft: what the settings tab previews. Nothing here is
-  // saved until "Save theme" is pressed; Cancel returns to the saved
-  // look, Reset clears the editor's overrides back to the theme's own
-  // defaults. The new twelve themes are trialled on the owner's wall
-  // only: every other account sees the old picker, and the
-  // customisation editor is hidden from them too.
-  const showNewThemes = profile?.is_platform_admin ?? false;
-  const [draftTheme, setDraftTheme] = useState<ThemeName>("moonlight");
-  const [draftCustom, setDraftCustom] = useState<CustomTheme>(DEFAULT_CUSTOM_THEME);
-  const [draftOverrides, setDraftOverrides] = useState<ThemeOverrides | null>(null);
-  const [themeSaving, setThemeSaving] = useState(false);
-
-  // The saved look, for the draft baseline and for leaving the
-  // settings tab. Memoised on the JSON so a refetched profile with
-  // the same values does not retrigger the preview effect.
-  const savedTheme: ThemeName = isThemeName(profile?.theme) ? profile.theme : "moonlight";
-  const savedCustom = useMemo(
-    () => parseCustomTheme(profile?.custom_theme) ?? DEFAULT_CUSTOM_THEME,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(profile?.custom_theme ?? null)],
-  );
-  const savedOverrides = useMemo(
-    () => parseThemeOverrides(profile?.theme_overrides),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(profile?.theme_overrides ?? null)],
-  );
-  const themeDirty =
-    draftTheme !== savedTheme ||
-    JSON.stringify(draftCustom) !== JSON.stringify(savedCustom) ||
-    JSON.stringify(draftOverrides) !== JSON.stringify(savedOverrides);
-
-  // The decorations the gate shows: the draft's while customising,
-  // the saved look everywhere else.
+  // The gate wears the owner's saved look. The theme itself is
+  // changed on the wall, from the palette button in the wall header —
+  // settings stays for display name, prompt, wall open/close and
+  // notifications only.
+  const savedTheme = isThemeName(profile?.theme) ? profile.theme : "moonlight";
   const gateDecorations =
-    tab === "settings"
-      ? (draftOverrides?.decorations ?? themeDef(draftTheme)?.decorations ?? [])
-      : (savedOverrides?.decorations ?? themeDef(savedTheme)?.decorations ?? []);
+    parseThemeOverrides(profile?.theme_overrides)?.decorations ??
+    themeDef(savedTheme)?.decorations ??
+    [];
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/login" });
@@ -354,30 +322,19 @@ function GatePage() {
       setWallOpen(profile.wall_open);
       setEmailNotifications(profile.email_notifications ?? true);
       setCustomPrompt(profile.custom_prompt ?? "");
-      setDraftTheme(isThemeName(profile.theme) ? profile.theme : "moonlight");
-      setDraftCustom(parseCustomTheme(profile.custom_theme) ?? DEFAULT_CUSTOM_THEME);
-      setDraftOverrides(parseThemeOverrides(profile.theme_overrides));
     }
   }, [profile]);
 
-  // Live preview: on the settings tab the draft repaints the whole
-  // gate as it changes. Anywhere else the gate wears the saved look.
+  // The gate wears the owner's saved theme, so it looks like the wall
+  // it manages.
   useEffect(() => {
     if (!profile) return;
-    if (tab === "settings") {
-      setTheme(
-        draftTheme,
-        draftTheme === CUSTOM_THEME_NAME ? draftCustom : undefined,
-        draftOverrides,
-      );
-    } else {
-      setTheme(
-        savedTheme,
-        savedTheme === CUSTOM_THEME_NAME ? savedCustom : undefined,
-        savedOverrides,
-      );
-    }
-  }, [tab, draftTheme, draftCustom, draftOverrides, profile, savedTheme, savedCustom, savedOverrides, setTheme]);
+    setTheme(
+      savedTheme,
+      savedTheme === CUSTOM_THEME_NAME ? (parseCustomTheme(profile.custom_theme) ?? DEFAULT_CUSTOM_THEME) : undefined,
+      parseThemeOverrides(profile.theme_overrides),
+    );
+  }, [profile, savedTheme, setTheme]);
 
   const profileId = profile?.id;
   const { data: entries = [], refetch } = useQuery({
@@ -418,8 +375,6 @@ function GatePage() {
   const ownerName = profile.display_name.trim() || profile.username;
   const unanswered = questions.filter((q) => !q.answer).length;
 
-  // The theme has its own save (below): picking a theme only previews
-  // it, so a cancelled draft never leaks into the saved settings.
   async function saveSettings() {
     setSaving(true);
     try {
@@ -436,30 +391,6 @@ function GatePage() {
     } finally {
       setSaving(false);
     }
-  }
-
-  async function saveTheme() {
-    setThemeSaving(true);
-    try {
-      await updateProfile(profile!.id, {
-        theme: draftTheme,
-        custom_theme: draftTheme === CUSTOM_THEME_NAME ? draftCustom : null,
-        theme_overrides: draftOverrides,
-      });
-      toast.success("Your wall's new look is saved");
-      refreshProfile(session);
-      queryClient.invalidateQueries({ queryKey: ["profile", profile!.username] });
-    } catch {
-      toast.error("Could not save your theme");
-    } finally {
-      setThemeSaving(false);
-    }
-  }
-
-  function cancelTheme() {
-    setDraftTheme(savedTheme);
-    setDraftCustom(savedCustom);
-    setDraftOverrides(savedOverrides);
   }
 
   async function copyLink() {
@@ -503,7 +434,6 @@ function GatePage() {
           >
             Sign out
           </button>
-          <ThemeToggle />
         </div>
       </nav>
 
@@ -594,93 +524,13 @@ function GatePage() {
                 className="bg-background/70"
               />
             </div>
-            <div className="space-y-2">
-              <Label>Customize my wall</Label>
-              <ThemePicker
-                value={draftTheme}
-                onChange={setDraftTheme}
-                customTheme={draftCustom}
-                legacy={!showNewThemes}
-              />
-              {showNewThemes && isLegacyTheme(draftTheme) && (
-                <p className="text-xs text-muted-foreground">
-                  Your wall is still on an earlier theme. Pick one of the new
-                  themes above to try it — nothing changes on your live wall
-                  until you save.
-                </p>
-              )}
+            <div className="space-y-2 rounded-3xl border border-border bg-background/40 p-4">
+              <p className="text-sm font-medium">Your wall's look</p>
               <p className="text-xs text-muted-foreground">
-                Pick a theme to preview it live — the whole gate repaints as
-                you browse. Save it below to keep it, or cancel to go back
-                to your saved look.
+                Change it from your wall — the palette button in the top
+                right, next to Your gate. Pick a theme, preview it live,
+                and save it there.
               </p>
-            </div>
-            {draftTheme === CUSTOM_THEME_NAME && (
-              <div className="space-y-3 rounded-3xl border border-border bg-background/40 p-4">
-                <p className="text-sm font-medium">Your colours</p>
-                <p className="text-xs text-muted-foreground">
-                  Pick three colours and the whole wall follows them. The
-                  preview changes as you pick.
-                </p>
-                {(
-                  [
-                    ["bg", "Background", "The page behind everything"],
-                    ["accent", "Accent", "Buttons, links and highlights"],
-                    ["ink", "Text", "The writing on the wall"],
-                  ] as const
-                ).map(([key, label, blurb]) => (
-                  <div key={key} className="flex items-center gap-3">
-                    <input
-                      type="color"
-                      value={draftCustom[key]}
-                      onChange={(e) =>
-                        setDraftCustom({ ...draftCustom, [key]: e.target.value })
-                      }
-                      aria-label={label}
-                      className="h-10 w-12 shrink-0 cursor-pointer rounded-full border border-border bg-transparent p-1"
-                    />
-                    <div className="min-w-0">
-                      <Label className="text-sm">{label}</Label>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {blurb} · {draftCustom[key]}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-            {showNewThemes && (
-              <ThemeEditor
-                theme={draftTheme}
-                overrides={draftOverrides}
-                onChange={setDraftOverrides}
-                showColors={draftTheme !== CUSTOM_THEME_NAME}
-              />
-            )}
-            <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={saveTheme}
-                disabled={!themeDirty || themeSaving}
-                className="flex-1 rounded-full"
-              >
-                {themeSaving ? "Saving…" : "Save theme"}
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={cancelTheme}
-                disabled={!themeDirty}
-                className="rounded-full"
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setDraftOverrides(null)}
-                disabled={!draftOverrides}
-                className="rounded-full"
-              >
-                Reset to theme defaults
-              </Button>
             </div>
             <div className="space-y-2">
               <Label htmlFor="settings-prompt">Your wall's prompt</Label>

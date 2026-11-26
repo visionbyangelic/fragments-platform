@@ -21,6 +21,8 @@ import { CUSTOM_THEME_NAME, isThemeName, themeDef } from "@/lib/themes";
 import { parseCustomTheme } from "@/lib/custom-theme";
 import { parseThemeOverrides } from "@/lib/theme-overrides";
 import { WallDecorations } from "@/components/WallDecorations";
+import { WallThemeControl } from "@/components/WallThemeControl";
+import type { Decoration } from "@/lib/themes";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -94,8 +96,10 @@ function Wall() {
   const [reportOpen, setReportOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [reporting, setReporting] = useState(false);
+  // Decorations the theme panel is previewing; null means the saved ones.
+  const [previewDecorations, setPreviewDecorations] = useState<Decoration[] | null>(null);
 
-  const { data: profile, isLoading: profileLoading } = useQuery({
+  const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useQuery({
     queryKey: ["profile", username],
     queryFn: () => fetchProfileByUsername(username),
   });
@@ -127,7 +131,8 @@ function Wall() {
     };
   }, [profileId, refetch, refetchQuestions]);
 
-  // A wall wears its owner's theme until the visitor picks their own.
+  // A wall wears its owner's theme. Visitors never change it — the
+  // theme control in the header is the owner's alone.
   useEffect(() => {
     if (profile && themedFor.current !== profile.id) {
       themedFor.current = profile.id;
@@ -199,9 +204,11 @@ function Wall() {
   );
 
   // The wall's decorations: the owner's overrides win, else the
-  // theme's own defaults.
+  // theme's own defaults — or the theme panel's preview, while it is
+  // open.
   const wallThemeName = isThemeName(profile.theme) ? profile.theme : "moonlight";
   const wallDecorations =
+    previewDecorations ??
     parseThemeOverrides(profile.theme_overrides)?.decorations ??
     themeDef(wallThemeName)?.decorations ??
     [];
@@ -234,6 +241,15 @@ function Wall() {
         username={profile.username}
         isOwner={isOwner}
         onBegin={scrollToForm}
+        themeControl={
+          isOwner ? (
+            <WallThemeControl
+              profile={profile}
+              onSaved={() => refetchProfile()}
+              onPreviewDecorations={setPreviewDecorations}
+            />
+          ) : undefined
+        }
       />
 
       {isOwner && (

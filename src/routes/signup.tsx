@@ -174,7 +174,6 @@ function SignupPage() {
                 setTheme(t, t === CUSTOM_THEME_NAME ? DEFAULT_CUSTOM_THEME : undefined);
               }}
               customTheme={DEFAULT_CUSTOM_THEME}
-              legacy
             />
             <p className="text-xs text-muted-foreground">
               Tap one and this page shows it live. Your wall is born in the

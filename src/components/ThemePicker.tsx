@@ -1,9 +1,8 @@
 import {
   CUSTOM_THEME_NAME,
-  LEGACY_PICKER_NAMES,
+  LEGACY_THEMES,
   THEMES,
   THEME_CATEGORIES,
-  themeDef,
   type ThemeDef,
   type ThemeName,
 } from "@/lib/themes";
@@ -16,10 +15,6 @@ interface Props {
   onChange: (theme: ThemeName) => void;
   /** The owner's own colours, for the Custom tile's preview. */
   customTheme: CustomTheme;
-  /** The old flat picker (the eleven retired presets). Used for every
-      account except the trial owner's while the new twelve are
-      trialled; the new gallery is the default. */
-  legacy?: boolean;
 }
 
 // One miniature wall: the theme's real CSS variables (and its own
@@ -167,26 +162,18 @@ function CustomTile({
 }
 
 // The theme gallery: every theme as a miniature wall, grouped by
-// category, so browsing feels like a stationery collection.
-export function ThemePicker({ value, onChange, customTheme, legacy }: Props) {
-  const customSelected = value === CUSTOM_THEME_NAME;
+// category, so browsing feels like a stationery collection. The
+// twelve new themes come first, the nine originals sit under Classic
+// at the bottom — nothing anyone loved was taken away.
+const ALL_THEMES: ThemeDef[] = [...THEMES, ...LEGACY_THEMES];
 
-  if (legacy) {
-    const legacyThemes = LEGACY_PICKER_NAMES.map((n) => themeDef(n)!);
-    return (
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {legacyThemes.map((t) => (
-          <ThemeTile key={t.name} t={t} selected={value === t.name} onChange={onChange} />
-        ))}
-        <CustomTile selected={customSelected} onChange={onChange} customTheme={customTheme} />
-      </div>
-    );
-  }
+export function ThemePicker({ value, onChange, customTheme }: Props) {
+  const customSelected = value === CUSTOM_THEME_NAME;
 
   return (
     <div className="space-y-6">
       {THEME_CATEGORIES.map((category) => {
-        const themes = THEMES.filter((t) => t.category === category);
+        const themes = ALL_THEMES.filter((t) => t.category === category);
         if (themes.length === 0) return null;
         return (
           <div key={category}>

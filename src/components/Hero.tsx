@@ -1,14 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import type { ReactNode } from "react";
 
 interface Props {
   displayName: string;
   username: string;
   isOwner: boolean;
   onBegin: () => void;
+  /** The owner's theme control (the palette button in the header).
+      Visitors get none: a wall wears its owner's theme, and only the
+      owner changes it. */
+  themeControl?: ReactNode;
 }
 
-export function Hero({ displayName, username, isOwner, onBegin }: Props) {
+export function Hero({ displayName, username, isOwner, onBegin, themeControl }: Props) {
   const name = displayName.trim() || username;
   return (
     <header className="relative overflow-hidden">
@@ -48,7 +52,7 @@ export function Hero({ displayName, username, isOwner, onBegin }: Props) {
               Get your own wall
             </Link>
           )}
-          <ThemeToggle />
+          {themeControl}
         </div>
       </nav>
 
