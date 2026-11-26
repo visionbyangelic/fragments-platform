@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { PENDING_PROFILE_KEY } from "./signup";
 import { ThemePicker } from "@/components/ThemePicker";
 import { isThemeName } from "@/lib/themes";
@@ -278,6 +279,7 @@ function GatePage() {
   const [displayName, setDisplayName] = useState("");
   const [wallOpen, setWallOpen] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
+  const [customPrompt, setCustomPrompt] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -289,6 +291,7 @@ function GatePage() {
       setDisplayName(profile.display_name);
       setWallOpen(profile.wall_open);
       setEmailNotifications(profile.email_notifications ?? true);
+      setCustomPrompt(profile.custom_prompt ?? "");
     }
   }, [profile]);
 
@@ -339,6 +342,7 @@ function GatePage() {
         theme,
         wall_open: wallOpen,
         email_notifications: emailNotifications,
+        custom_prompt: customPrompt.trim() || null,
       });
       toast.success("Settings saved");
       refreshProfile(session);
@@ -485,6 +489,22 @@ function GatePage() {
               <p className="text-xs text-muted-foreground">
                 Visitors see your wall in this theme first. They can switch it
                 for themselves. Press Save settings to keep your choice.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="settings-prompt">Your wall's prompt</Label>
+              <Textarea
+                id="settings-prompt"
+                value={customPrompt}
+                onChange={(e) => setCustomPrompt(e.target.value)}
+                placeholder="Tell me something you've never told anyone…"
+                rows={3}
+                maxLength={140}
+                className="bg-white/60"
+              />
+              <p className="text-xs text-muted-foreground">
+                This shows above the fragment form instead of the usual line.
+                Leave it blank to keep the usual line.
               </p>
             </div>
             <div className="flex items-center justify-between gap-4">

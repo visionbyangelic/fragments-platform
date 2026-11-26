@@ -301,9 +301,8 @@ function Wall() {
               <div className="mb-8 text-center">
                 <h2 className="font-serif text-4xl text-gradient">Leave a fragment</h2>
                 <p className="mt-3 text-muted-foreground">
-                  A few words that will live on this wall, seal it for a future
-                  day, or flip the switch below and ask {ownerName} a question
-                  instead.
+                  {profile.custom_prompt?.trim() ||
+                    `A few words that will live on this wall, seal it for a future day, or flip the switch below and ask ${ownerName} a question instead.`}
                 </p>
               </div>
               {profile.wall_open ? (
