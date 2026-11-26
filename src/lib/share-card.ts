@@ -59,6 +59,18 @@ export interface AnswerCardInput {
   customTheme?: CustomTheme | null;
 }
 
+export interface FragmentCardInput {
+  /** The fragment's words, exactly as left on the wall. */
+  message: string;
+  /** The name the wall shows — "Anonymous" or the signed name. */
+  author: string;
+  username: string;
+  displayName: string;
+  theme: string;
+  /** The wall's own colours when its theme is Custom. */
+  customTheme?: CustomTheme | null;
+}
+
 /** A custom wall's cards wear its own colours; presets wear theirs. */
 function paletteFor(theme: string, custom?: CustomTheme | null) {
   const picks = parseCustomTheme(custom);
@@ -225,6 +237,112 @@ async function renderAnswerCanvas(
   return canvas;
 }
 
+/** A fragment on its own card: the words are the whole card, so they
+    get the big type and the shrink-to-fit treatment the answer gets
+    in the Q&A card. A fragment can be up to 3000 characters and the
+    card cannot hold that at a readable size, so once the type has
+    shrunk to its floor the lines are cut with an ellipsis — the link
+    pill at the bottom takes people to the wall for the full words. */
+async function renderFragmentCanvas(
+  input: FragmentCardInput,
+  theme: string,
+  custom?: CustomTheme | null,
+): Promise<HTMLCanvasElement> {
+  const pal = paletteFor(theme, custom);
+  await document.fonts.ready;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas is not available");
+
+  // Sanctuary gradient background
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, pal.bg[0]);
+  grad.addColorStop(0.5, pal.bg[1]);
+  grad.addColorStop(1, pal.bg[2]);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Soft aura glow
+  const aura = ctx.createRadialGradient(W * 0.25, H * 0.15, 0, W * 0.25, H * 0.15, 620);
+  aura.addColorStop(0, pal.accent + "55");
+  aura.addColorStop(1, pal.accent + "00");
+  ctx.fillStyle = aura;
+  ctx.fillRect(0, 0, W, H);
+
+  const innerW = W - PAD * 2;
+  let y = 96;
+
+  // Wordmark
+  ctx.fillStyle = pal.muted;
+  ctx.font = `600 30px ${SANS}`;
+  ctx.fillText("F R A G M E N T S", PAD, y);
+  y += 52;
+  ctx.fillStyle = pal.ink;
+  ctx.font = `italic 600 44px ${SERIF}`;
+  ctx.fillText(`${input.displayName}'s wall`, PAD, y);
+  y += 84;
+
+  // The fragment
+  ctx.fillStyle = pal.accent;
+  ctx.font = `600 26px ${SANS}`;
+  ctx.fillText("A FRAGMENT", PAD, y);
+  y += 26;
+
+  const footerTop = H - 210;
+  let fSize = 60;
+  let fLines: string[] = [];
+  for (;;) {
+    ctx.font = `500 ${fSize}px ${SERIF}`;
+    fLines = wrapLines(ctx, input.message, innerW);
+    const totalH = fLines.length * fSize * 1.22 + 90;
+    if (y + totalH <= footerTop || fSize <= 30) break;
+    fSize -= 4;
+  }
+  // Still too long at the smallest readable size: keep what fits and
+  // end with an ellipsis, the way the wall itself clamps long notes.
+  const lineH = fSize * 1.22;
+  const maxLines = Math.max(1, Math.floor((footerTop - y - 90) / lineH));
+  if (fLines.length > maxLines) {
+    fLines = fLines.slice(0, maxLines);
+    fLines[maxLines - 1] = `${fLines[maxLines - 1].replace(/\s+\S*$/, "")}…`;
+  }
+  ctx.font = `500 ${fSize}px ${SERIF}`;
+  ctx.fillStyle = pal.ink;
+  for (const line of fLines) {
+    y += lineH;
+    ctx.fillText(line, PAD, y);
+  }
+  ctx.font = `italic 600 36px ${SERIF}`;
+  ctx.fillStyle = pal.ink;
+  ctx.globalAlpha = 0.75;
+  ctx.fillText(`— ${input.author}`, PAD, y + 62);
+  ctx.globalAlpha = 1;
+
+  // Footer: the wall link, the whole point of the card
+  const link = `myfragments.vercel.app/${input.username}`;
+  ctx.font = `600 40px ${SANS}`;
+  const linkW = ctx.measureText(link).width;
+  const pillW = linkW + 72;
+  const pillX = (W - pillW) / 2;
+  const pillY = H - 168;
+  roundRect(ctx, pillX, pillY, pillW, 84, 42);
+  ctx.fillStyle = pal.accent;
+  ctx.fill();
+  ctx.fillStyle = pal.bg[1];
+  ctx.textAlign = "center";
+  ctx.fillText(link, W / 2, pillY + 56);
+  ctx.textAlign = "left";
+  ctx.fillStyle = pal.muted;
+  ctx.font = `500 30px ${SANS}`;
+  const tag = "Leave a little something";
+  ctx.fillText(tag, (W - ctx.measureText(tag).width) / 2, H - 44);
+
+  return canvas;
+}
+
 function canvasToJpeg(
   source: HTMLCanvasElement,
   width: number,
@@ -286,6 +404,65 @@ export async function shareAnswerCard(
   options: ShareCardOptions = {},
 ): Promise<"shared" | "downloaded"> {
   const blob = await renderAnswerCard(input, options);
+  const file = new File([blob], `fragments-${input.username}.jpg`, { type: "image/jpeg" });
+
+  const nav = navigator as Navigator & {
+    canShare?: (data: { files: File[] }) => boolean;
+    share?: (data: { files: File[]; title?: string }) => Promise<void>;
+  };
+  if (nav.canShare && nav.share && nav.canShare({ files: [file] })) {
+    await nav.share({ files: [file], title: "Fragments" });
+    return "shared";
+  }
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = file.name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  return "downloaded";
+}
+
+export async function renderFragmentCard(
+  input: FragmentCardInput,
+  options: ShareCardOptions = {},
+): Promise<Blob> {
+  const size = CARD_SIZES[options.size ?? "story"];
+  const canvas = await renderFragmentCanvas(
+    input,
+    options.theme ?? input.theme,
+    options.customTheme ?? input.customTheme,
+  );
+  return canvasToJpeg(canvas, size.width, size.height, 0.85);
+}
+
+/** Small JPEG data URL for the live preview in the save dialog. */
+export async function renderFragmentCardPreview(
+  input: FragmentCardInput,
+  options: ShareCardOptions = {},
+): Promise<string> {
+  const canvas = await renderFragmentCanvas(
+    input,
+    options.theme ?? input.theme,
+    options.customTheme ?? input.customTheme,
+  );
+  const small = document.createElement("canvas");
+  small.width = 360;
+  small.height = 450;
+  const ctx = small.getContext("2d");
+  if (!ctx) throw new Error("Canvas is not available");
+  ctx.drawImage(canvas, 0, 0, 360, 450);
+  return small.toDataURL("image/jpeg", 0.8);
+}
+
+export async function shareFragmentCard(
+  input: FragmentCardInput,
+  options: ShareCardOptions = {},
+): Promise<"shared" | "downloaded"> {
+  const blob = await renderFragmentCard(input, options);
   const file = new File([blob], `fragments-${input.username}.jpg`, { type: "image/jpeg" });
 
   const nav = navigator as Navigator & {

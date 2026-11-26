@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   type Entry,
@@ -7,7 +7,8 @@ import {
   setEntryFavorite,
   deleteEntry,
 } from "@/lib/entries";
-import { Eye, EyeOff, Trash2, Lock, Star, Pin, Reply } from "lucide-react";
+import { Eye, EyeOff, Trash2, Lock, Star, Pin, Reply, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,14 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { CUSTOM_THEME_NAME, THEMES, themeLabel } from "@/lib/themes";
+import {
+  CARD_SIZES,
+  renderFragmentCardPreview,
+  shareFragmentCard,
+  type CardSize,
+} from "@/lib/share-card";
+import type { CustomTheme } from "@/lib/custom-theme";
 import {
   REACTION_KINDS,
   toggleReaction,
@@ -49,6 +58,13 @@ interface Props {
   inCollections?: string[];
   /** Owner only: add or remove this fragment from a collection. */
   onCollectionToggle?: (collectionId: string, inIt: boolean) => void;
+  /** The wall's username, for the share card's link. Without it the
+      share button does not render. */
+  wallUsername?: string;
+  /** The wall's theme, so the share card wears the wall's colours. */
+  wallTheme?: string;
+  /** The wall's own colours when its theme is Custom. */
+  customTheme?: CustomTheme | null;
 }
 
 function ReactionRow({
@@ -104,6 +120,224 @@ function ReactionRow({
   );
 }
 
+/** A fragment as a shareable image, the same card maker the answered
+    questions already have: live preview, pick a colour and a size,
+    save a light JPEG. The image shows exactly what the wall shows —
+    the words and the displayed name — and nothing else. */
+function FragmentShareButton({
+  message,
+  author,
+  wallUsername,
+  ownerName,
+  wallTheme,
+  customTheme,
+}: {
+  message: string;
+  author: string;
+  wallUsername: string;
+  ownerName: string;
+  wallTheme: string;
+  customTheme?: CustomTheme | null;
+}) {
+  const [open, setOpen] = useState(false);
+  const [theme, setTheme] = useState(wallTheme);
+  const [size, setSize] = useState<CardSize>("story");
+  const [preview, setPreview] = useState<string | null>(null);
+  const [rendering, setRendering] = useState(false);
+  const [sharing, setSharing] = useState(false);
+
+  // Live preview, re-drawn whenever the colour or size changes.
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    setRendering(true);
+    renderFragmentCardPreview(
+      {
+        message,
+        author,
+        username: wallUsername,
+        displayName: ownerName,
+        theme: wallTheme,
+        customTheme,
+      },
+      { theme, size, customTheme },
+    )
+      .then((url) => {
+        if (!cancelled) setPreview(url);
+      })
+      .catch(() => {
+        if (!cancelled) setPreview(null);
+      })
+      .finally(() => {
+        if (!cancelled) setRendering(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, theme, size, message, author, wallUsername, ownerName, wallTheme, customTheme]);
+
+  async function handleShare() {
+    setSharing(true);
+    try {
+      const how = await shareFragmentCard(
+        {
+          message,
+          author,
+          username: wallUsername,
+          displayName: ownerName,
+          theme: wallTheme,
+          customTheme,
+        },
+        { theme, size, customTheme },
+      );
+      if (how === "downloaded") toast.success("Card saved. Post it anywhere 🤍");
+      setOpen(false);
+    } catch {
+      toast.error("Could not make the card");
+    } finally {
+      setSharing(false);
+    }
+  }
+
+  return (
+    <div className="mt-3 flex justify-end">
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={() => {
+          setTheme(wallTheme);
+          setOpen(true);
+        }}
+        className="rounded-full text-xs"
+      >
+        <Share2 className="mr-1.5 h-3.5 w-3.5" aria-hidden />
+        Share as image
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl">Save your card</DialogTitle>
+            <DialogDescription>
+              Pick a colour and a size, then save it. The file is a JPEG,
+              so it stays light on data.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="mt-2 flex justify-center">
+            {preview ? (
+              <img
+                src={preview}
+                alt="Preview of your fragment card"
+                className="max-h-[46vh] w-auto rounded-xl shadow-lg"
+              />
+            ) : (
+              <div className="flex h-64 w-48 items-center justify-center rounded-xl bg-muted text-sm text-muted-foreground">
+                {rendering ? "Drawing your card…" : "Preview unavailable"}
+              </div>
+            )}
+          </div>
+
+          <div className="mt-5 space-y-2">
+            <p className="text-sm font-medium">Colour</p>
+            <div className="flex flex-wrap gap-2.5" role="radiogroup" aria-label="Card colour">
+              {wallTheme === CUSTOM_THEME_NAME && customTheme && (
+                <button
+                  key="custom"
+                  type="button"
+                  role="radio"
+                  aria-checked={theme === CUSTOM_THEME_NAME}
+                  aria-label="Custom — the wall's own colours"
+                  title="Custom — the wall's own colours"
+                  onClick={() => setTheme(CUSTOM_THEME_NAME)}
+                  className={`h-10 w-10 rounded-full transition ${
+                    theme === CUSTOM_THEME_NAME
+                      ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                      : "ring-1 ring-border"
+                  }`}
+                  style={{
+                    background: `linear-gradient(135deg, ${customTheme.bg}, ${customTheme.accent})`,
+                  }}
+                />
+              )}
+              {THEMES.map((t) => (
+                <button
+                  key={t.name}
+                  type="button"
+                  role="radio"
+                  aria-checked={theme === t.name}
+                  aria-label={t.label}
+                  title={t.label}
+                  onClick={() => setTheme(t.name)}
+                  className={`h-10 w-10 rounded-full transition ${
+                    theme === t.name
+                      ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                      : "ring-1 ring-border"
+                  }`}
+                  style={{
+                    background: `linear-gradient(135deg, ${t.card.bg[0]}, ${t.card.bg[2]})`,
+                  }}
+                />
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {themeLabel(theme)} ·{" "}
+              {theme === CUSTOM_THEME_NAME
+                ? "Your colours, your wall"
+                : (THEMES.find((t) => t.name === theme)?.blurb ?? "")}
+            </p>
+          </div>
+
+          <div className="mt-4 space-y-2">
+            <p className="text-sm font-medium">Size</p>
+            <div className="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Card size">
+              {(Object.keys(CARD_SIZES) as CardSize[]).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="radio"
+                  aria-checked={size === key}
+                  onClick={() => setSize(key)}
+                  className={`rounded-2xl border px-3 py-2.5 text-left transition ${
+                    size === key
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card/40"
+                  }`}
+                >
+                  <span className="block text-sm font-medium">{CARD_SIZES[key].label}</span>
+                  <span
+                    className={`mt-0.5 block text-xs ${
+                      size === key ? "text-primary-foreground/80" : "text-muted-foreground"
+                    }`}
+                  >
+                    {CARD_SIZES[key].blurb}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-end gap-2">
+            <Button type="button" variant="ghost" onClick={() => setOpen(false)} className="rounded-full">
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleShare}
+              disabled={sharing || rendering || !preview}
+              className="rounded-full"
+            >
+              <Share2 className="mr-2 h-4 w-4" aria-hidden />
+              {sharing ? "Making your card…" : "Share / Save image"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 export function FragmentCard({
   entry,
   index,
@@ -118,6 +352,9 @@ export function FragmentCard({
   collections,
   inCollections,
   onCollectionToggle,
+  wallUsername,
+  wallTheme,
+  customTheme,
 }: Props) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
@@ -243,6 +480,20 @@ export function FragmentCard({
           )}
 
           <ReactionRow entryId={entry.id} reactions={reactions} onReacted={onReacted} />
+
+          {/* Shareable as an image — public fragments only. A private
+              or hidden fragment never gets the button, so nothing
+              hidden can leak out as a picture. */}
+          {wallUsername && !entry.is_private && entry.is_visible && (
+            <FragmentShareButton
+              message={entry.message}
+              author={displayName}
+              wallUsername={wallUsername}
+              ownerName={ownerName ?? wallUsername}
+              wallTheme={wallTheme ?? "moonlight"}
+              customTheme={customTheme}
+            />
+          )}
 
           {isOwner && editMode && (
             <div className="mt-4 flex flex-wrap gap-2 border-t border-black/5 pt-3">

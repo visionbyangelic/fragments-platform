@@ -436,6 +436,9 @@ function Wall() {
                     }}
                     featured={profile.featured_entry_id === entry.id}
                     onFeature={isOwner && editMode ? () => toggleFeatured(entry.id) : undefined}
+                    wallUsername={profile.username}
+                    wallTheme={wallThemeName}
+                    customTheme={parseCustomTheme(profile.custom_theme)}
                   />
                 ))}
               </div>

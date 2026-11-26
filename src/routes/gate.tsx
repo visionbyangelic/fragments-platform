@@ -825,6 +825,9 @@ function GatePage() {
                         }}
                         featured={profile.featured_entry_id === entry.id}
                         onFeature={() => toggleFeatured(entry.id)}
+                        wallUsername={profile.username}
+                        wallTheme={profile.theme}
+                        customTheme={parseCustomTheme(profile.custom_theme)}
                         collections={collections}
                         inCollections={collectionsContaining(entry.id)}
                         onCollectionToggle={(collectionId, inIt) => toggleCollectionMembership(collectionId, entry.id, inIt)}
@@ -930,6 +933,9 @@ function GatePage() {
                         }}
                         featured={profile.featured_entry_id === entry.id}
                         onFeature={() => toggleFeatured(entry.id)}
+                        wallUsername={profile.username}
+                        wallTheme={profile.theme}
+                        customTheme={parseCustomTheme(profile.custom_theme)}
                         collections={collections}
                         inCollections={collectionsContaining(entry.id)}
                         onCollectionToggle={(collectionId, inIt) => toggleCollectionMembership(collectionId, entry.id, inIt)}
