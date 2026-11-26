@@ -49,7 +49,6 @@ function WallPreview() {
   const shown = (entries ?? [])
     .filter((e) => !e.is_private && e.is_visible)
     .slice(0, 3);
-  const name = profile?.display_name?.trim() || "Angelic";
 
   return (
     <div className="relative mx-auto w-full max-w-md">
