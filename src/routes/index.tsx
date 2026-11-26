@@ -152,6 +152,9 @@ function Landing() {
         }
         @media (max-width: 640px) {
           .fragments-home .landing-nav { padding-left: 1rem; padding-right: 1rem; }
+          .fragments-home .landing-nav > div { gap: 0.5rem; }
+          .fragments-home .landing-nav a { padding-left: 0.75rem; padding-right: 0.75rem; font-size: 0.75rem; white-space: nowrap; }
+          .fragments-home .landing-nav > span { font-size: 1.1rem; }
           .fragments-home .landing-hero { padding: 1.5rem 1rem 2.5rem; gap: 2rem; }
           .fragments-home .landing-hero h1 { font-size: clamp(2.35rem, 10.5vw, 3.25rem); line-height: 1.08; letter-spacing: -0.035em; }
           .fragments-home .landing-hero-copy { font-size: 1rem; line-height: 1.65; }
